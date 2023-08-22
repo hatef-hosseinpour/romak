@@ -1,0 +1,72 @@
+{% extends 'main.html'%}
+{% load static %}
+{% block headcontent %}
+{% include 'head.html' with title="Installers App| Create Installers" %}
+{% endblock %}
+{% block content %}
+
+<div class="loginbox signupbox">
+    <img src="{% static '/images/human-icon-3d-render-illustration.jpg' %}" class="avatar">
+    <h1> ایجاد کاربر </h1>
+    <form action="" method="POST" id="create-user-form">
+        {% csrf_token %}
+        <p>نام</p>
+        <input type="text" id="first-name" name="first-name" placeholder="نام کاربر را وارد کنید">
+        <p>نام خانوادگی</p>
+        <input type="text" id="last-name" name="last-name" placeholder="نام‌خانوادگی کاربر را وارد کنید">
+        <p>نام کاربری</p>
+        <input type="text" id="username" name="username" placeholder="نام کاربری کاربر را وارد کنید" required>
+        <p>رمزعبور</p>
+        <input type="password" id="password1" name="password1" placeholder="رمزعبور کاربر را وارد کنید" required>
+        <p>تاییدیه رمزعبور</p>
+        <input type="password" id="password2" name="password2" placeholder="رمزعبور کاربر را دوباره وارد کنید" required>
+        <input type="submit" value="ورود" name="" id="create-user">
+    </form>
+
+
+    <script>
+        $('#create-user').on('click', function (e) {
+            e.preventDefault();
+            let firstName = $('#first-name').val();
+            let lastName = $('#last-name').val();
+            let username = $('#username').val();
+            let password1 = $('#password1').val();
+            let password2 = $('#password2').val();
+
+
+            if (password1 !== password2) {
+                createAlert('warning', 'رمزعبور و تاییدیه آن با هم تطابق ندارند!!')
+            }
+            else {
+                let data = {
+                    'username': username.toLowerCase(),
+                    'password': password1,
+                    'first_name': firstName,
+                    'last_name': lastName,
+                    'is_active': true
+                };
+                $.ajax({
+                    type: "POST",
+                    url: "/api/users/",
+                    data: JSON.stringify(data),
+                    contentType: "application/json",
+                    headers: {
+                        'X-CSRFToken': $('[name=csrfmiddlewaretoken]').val()
+                    },
+                    success: function (response) {
+                        createAlert('success', 'کاربر با موفقیت اضافه شد.')
+                    },
+                    error: function (error) {
+                        if (error.responseJSON && error.responseJSON.username) {
+                            // let errorMessage = error.responseJSON.username[0]; 
+                            createAlert('danger', 'نام کاربری قبلا انتخاب شده‌است'); 
+                        } else {
+                            console.error("ERROR CREATING USER ERROR TEXT: ", error.responseJSON);
+                        }
+                    }
+                });
+
+            }
+        })
+    </script>
+    {% endblock%}

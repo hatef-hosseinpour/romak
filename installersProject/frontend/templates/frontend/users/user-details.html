@@ -1,0 +1,97 @@
+{% extends 'main.html'%}
+{% load static %}
+{% block headcontent %}
+{% include 'head.html' with title="Installers App| User Profile" %}
+{% endblock %}
+{% block content %}
+
+<section class="vh-100 rtl-txt">
+    <div class="container py-5 h-100">
+        <div class="row d-flex justify-content-center align-items-center h-100">
+            <div class="col col-lg-6 mb-4 mb-lg-0">
+                <div class="card mb-3" style="border-radius: .5rem;">
+                    <div class="row g-0">
+                        <div class="col-md-4 gradient-custom text-center text-black"
+                            style="border-top-left-radius: .5rem; border-bottom-left-radius: .5rem;">
+                            <img id="profile-image" alt="Avatar" class="img-fluid my-5 rounded-circle shadow-lg" style="max-width: 100px; max-height: 100px;" />
+                            <h5 class="text-black" id="username"></h5>
+                            
+                            <p id="role"></p>
+                            <a href="" id="edit">ویرایش</a>
+                        </div>
+                        <div class="col-md-8">
+                            <div class="card-body p-4">
+                                <h6>اطلاعات کاربری</h6>
+                                <hr class="mt-0 mb-4">
+                                <div class="row pt-1">
+                                    <div class="col-12 mb-3">
+                                        <h6>نام</h6>
+                                        <p class="text-muted" id="name"></p>
+                                    </div>
+                                    <div class="col-12 mb-3">
+                                        <h6>شماره همراه</h6>
+                                        <p class="text-muted" id="phone-number"></p>
+                                    </div>
+                                    <div class="col-12 mb-3">
+                                        <h6>ایمیل</h6>
+                                        <p class="text-muted" id="email"></p>
+                                    </div>
+                                    <div class="col-10 mb-3">
+                                        <h6>وضعیت</h6>
+                                        <p class="text-muted" id="is-active"></p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<script>
+    let user_id = '{{user_id}}';
+    console.log('user_id', user_id);
+    $('#edit').attr('href', `/update-user/${user_id}`)
+    $(document).ready(function () {
+        $.ajax({
+            type: "GET",
+            url: `/api/users/${user_id}/`,
+            success: function (response) {
+                $('#name').text(response.first_name || response.last_name ? response.first_name + ' ' + response.last_name : '--');
+
+                $("#email").text(response.email ? response.email : '--')
+                $("#is-active").text(response.is_active ? 'فعال' : 'غیرفعال')
+                $("#role").text(response.is_superuser ? 'ادمین' : 'نصاب')
+                $('#username').text(response.username);
+
+
+            },
+            error: function () {
+                console.log('Failed to retrieve profile data');
+            }
+        });
+
+        $.ajax({
+            type: "GET",
+            url: `/api/users-profile/${user_id}/`,
+            success: function (response) {
+
+                $("#phone-number").text(response.phone_number ? response.phone_number : '--')
+                $("#is-active").text(response.user.is_active ? 'فعال' : 'غیرفعال')
+                $('#profile-image').attr('src', response.profile_image)
+
+            },
+            error: function () {
+                console.log('Failed to retrieve profile data');
+            }
+        });
+    });
+
+
+</script>
+
+
+{% endblock content %}

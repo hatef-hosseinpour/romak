@@ -1,0 +1,147 @@
+{% extends 'main.html'%}
+{% load static %}
+{% block headcontent %}
+{% include 'head.html' with title="Installers App| Create Enginroom" %}
+{% endblock %}
+{% block content %}
+
+<div class="loginbox col-lg-4 col-md-12 col-centered">
+    <!-- <img src="{% static '/images/human-icon-3d-render-illustration.jpg' %}" class="avatar"> -->
+    <h1> ایجاد موتورخانه </h1>
+    <form action="" method="POST" id="enginroom-form">
+        {% csrf_token %}
+        <p>نام موتورخانه</p>
+        <input type="text" id="enginroom-name" name="enginroom-name" placeholder="نام موتورخانه را وارد کنید">
+        <p>نام سازمان</p>
+        <input type="text" id="organization" name="organization" placeholder="نام سازمان را وارد کنید">
+        <p>نام نهاد</p>
+        <input type="text" id="administration" name="administration" placeholder="نام‌ نهاد را وارد کنید">
+        <input type="hidden" name="creator" id="creator" value="{{request.session.user_id}}">
+        <input type="submit" value="ثبت" name="" id="enginroom-submit">
+    </form>
+    <script>
+        let page = "{{ page }}";
+        let organ_id = "{{ organ_id }}";
+        let enginroomData;
+        let enginroomName;
+        let organization;
+        let administration;
+        let creator;
+        console.log('page', page);
+        console.log('organ id', organ_id);
+
+        function enginroomExist(enginroomName, callback) {
+            $.ajax({
+                type: "GET",
+                url: "/api/enginroom/",
+                success: function (response) {
+                    let enginroomExists = false; // Flag to track existence
+
+                    for (let i = 0; i < response.length; i++) {
+                        if (response[i].enginroom_name === enginroomName) {
+                            enginroomExists = true;
+                            break; // Exit the loop since we found a match
+                        }
+                    }
+
+                    // Call the callback function with the result
+                    callback(enginroomExists);
+                }
+            });
+
+        }
+
+        if (page === "updateOrgan") {
+            console.log(page);
+            $(document).ready(function () {
+                $.ajax({
+                    type: "GET",
+                    url: `/api/enginroom/${organ_id}/`,
+                    success: function (response) {
+
+                        $('#enginroom-name').val(response.enginroom_name);
+                        $('#organization').val(response.organization);
+                        $('#administration').val(response.administration);
+
+                    }
+                });
+                $('#enginroom-submit').on('click', function (e) {
+                    e.preventDefault()
+                    enginroomName = $('#enginroom-name').val();
+                    organization = $('#organization').val();
+                    administration = $('#administration').val();
+                    creator = $('#creator').val();
+                    enginroomData = {
+                        'enginroom_name': enginroomName,
+                        'organization': organization,
+                        'administration': administration,
+                        'creator': creator
+
+                    }
+                    $.ajax({
+                        type: "PUT",
+                        url: `/api/enginroom/${organ_id}/`,
+                        data: JSON.stringify(enginroomData),
+                        contentType: "application/json",
+                        headers: {
+                            'X-CSRFToken': $('[name=csrfmiddlewaretoken]').val()
+                        },
+                        success: function (response) {
+                            createAlert('success', 'اطلاعات موتورخانه با موفقیت بروز رسانی شد');
+                            window.location.href = '/enginroom-list/'
+                        },
+                        error: function (error) {
+                            console.error('ERROR FROM UPDATA DATA:', error.responseJSON)
+                        }
+                    });
+                })
+
+            });
+        }
+        else {
+            $(document).ready(function () {
+                $('#enginroom-submit').on('click', function (e) {
+                    e.preventDefault()
+                    enginroomName = $('#enginroom-name').val();
+                    organization = $('#organization').val();
+                    administration = $('#administration').val();
+                    creator = $('#creator').val();
+                    enginroomData = {
+                        'enginroom_name': enginroomName,
+                        'organization': organization,
+                        'administration': administration,
+                        'creator': creator
+
+                    }
+                    enginroomExist(enginroomName, function (exists) {
+                        if (exists) {
+                            createAlert('warning', 'موتورخانه‌ با این نام وجود دارد')
+                        }
+                        else {
+                            $.ajax({
+                                type: "POST",
+                                url: "/api/enginroom/",
+                                data: JSON.stringify(enginroomData),
+                                contentType: "application/json",
+                                headers: {
+                                    'X-CSRFToken': $('[name=csrfmiddlewaretoken]').val()
+                                },
+                                success: function (response) {
+                                    createAlert('success', 'موتورخانه با موفقیت ثبت شد.');
+                                    window.location.href = '/enginroom-list/'
+                                },
+                                error: function (error) {
+                                    console.error('ERROR FROM CREATE DATA:', error.responseJSON)
+                                }
+                            });
+                        }
+
+                    })
+
+                })
+
+            });
+
+        }
+    </script>
+    {% endblock content %}

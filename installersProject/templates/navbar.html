@@ -1,0 +1,57 @@
+{% load static %}
+
+<nav class="navbar navbar-expand-lg bg-body-tertiary sticky-top rtl-txt ">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="/"><img src="{% static 'images/logo-romak.jpg' %}" class="navbar-img"></a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarTogglerDemo02"
+      aria-controls="navbarTogglerDemo02" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarTogglerDemo02">
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+
+        <li class="nav-item">
+          {% if request.session.session_key %}
+          <a class="btn btn-outline-secondary" id="logout-btn" href="/api/logout-user/">خروج</a>
+          <a class="btn btn-sm btn-light" id="profile-btn" href="/profile/">پروفایل‌کاربری</a>
+          <a class="btn btn-sm btn-light" id="installation-form" href="/create-installation/">ایجاد اطلاعات نصب</a>
+          <!-- <a class="btn btn-sm btn-light" id="create-organ-btn" href="/create-organization/">افزودن سازمان</a> -->
+          {% if request.session.is_admin %}
+          <a class="btn btn-sm btn-light" id="users-list-btn" href="/users-list/">لیست کاربران</a>
+          <a class="btn btn-sm btn-light" id="create-organ-btn" href="/enginroom-list/">لیست موتورخانه</a>
+          <a class="btn btn-sm btn-light" id="locatio-list-btn" href="/location-public-info-list/">لیست اطلاعات عمومی
+            محل</a>
+          <a class="btn btn-sm btn-light" id="create-organ-btn" href="/enginroom-info-list/">لیست اطلاعات
+            موتورخانه</a>
+          {% endif %}
+          {% else %}
+          <a class="btn btn-outline-secondary" id="login-btn" href="/login/">ورود</a>
+         
+          {% endif %}
+        </li>
+      </ul>
+    </div>
+
+</nav>
+
+<script>
+
+  $('#logout-btn').click(function (e) {
+    e.preventDefault();
+    let href = $(this).attr('href');
+    if (href === '/api/logout-user/') {
+      $.ajax({
+        type: "GET",
+        url: href,
+        success: function (response) {
+          window.location.href = '/login/'
+        },
+        error: function () {
+          console.log('logout failed');
+        }
+      });
+    }
+  });
+
+</script>

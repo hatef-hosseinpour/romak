@@ -1,0 +1,49 @@
+{% extends 'main.html'%}
+{% load static %}
+{% block headcontent %}
+{% include 'head.html' with title="Installers App| Login User" %}
+{% endblock %}
+{% block content %}
+
+<div class="loginbox">
+  <img src="{% static '/images/human-icon-3d-render-illustration.jpg' %}" class="avatar">
+
+  <h1> ورود کاربر </h1>
+  <form action="" method="POST" id="login-form">
+    {% csrf_token %}
+    <p>نام کاربری</p>
+    <input type="text" id="username" name="username" placeholder="نام کاربری خود را وارد کنید">
+    <p>رمزعبور</p>
+    <input type="password" id="password" name="password" placeholder="رمزعبور خود را وارد کنید">
+    <input type="submit" value="ورود" name="">
+  </form>
+  <!-- <a href="" class="rtl-txt">فراموشی رمزعبور</a> -->
+
+
+  <script>
+
+    
+
+
+    $('#login-form').submit(function (event) {
+      event.preventDefault();
+      let formData = $(this).serialize();
+      $.ajax({
+        url: '/api/login-user/',
+        type: 'POST',
+        data: formData,
+        success: function (response) {
+          console.log(response.user_id);
+          createAlert('success', 'ورودکاربر با موفقیت انجام شد.');
+          window.location.href = "/profile/"
+        },
+        error: function () {
+          createAlert('danger', 'خطایی رخ داده است');
+        }
+      });
+    });
+
+
+
+  </script>
+  {% endblock content %}

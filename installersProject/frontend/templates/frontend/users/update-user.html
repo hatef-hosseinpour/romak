@@ -1,0 +1,220 @@
+{% extends 'main.html'%}
+{% load static %}
+{% block headcontent %}
+{% include 'head.html' with title="Installers App| Create Installers" %} {% endblock %}
+{%block content %}
+
+<div class="rtl-txt loginbox signupbox" style="margin-top: 8%">
+  <form method="POST" id="update-form">
+    {% csrf_token %}
+    <p>نام کاربری</p>
+    <input type="text" id="username" name="username" />
+    <p>رمزعبور</p>
+    <input type="hidden" id="password" name="password" disabled />
+    <p class="small">
+      رمزعبور قابل مشاهده نیست برای تغییر رمزعبور
+      روی این <a href="#">لینک</a> کلیک کنید
+    </p>
+    <br />
+    <p>نام</p>
+    <input type="text" id="first-name" name="first-name" />
+    <p>نام خانوادگی</p>
+    <input type="text" id="last-name" name="last-name" />
+    <p>ایمیل</p>
+    <input type="email" id="email" name="email" required />
+    <p>عکس پروفایل فعلی</p>
+    <img src="" id="current-profile-image" name="current-profile-image" class="thumbnail" width="100" height="100" />
+    <p>عکس پروفایل تغییر</p>
+    <input type="file" accept="image/jpeg,image/png" id="change-profile-image" name="change-profile-image" />
+    <p>شماره همراه</p>
+    <input type="text" id="phone-number" name="phone-number" />
+    <div class="checkbox-container">
+      <p>وضعیت(فعال، غیرفعال)</p>
+      <input type="checkbox" id="is-active" name="is-active" />
+    </div>
+
+    <!-- <p>وضعیت ادمین</p>
+        <input type="checkbox" id="is-superuser" name="is-superuser"> -->
+    <input type="submit" value="بروزرسانی" id="update-user" />
+  </form>
+</div>
+<script>
+  // The User id that receive from Front View
+  let user_id = "{{user_id}}";
+  console.log("user id: ", user_id);
+  let newImageUploaded = false
+  let profileImage;
+  $(document).ready(function () {
+    // This Ajax method based on user_id and this endpoint /api/users/user_id/ Filling user data
+    $.ajax({
+      type: "GET",
+      url: `/api/users/${user_id}/`,
+      success: function (response) {
+        $("#username").val(response.username);
+        $("#first-name").val(response.first_name);
+        $("#last-name").val(response.last_name);
+        $("#email").val(response.email);
+        $("#is-active").prop("checked", response.is_active);
+        $("#password").val(response.password);
+        // let password = response.password;
+        // let lastLogin = response.last_login;
+        // let isSuperuser = response.is_superuser;
+        // let isStaff = response.is_staff;
+        // let dateJoined = response.date_joined;
+        // let groups = response.groups;
+        // let userPermission = response.user_permissions
+
+        $("#update-user").on("click", function (e) {
+          let username = $("#username").val();
+          let password = $("#password").val();
+          let firstName = $("#first-name").val();
+          let lastName = $("#last-name").val();
+          let email = $("#email").val();
+          let isActive = $("#is-active").prop("checked");
+          $("#is-active").on("change", function () {
+            isActive = $(this).prop("checked");
+          });
+          e.preventDefault();
+          const userData = {
+            'password': password,
+            'username': username,
+            'email': email,
+            'is_active': isActive,
+            'first_name': firstName,
+            'last_name': lastName,
+            // 'is_staff': isStaff,
+            // 'last_login': lastLogin,
+            // 'is_superuser': isSuperuser,
+
+            // 'date_joined': dateJoined,
+            // 'groups': groups
+          };
+          console.log(userData);
+          $.ajax({
+            type: "PUT",
+            url: `/api/users/${user_id}/`,
+            data: userData,
+            headers: {
+              "X-CSRFToken": $("[name=csrfmiddlewaretoken]").val(),
+            },
+            success: function (response) {
+              console.log("User data updated", response);
+              // window.location.href = "/users-list/";
+            },
+            error: function (response) {
+              console.log("Error updating user data.", response.error);
+            },
+          });
+        });
+      },
+    });
+    $.ajax({
+      type: "GET",
+      url: `/api/users-profile/${user_id}/`,
+      success: function (response) {
+        currentProfileImageURL = response.profile_image;
+        console.log(currentProfileImageURL);
+        $("#current-profile-image").attr("src", currentProfileImageURL);
+        $("#phone-number").val(response.phone_number);
+
+        $("#update-user").on("click", function (e) {
+          e.preventDefault();
+
+          let phone_number = $("#phone-number").val();
+          let img = $("#change-profile-image")[0].files[0];
+
+          if (!img) {
+            // If no new image uploaded, fetch the current image and convert to base64
+            getBase64FromImageUrl(currentProfileImageURL, function (base64Image) {
+
+              let profileImage = base64Image;
+              let profileData = {
+                'phone_number': phone_number,
+                'profile_image': profileImage,
+                'user': user_id
+              };
+
+              $.ajax({
+                type: "PUT",
+                url: `/api/users-profile/${user_id}/`,
+                data: JSON.stringify(profileData),
+                contentType: "application/json",
+                headers: {
+                  "X-CSRFToken": $("[name=csrfmiddlewaretoken]").val(),
+                },
+                success: function (response) {
+                  console.log("profile data updated", response);
+                  window.location.href = "/users-list/";
+                },
+                error: function (error) {
+                  console.error('ERROR PROFILE DATE :', error.responseJSON)
+                }
+              });
+
+            });
+          } else {
+            // If new image uploaded, convert it to base64
+            let reader = new FileReader();
+            reader.onloadend = function () {
+              let profileImage = reader.result;
+
+
+              let profileData = {
+                'phone_number': phone_number,
+                'profile_image': profileImage,
+                'user': user_id
+              };
+
+              console.log('Data to be sent:', profileData);
+
+
+              $.ajax({
+                type: "PUT",
+                url: `/api/users-profile/${user_id}/`,
+                data: JSON.stringify(profileData),
+                contentType: "application/json",
+                headers: {
+                  "X-CSRFToken": $("[name=csrfmiddlewaretoken]").val(),
+                },
+                success: function (response) {
+                  console.log("profile data updated", response);
+                  window.location.href = "/users-list/";
+                },
+                error: function (error) {
+                  console.error('ERROR PROFILE DATE :', error.responseJSON)
+                }
+              });
+
+            };
+            reader.readAsDataURL(img);
+          }
+        });
+      },
+    });
+
+    // Function to fetch the current image and convert it to base64
+    function getBase64FromImageUrl(url, callback) {
+      let img = new Image();
+      img.setAttribute("crossOrigin", "anonymous");
+
+      img.onload = function () {
+        let canvas = document.createElement("canvas");
+        canvas.width = this.width;
+        canvas.height = this.height;
+
+        let ctx = canvas.getContext("2d");
+        ctx.drawImage(this, 0, 0);
+
+        let dataURL = canvas.toDataURL("image/jpeg");
+        callback(dataURL.replace(/^data:image\/(png|jpg);base64,/, ""));
+        console.log(dataURL);
+      };
+
+      img.src = url;
+    }
+
+
+
+  });
+</script>
+{% endblock %}
