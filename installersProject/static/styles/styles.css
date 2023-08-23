@@ -36,16 +36,10 @@ body {
   box-sizing: border-box;
   padding: 70px 30px;
   border-radius: 10px;
+  margin-top: 5%;
 }
 
-@media screen and (max-width: 768px) {
-  .loginbox {
-    width: 70%;
-    height: auto;
-    padding: 40px 20px;
-    font-size: 14px;
-  }
-}
+
 
 .signupbox {
   width: 600;
@@ -87,7 +81,7 @@ h1 {
   width: 100%;
   margin-bottom: 20px;
 
-  margin-top: 20px;
+  /* margin-top: 20px; */
 }
 
 .loginbox input {
