@@ -12,6 +12,7 @@ from django.core.files.base import ContentFile
 import base64
 import uuid
 import imghdr
+import os
 
 
 # @brief A class for serialize Users objects
@@ -42,7 +43,7 @@ class UserListSerializer(serializers.ModelSerializer):
 # @brief A class for serialize Profile objects and decode image that sent from frontend
 class ProfileSerializers(serializers.ModelSerializer):
     # @param profile_image the decode image that received from frontend
-    profile_image = Base64ImageField(required=True)
+    profile_image = Base64ImageField(required=False)
 
     # @brief customize the behavior and characteristics of the Profile serializer
     class Meta:
@@ -50,6 +51,14 @@ class ProfileSerializers(serializers.ModelSerializer):
         model = Profile
         # @param fields What fields of the Profile model do we want to serialize
         fields = '__all__'
+
+    def update(self, instance, validated_data):
+        # Delete old profile image if new image is provided
+        if 'profile_image' in validated_data and instance.profile_image and 'default_user.jpg' not in instance.profile_image.path:
+            if os.path.exists(instance.profile_image.path):
+                os.remove(instance.profile_image.path)
+
+        return super().update(instance, validated_data)
 
 
 # @brief A class for serialize Enginroom objects
@@ -73,7 +82,7 @@ class EnginroomSerializers(serializers.ModelSerializer):
 
 # @brief A class for serialize Location Public Info objects
 class LocationPublicInfoSerializers(serializers.ModelSerializer):
-    building_image = Base64ImageField(required=True)
+    building_image = Base64ImageField(required=False)
     # @param enginroom_name  this readonly field just to display the name of the engine room where the public information of its location is to be recorded
     enginroom_name = serializers.CharField(
         source='enginroom.enginroom_name', read_only=True)
@@ -120,7 +129,7 @@ class EnginroomPublicInfoSerializers(serializers.ModelSerializer):
 
 # @brief A class for serialize Installation Info objects
 class InstallationInfoSerializers(serializers.ModelSerializer):
-    device_serial_number_image = Base64ImageField(required=True)
+    device_serial_number_image = Base64ImageField(required=False)
     # @param installer_username  this readonly field just to display the name of the installer where record public information of engin room
     installer_username = serializers.CharField(
         source='user.username', read_only=True)
@@ -163,9 +172,11 @@ class EnginroomImagesSerializers(serializers.ModelSerializer):
     def create(self, validated_data):
         images_data = validated_data.pop('images_data')
         split_data = list()
-        print('\n\n  len images_data  : \n\n', len(images_data[0].split('data:image/jpeg;base64,')))
+        print('\n\n  len images_data  : \n\n', len(
+            images_data[0].split('data:image/jpeg;base64,')))
         for i in range(1, len(images_data[0].split('data:image/jpeg;base64,'))):
-            split_data.append(images_data[0].split('data:image/jpeg;base64,')[i])
+            split_data.append(images_data[0].split(
+                'data:image/jpeg;base64,')[i])
 
         enginroom_images = []
 
@@ -192,7 +203,3 @@ class EnginroomImagesSerializers(serializers.ModelSerializer):
         image_file = ContentFile(decoded_data, name=filename)
 
         enginroom_image.images.save(filename, image_file, save=True)
-
-       
-        
-

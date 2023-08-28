@@ -10,7 +10,7 @@ class Profile(models.Model):
     updated_at = models.DateTimeField(verbose_name='updated at', auto_now=True)
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     profile_image = models.ImageField(null=True, blank=True, upload_to='profile_images/',
-                                      default='profile_images/default_user.jpg', max_length=200)
+                                      default='default_user.jpg', max_length=200)
     phone_number = models.CharField(max_length=20, null=True, blank=True)
     # two_factor_authentication = models.BooleanField(default=True)
     # login_attempt_count = models.IntegerField(default=0)

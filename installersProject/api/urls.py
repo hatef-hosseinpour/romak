@@ -7,7 +7,7 @@ from rest_framework import routers
 router = routers.DefaultRouter()
 router.register(r'users', UserViewSet)
 router.register(r'users-profile', UserProfileViewSet)
-router.register(r'enginroom', EnginroomViewSet)
+router.register(r'enginroom', EnginroomViewSet, basename='enginroom')
 router.register(r'location-public-info', LocationPublicInfoViewSet)
 router.register(r'enginroom-public-info', EnginroomPublicInfoViewSet)
 router.register(r'installation-info', InstallationInfoViewSet)

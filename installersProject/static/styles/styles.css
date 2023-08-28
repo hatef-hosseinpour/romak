@@ -12,7 +12,7 @@ body {
   margin: 0;
   padding: 0;
   background-image: linear-gradient(rgba(0, 0, 50, 0.8), rgba(0, 0, 50, 0.8)),
-    url(../images/20230512144851.jpg);
+    url("../images/background.jpg");
   background-size: cover;
   background-position: center;
   font-family: vazir;
@@ -25,7 +25,7 @@ body {
 }
 
 .loginbox {
-  width: 450;
+  width: 500px;
   height: fit-content;
   background: #fff;
   color: #000;
@@ -42,7 +42,7 @@ body {
 
 
 .signupbox {
-  width: 600;
+  width: 100%;
   height: fit-content;
   top: 75%;
   bottom: -10px;
@@ -176,6 +176,7 @@ button {
 /* Optional: Add some spacing between the checkbox and the text */
 input[type="checkbox"] {
   margin-right: 8px;
+  margin-top: 15px;
 }
 
 .checkbox-container {
@@ -204,4 +205,173 @@ input[type="checkbox"] {
   padding: 10px;
   margin-bottom: 10px;
   border-radius: 10px;
+}
+
+
+form {
+  position: relative;
+  margin: 20px auto;
+  width: 300px;
+}
+
+h3 {
+  font-size: 16px;
+  font-weight: 600;
+  color: rgba(0, 0, 0, 0.8);
+}
+
+.submit__generated {
+  display: inline-block;
+  margin-right: 25%;
+}
+
+.submit__generated span {
+  display: inline-block;
+  width: 35px;
+  height: 35px;
+  vertical-align: center;
+  line-height: 35px;
+  font-weight: bold;
+  font-size: 18px;
+  color: rgba(0, 0, 0, 0.9);
+  text-align: center;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border: none;
+}
+
+.submit__generated.valid:after,
+.submit__generated.unvalid:after {
+  font-family: vazir;
+  font-size: 18px;
+  margin-left: 10px;
+}
+
+.submit__generated.valid:after {
+  content: "\f00c";
+  color: #2ecc71;
+}
+
+.submit__generated.unvalid:after {
+  content: "\f00d";
+  color: #e74c3c;
+}
+
+.submit__generated.valid .submit__input {
+  border: 1px solid #2ecc71;
+  color: #2ecc71 !important;
+}
+
+.submit__generated.unvalid .submit__input {
+  border: 1px solid #e74c3c;
+  color: #e74c3c;
+}
+.submit__generated .submit__input {
+  position: relative;
+  outline: 0;
+  height: 38px;
+  width: 50px;
+  border-radius: 3px;
+  border: 1px solid #42A0DD;
+  color: #42A0DD;
+  text-align: center;
+  font-weight: bold;
+  font-size: 16px;
+  top: -2px;
+  
+}
+
+img.refresh {
+  margin: 4px 0 0px 5px;
+  padding: 5px;
+  font-size: 18px;
+  color: rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+  transform-origin: center center;
+  transition: transform 0.2s ease-out, color 0.2s ease-out;
+}
+
+img.refresh:hover {
+  color: rgba(0, 0, 0, 0.4);
+  transform: rotate(180deg);
+}
+
+span.submit__error,
+span.submit__error--empty {
+  color: #e74c3c;
+  position: absolute;
+  margin-top: 0px;
+  margin-left: 100px;
+}
+
+
+
+.submit:hover {
+  background-color: #3498db;
+}
+
+.submit:active,
+.submit.enter-press,
+.submit.overlay {
+  margin: 55px 0 46px 0;
+  box-shadow: none;
+}
+
+.submit__overlay {
+  height: 50px;
+  width: 110px;
+  background-color: rgba(255, 255, 255, 0.8);
+  position: absolute;
+  margin-top: -90px;
+  margin-left: -5px;
+}
+
+.low-opa {
+  opacity: 0.4;
+}
+
+.fadeOut {
+  opacity: 0;
+  transform: translateY(10px);
+}
+
+.fadeIn {
+  opacity: 1 !important;
+  transform: translateY(0px) !important;
+}
+
+.form-fields,
+.form-success {
+  transition: all 0.2s ease-out;
+}
+
+.form-success {
+  opacity: 0;
+  transform: translateY(-10px);
+  margin-top: 20px;
+}
+
+.noisy {
+  position: relative;
+  display: inline-block;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-size: 200% 100%;
+  pointer-events: none;
+  transform: rotate(20deg);
+
+
+}
+
+.captcha {
+  border-radius: 5px;
+  padding-top: 4px;
+  background-image: url("../images/noisy-captcha.jpg");
+  left: 0;
+  display: inline-block;
+  transform-origin: top left;
+
 }

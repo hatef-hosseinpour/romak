@@ -16,7 +16,7 @@
             <th scope="col">سازمان</th>
             <th scope="col">نهاد</th>
             <th scope="col">نام ایجادکننده</th>
-            <!-- <th scope="col">نصاب(ها)</th> -->
+            <th scope="col">تکمیل اطلاعات</th>
             <th scope="col"></th>
         </tr>
     </thead>
@@ -37,6 +37,7 @@
                 <td>${obj.organization}</td>
                 <td>${obj.administration}</td>
                 <td>${obj.creator_username}</td>
+                <td><a class="btn btn-sm" href="/create-installation/">تکمیل</a></td>
                 
                 <td >
                         <a class="btn btn-sm btn-danger" id="delete-btn" data-id="${obj.id}"><img width="20" height="20" src="{% static 'icons/icons8-trash-24.png' %}" alt="trash"/></a>

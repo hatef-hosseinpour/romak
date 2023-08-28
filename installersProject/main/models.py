@@ -34,7 +34,7 @@ class locationPublicInfo(models.Model):
     user = models.ForeignKey(
         User, on_delete=models.CASCADE, editable=True, null=True, default=None)
     # @param enginroom this data is about this enginroom
-    enginroom = models.ForeignKey(
+    enginroom = models.OneToOneField(
         Enginroom, on_delete=models.CASCADE, editable=True, null=True, default=None)
     # @param address the address of this enginroom
     address = models.TextField(null=True, blank=True)
@@ -50,7 +50,7 @@ class locationPublicInfo(models.Model):
         max_length=200, null=True, blank=True)
     # @param building_image the image of the building that device installed
     building_image = models.ImageField(
-        null=True, blank=True, upload_to='building_images/', default='building_images/default.jpg', max_length=200)
+        null=True, blank=True, upload_to='building_images/', default='no-image.jpg', max_length=200)
     # @param location the location of this building that chosen from map and coordination of it stored in this field
     location = models.CharField(max_length=200, null=True, blank=True)
     # @param status this field defaul to false after user fill information of installation admin can accept it and after accept of admin this field change to true
@@ -83,7 +83,7 @@ class EnginRoomPublicInfo(models.Model):
     user = models.ForeignKey(
         User, on_delete=models.CASCADE, editable=True, null=True, default=None)
     # @param enginroom this data is about this enginroom
-    enginroom = models.ForeignKey(
+    enginroom = models.OneToOneField(
         Enginroom, on_delete=models.CASCADE, editable=True, null=True, default=None)
     usage = models.CharField(
         max_length=2000, choices=USAGE_TYPE, null=True, blank=True)
@@ -122,7 +122,7 @@ class InstallationInfo(models.Model):
     user = models.ForeignKey(
         User, on_delete=models.CASCADE, editable=True, null=True, default=None)
     # @param enginroom this data is about this enginroom
-    enginroom = models.ForeignKey(
+    enginroom = models.OneToOneField(
         Enginroom, on_delete=models.CASCADE, editable=True, null=True, default=None)
     # @param installed_device_model the model of device that can be in 3 value 8relays, 12relays, 16relays
     installed_device_model = models.CharField(
@@ -143,12 +143,21 @@ class InstallationInfo(models.Model):
         verbose_name='installed_at', null=True, blank=True)
     # @param  device_serial_number_image the user should take a picture from serial of device number
     device_serial_number_image = models.ImageField(
-        null=True, blank=True, upload_to='device_serial_number/', default='device_serial_number/no-image.jpg')
+        null=True, blank=True, upload_to='device_serial_number/', default='no-image.jpg')
     # @param status this field defaul to false after user fill information of installation admin can accept it and after accept of admin this field change to true
     status = models.BooleanField(default=False, null=True)
 
     def __str__(self) -> str:
         return f'{self.installed_device_model} installed at {str(self.installation_date)}'
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+
+        img = Image.open(self.device_serial_number_image.path)
+        if img.height > 300 or img.width > 300:
+            output_size = (300, 300)
+            img.thumbnail(output_size)
+            img.save(self.device_serial_number_image.path)
 
 
 class EnginRoomImage(models.Model):
@@ -159,13 +168,23 @@ class EnginRoomImage(models.Model):
     user = models.ForeignKey(
         User, on_delete=models.CASCADE, editable=True, null=True, default=None)
     # @param enginroom this data is about this enginroom
-    enginroom = models.ForeignKey(
+    enginroom = models.OneToOneField(
         Enginroom, on_delete=models.CASCADE, editable=True, null=True, default=None)
     # @param image in this table each enginroom can have any images
-    images = models.ImageField(null=True, blank=True, max_length=200)
+    images = models.ImageField(
+        null=True, blank=True, upload_to='enginroom_images/')
     # @param status this field defaul to false after user fill information of installation admin can accept it and after accept of admin this field change to true
     status = models.BooleanField(default=False, null=True)
 
     def __str__(self):
 
         return f'Image {self.id}  - Enginroom {self.enginroom.enginroom_name}'
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+
+        img = Image.open(self.images.path)
+        if img.height > 300 or img.width > 300:
+            output_size = (300, 300)
+            img.thumbnail(output_size)
+            img.save(self.images.path)

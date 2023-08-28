@@ -63,7 +63,7 @@ class LogoutUserApiView(APIView):
 
 class UserProfileApiView(APIView):
     authentication_classes = [authentication.SessionAuthentication]
-    permission_classes = [permissions.IsAdminUser]
+    permission_classes = [permissions.IsAdminUser | permissions.IsAuthenticated]
 
     def get(self, request):
         user = request.user
@@ -74,7 +74,7 @@ class UserProfileApiView(APIView):
 
 class UsersListApiView(APIView):
     authentication_classes = [authentication.SessionAuthentication]
-    permission_classes = [permissions.IsAdminUser]
+    permission_classes = [permissions.IsAdminUser | permissions.IsAuthenticated]
 
     def get(self, request):
         current_user = request.user
@@ -104,7 +104,7 @@ class UsersListApiView(APIView):
 
 class UserViewSet(viewsets.ModelViewSet):
     authentication_classes = [authentication.SessionAuthentication]
-    permission_classes = [permissions.IsAdminUser]
+    permission_classes = [permissions.IsAdminUser | permissions.IsAuthenticated]
     queryset = User.objects.all()
     serializer_class = UserSerializers
 
@@ -116,28 +116,9 @@ class UserViewSet(viewsets.ModelViewSet):
         serializer.validated_data['password'] = hashed_password
         serializer.save()
 
-    # def perform_update(self, serializer):
-    #     password = self.request.data.get('password')
-    #     if password:
-    #         hashed_password = make_password(password)
-    #         serializer.validated_data['password'] = hashed_password
-    #     serializer.save()
-
 
 class UserProfileViewSet(viewsets.ModelViewSet):
     authentication_classes = [authentication.SessionAuthentication]
-    permission_classes = [permissions.IsAdminUser]
+    permission_classes = [permissions.IsAdminUser | permissions.IsAuthenticated]
     queryset = Profile.objects.all()
     serializer_class = ProfileSerializers
-
-    # def perform_update(self, serializer):
-    #     instance = self.get_object()
-    #     profile_image_file = self.request.data.get(
-    #         'profile_image', None)  # type: ignore
-    #     # print('profile_image: ', profile_image_file)
-    #     if profile_image_file == "":
-    #         serializer.validated_data['profile_image'] = instance.profile_image
-    #     else:
-    #         serializer.validated_data['profile_image'] = Base64ImageField(
-    #         ).to_internal_value(profile_image_file)
-    #     serializer.save()

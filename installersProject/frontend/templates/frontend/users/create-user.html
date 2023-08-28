@@ -5,10 +5,10 @@
 {% endblock %}
 {% block content %}
 
-<div class="loginbox signupbox">
+<div class="loginbox" style="margin-top: 10%;">
     <img src="{% static '/images/human-icon-3d-render-illustration.jpg' %}" class="avatar">
     <h1> ایجاد کاربر </h1>
-    <form action="" method="POST" id="create-user-form">
+    <form action="" method="POST" id="create-user-form" class="form-control">
         {% csrf_token %}
         <p>نام</p>
         <input type="text" id="first-name" name="first-name" placeholder="نام کاربر را وارد کنید">
@@ -55,6 +55,7 @@
                     },
                     success: function (response) {
                         createAlert('success', 'کاربر با موفقیت اضافه شد.')
+                        window.location.href = "/users-list/";
                     },
                     error: function (error) {
                         if (error.responseJSON && error.responseJSON.username) {

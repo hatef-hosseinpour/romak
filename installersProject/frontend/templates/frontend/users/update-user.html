@@ -4,8 +4,8 @@
 {% include 'head.html' with title="Installers App| Create Installers" %} {% endblock %}
 {%block content %}
 
-<div class="rtl-txt loginbox signupbox" style="margin-top: 8%">
-  <form method="POST" id="update-form">
+<div class="rtl-txt loginbox " style="margin-top:20%">
+  <form method="POST" id="update-form" class="form-control">
     {% csrf_token %}
     <p>نام کاربری</p>
     <input type="text" id="username" name="username" />
@@ -28,23 +28,28 @@
     <input type="file" accept="image/jpeg,image/png" id="change-profile-image" name="change-profile-image" />
     <p>شماره همراه</p>
     <input type="text" id="phone-number" name="phone-number" />
-    <div class="checkbox-container">
-      <p>وضعیت(فعال، غیرفعال)</p>
-      <input type="checkbox" id="is-active" name="is-active" />
+    {% if request.session.is_admin %}
+    <p>وضعیت (فعال،غیرفعال)</p>
+    <div id="checkbox-container">
+      <input type="checkbox" id="is-active" name="is-active">
     </div>
+    {% endif %}
 
-    <!-- <p>وضعیت ادمین</p>
-        <input type="checkbox" id="is-superuser" name="is-superuser"> -->
     <input type="submit" value="بروزرسانی" id="update-user" />
   </form>
 </div>
 <script>
   // The User id that receive from Front View
   let user_id = "{{user_id}}";
-  console.log("user id: ", user_id);
+  // console.log("user admin: ", is_admin);
   let newImageUploaded = false
   let profileImage;
   $(document).ready(function () {
+    $("#change-profile-image").on("change", function (e) {
+      let imgUploaded = URL.createObjectURL(e.target.files[0])
+      console.log(imgUploaded);
+      $("#current-profile-image").attr("src", imgUploaded);
+    })
     // This Ajax method based on user_id and this endpoint /api/users/user_id/ Filling user data
     $.ajax({
       type: "GET",
@@ -58,8 +63,8 @@
         $("#password").val(response.password);
         // let password = response.password;
         // let lastLogin = response.last_login;
-        // let isSuperuser = response.is_superuser;
-        // let isStaff = response.is_staff;
+        let isSuperuser = response.is_superuser;
+        let isStaff = response.is_staff;
         // let dateJoined = response.date_joined;
         // let groups = response.groups;
         // let userPermission = response.user_permissions
@@ -82,10 +87,9 @@
             'is_active': isActive,
             'first_name': firstName,
             'last_name': lastName,
-            // 'is_staff': isStaff,
+            'is_staff': isStaff,
+            'is_superuser': isSuperuser,
             // 'last_login': lastLogin,
-            // 'is_superuser': isSuperuser,
-
             // 'date_joined': dateJoined,
             // 'groups': groups
           };
@@ -99,7 +103,7 @@
             },
             success: function (response) {
               console.log("User data updated", response);
-              // window.location.href = "/users-list/";
+              window.location.href = "/users-list/";
             },
             error: function (response) {
               console.log("Error updating user data.", response.error);
@@ -144,7 +148,8 @@
                 },
                 success: function (response) {
                   console.log("profile data updated", response);
-                  window.location.href = "/users-list/";
+                  
+                  window.location.href = '/users-list/'
                 },
                 error: function (error) {
                   console.error('ERROR PROFILE DATE :', error.responseJSON)
@@ -178,7 +183,12 @@
                 },
                 success: function (response) {
                   console.log("profile data updated", response);
-                  window.location.href = "/users-list/";
+                  // if ($('#is-active').data('role') === 'admin') {
+                  //   window.location.href = '/users-list/'
+                  // }
+                  // else {
+                  //   window.location.href = '/profile/'
+                  // }
                 },
                 error: function (error) {
                   console.error('ERROR PROFILE DATE :', error.responseJSON)

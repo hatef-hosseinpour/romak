@@ -27,6 +27,10 @@
         let organization;
         let administration;
         let creator;
+
+        let info;
+
+
         console.log('page', page);
         console.log('organ id', organ_id);
 
@@ -40,6 +44,7 @@
                     for (let i = 0; i < response.length; i++) {
                         if (response[i].enginroom_name === enginroomName) {
                             enginroomExists = true;
+                            console.log(enginroomExists);
                             break; // Exit the loop since we found a match
                         }
                     }
@@ -99,48 +104,49 @@
             });
         }
         else {
-            $(document).ready(function () {
-                $('#enginroom-submit').on('click', function (e) {
-                    e.preventDefault()
-                    enginroomName = $('#enginroom-name').val();
-                    organization = $('#organization').val();
-                    administration = $('#administration').val();
-                    creator = $('#creator').val();
-                    enginroomData = {
-                        'enginroom_name': enginroomName,
-                        'organization': organization,
-                        'administration': administration,
-                        'creator': creator
+        $(document).ready(function () {
+            $('#enginroom-submit').on('click', function (e) {
+                e.preventDefault()
+                enginroomName = $('#enginroom-name').val();
+                organization = $('#organization').val();
+                administration = $('#administration').val();
+                creator = $('#creator').val();
+                enginroomData = {
+                    'enginroom_name': enginroomName,
+                    'organization': organization,
+                    'administration': administration,
+                    'creator': creator
 
+                }
+                enginroomExist(enginroomName, function (exists) {
+                   
+                    if (exists) {
+                        createAlert('warning', 'این موتورخانه قبلا ایجاد شده است')
                     }
-                    enginroomExist(enginroomName, function (exists) {
-                        if (exists) {
-                            createAlert('warning', 'موتورخانه‌ با این نام وجود دارد')
-                        }
-                        else {
-                            $.ajax({
-                                type: "POST",
-                                url: "/api/enginroom/",
-                                data: JSON.stringify(enginroomData),
-                                contentType: "application/json",
-                                headers: {
-                                    'X-CSRFToken': $('[name=csrfmiddlewaretoken]').val()
-                                },
-                                success: function (response) {
-                                    createAlert('success', 'موتورخانه با موفقیت ثبت شد.');
-                                    window.location.href = '/enginroom-list/'
-                                },
-                                error: function (error) {
-                                    console.error('ERROR FROM CREATE DATA:', error.responseJSON)
-                                }
-                            });
-                        }
-
-                    })
+                    else {
+                        $.ajax({
+                            type: "POST",
+                            url: "/api/enginroom/",
+                            data: JSON.stringify(enginroomData),
+                            contentType: "application/json",
+                            headers: {
+                                'X-CSRFToken': $('[name=csrfmiddlewaretoken]').val()
+                            },
+                            success: function (response) {
+                                createAlert('success', 'موتورخانه با موفقیت ثبت شد.');
+                                window.location.href = '/enginroom-list/'
+                            },
+                            error: function (error) {
+                                console.error('ERROR FROM CREATE DATA:', error.responseJSON)
+                            }
+                        });
+                    }
 
                 })
 
-            });
+            })
+
+        });
 
         }
     </script>

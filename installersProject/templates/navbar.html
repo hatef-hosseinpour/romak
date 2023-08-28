@@ -8,7 +8,7 @@
       <span class="navbar-toggler-icon"></span>
     </button>
 
-    <div class="collapse navbar-collapse" id="navbarTogglerDemo02">
+    <div class="collapse navbar-collapse" id="collapse-nav">
       <ul class="navbar-nav me-auto mb-2 mb-lg-0">
 
         <li class="nav-item">
@@ -16,10 +16,10 @@
           <a class="btn btn-outline-secondary" id="logout-btn" href="/api/logout-user/">خروج</a>
           <a class="btn btn-sm btn-light" id="profile-btn" href="/profile/">پروفایل‌کاربری</a>
           <a class="btn btn-sm btn-light" id="installation-form" href="/create-installation/">ایجاد اطلاعات نصب</a>
-          <!-- <a class="btn btn-sm btn-light" id="create-organ-btn" href="/create-organization/">افزودن سازمان</a> -->
+          <a class="btn btn-sm btn-light" id="create-organ-btn" href="/enginroom-list/">لیست موتورخانه</a>
           {% if request.session.is_admin %}
           <a class="btn btn-sm btn-light" id="users-list-btn" href="/users-list/">لیست کاربران</a>
-          <a class="btn btn-sm btn-light" id="create-organ-btn" href="/enginroom-list/">لیست موتورخانه</a>
+         
           <a class="btn btn-sm btn-light" id="locatio-list-btn" href="/location-public-info-list/">لیست اطلاعات عمومی
             محل</a>
           <a class="btn btn-sm btn-light" id="create-organ-btn" href="/enginroom-info-list/">لیست اطلاعات
