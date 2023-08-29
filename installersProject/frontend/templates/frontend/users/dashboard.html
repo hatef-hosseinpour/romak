@@ -1,0 +1,205 @@
+{% extends 'main.html'%}
+{% load static %}
+{% block headcontent %}
+{% include 'head.html' with title="Installers App| User dashboard" %}
+{% endblock %}
+{% block content %}
+
+<style>
+    .tab-container {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 20px;
+    }
+
+    .tab-link {
+        padding: 10px 20px;
+        background-color: #f0f0f0;
+        cursor: pointer;
+    }
+
+    .tab-link.active {
+        background-color: #ccc;
+    }
+
+    .tab-content {
+        display: none;
+        padding: 20px;
+        background-color: #f0f0f0;
+    }
+
+    .tab-content.active {
+        display: block;
+    }
+</style>
+
+    <div class="dash-content">
+        <div class="overview">
+            <div class="title">
+                <i class="uil uil-tachometer-fast-alt"></i>
+                <span class="text">داشبورد</span>
+            </div>
+            <div class="boxes">
+                <div class="box box1">
+                    <i class="uil uil-thumbs-up"></i>
+                    <span class="text">تعداد لایک ها</span>
+                    <span class="number">۵۰,۱۲۰</span>
+                </div>
+                <div class="box box2">
+                    <i class="uil uil-comments"></i>
+                    <span class="text">نظرات</span>
+                    <span class="number">۲۰,۱۲۰</span>
+                </div>
+                <div class="box box3">
+                    <i class="uil uil-share"></i>
+                    <span class="text">اشتراک گذاشته شده</span>
+                    <span class="number">۱۰,۱۲۰</span>
+                </div>
+            </div>
+        </div>
+        <div class="tab-container">
+            <div class="tab-link" data-tab="tab1">Tab 1</div>
+            <div class="tab-link" data-tab="tab2">Tab 2</div>
+        </div>
+
+        <div id="tab1" class="tab-content">
+            <div class="activity">
+                <div class="title">
+                    <i class="uil uil-clock-three"></i>
+                    <span class="text">فعالیت های اخیر</span>
+                </div>
+                <div class="activity-data">
+                    <div class="data names">
+                        <span class="data-title">نام</span>
+                        <span class="data-list">احمد احمدی</span>
+                        <span class="data-list">رضا رضایی</span>
+                        <span class="data-list">محمد محمدی</span>
+                        <span class="data-list">سعید سعیدی</span>
+                        <span class="data-list">علی علوی</span>
+                        <span class="data-list">حامد حامدی</span>
+                        <span class="data-list">رحیم رحیمی</span>
+                    </div>
+                    <div class="data email">
+                        <span class="data-title">ایمیل</span>
+                        <span class="data-list">ahmad@gmail.com</span>
+                        <span class="data-list">reza@gmail.com</span>
+                        <span class="data-list">mohammad@gmail.com</span>
+                        <span class="data-list">saeed@gmail.com</span>
+                        <span class="data-list">ali@gmail.com</span>
+                        <span class="data-list">hamed@gmail.com</span>
+                        <span class="data-list">rahim@gmail.com</span>
+                    </div>
+                    <div class="data joined">
+                        <span class="data-title">تاریخ ملحق شدن</span>
+                        <span class="data-list">2022-02-12</span>
+                        <span class="data-list">2022-02-12</span>
+                        <span class="data-list">2022-02-13</span>
+                        <span class="data-list">2022-02-13</span>
+                        <span class="data-list">2022-02-14</span>
+                        <span class="data-list">2022-02-14</span>
+                        <span class="data-list">2022-02-15</span>
+                    </div>
+                    <div class="data type">
+                        <span class="data-title">نوع</span>
+                        <span class="data-list">جدید</span>
+                        <span class="data-list">عضو</span>
+                        <span class="data-list">عضو</span>
+                        <span class="data-list">جدید</span>
+                        <span class="data-list">عضو</span>
+                        <span class="data-list">جدید</span>
+                        <span class="data-list">عضو</span>
+                    </div>
+                    <div class="data status">
+                        <span class="data-title">وضعیت</span>
+                        <span class="data-list">لایک شده</span>
+                        <span class="data-list">لایک شده</span>
+                        <span class="data-list">لایک شده</span>
+                        <span class="data-list">لایک شده</span>
+                        <span class="data-list">لایک شده</span>
+                        <span class="data-list">لایک شده</span>
+                        <span class="data-list">لایک شده</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="tab2" class="tab-content">
+        <div class="activity">
+            <div class="title">
+                <i class="uil uil-clock-three"></i>
+                <span class="text">فعالیت های اخیر</span>
+            </div>
+            <div class="activity-data">
+                <div class="data names">
+                    <span class="data-title">نام</span>
+                    <span class="data-list">احمد احمدی</span>
+                    <span class="data-list">رضا رضایی</span>
+                    <span class="data-list">محمد محمدی</span>
+                    <span class="data-list">سعید سعیدی</span>
+                    <span class="data-list">علی علوی</span>
+                    <span class="data-list">حامد حامدی</span>
+                    <span class="data-list">رحیم رحیمی</span>
+                </div>
+                <div class="data email">
+                    <span class="data-title">ایمیل</span>
+                    <span class="data-list">ahmad@gmail.com</span>
+                    <span class="data-list">reza@gmail.com</span>
+                    <span class="data-list">mohammad@gmail.com</span>
+                    <span class="data-list">saeed@gmail.com</span>
+                    <span class="data-list">ali@gmail.com</span>
+                    <span class="data-list">hamed@gmail.com</span>
+                    <span class="data-list">rahim@gmail.com</span>
+                </div>
+                <div class="data joined">
+                    <span class="data-title">تاریخ ملحق شدن</span>
+                    <span class="data-list">2022-02-12</span>
+                    <span class="data-list">2022-02-12</span>
+                    <span class="data-list">2022-02-13</span>
+                    <span class="data-list">2022-02-13</span>
+                    <span class="data-list">2022-02-14</span>
+                    <span class="data-list">2022-02-14</span>
+                    <span class="data-list">2022-02-15</span>
+                </div>
+                <div class="data type">
+                    <span class="data-title">نوع</span>
+                    <span class="data-list">جدید</span>
+                    <span class="data-list">عضو</span>
+                    <span class="data-list">عضو</span>
+                    <span class="data-list">جدید</span>
+                    <span class="data-list">عضو</span>
+                    <span class="data-list">جدید</span>
+                    <span class="data-list">عضو</span>
+                </div>
+                <div class="data status">
+                    <span class="data-title">وضعیت</span>
+                    <span class="data-list">لایک شده</span>
+                    <span class="data-list">لایک شده</span>
+                    <span class="data-list">لایک شده</span>
+                    <span class="data-list">لایک شده</span>
+                    <span class="data-list">لایک شده</span>
+                    <span class="data-list">لایک شده</span>
+                    <span class="data-list">لایک شده</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+    </div>
+
+
+</section>
+
+<script>
+    $(document).ready(function () {
+        $('.tab-link').click(function () {
+            var tabId = $(this).data('tab');
+            $('.tab-content').hide();
+            $('#' + tabId).show();
+        });
+    });
+
+    $('.tab-link:first').addClass('active');
+    $('.tab-content:first').addClass('active');
+
+</script>
+{% endblock content %}

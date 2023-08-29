@@ -19,12 +19,13 @@ class EnginRoomPublicInfoAdmin(admin.ModelAdmin):
 
 class LocationPublicInfoAdmin(admin.ModelAdmin):
     list_display = ['id', 'user', 'enginroom',
-                    'phone_number1', 'phone_number2', 'building_metrage', 'building_picture', 'status']
+                    'phone_number1', 'phone_number2', 'building_metrage', 'building_picture', 'location', 'status']
     list_filter = ['user', 'enginroom']
     search_fields = ['user__username', 'enginroom__name']
 
     def building_picture(self, obj):
         return format_html(f'<img src="/images/{obj.building_image} "width="85" height="85""/>')
+
 
 class InstallationInfoAdmin(admin.ModelAdmin):
     list_display = ['id', 'user', 'enginroom', 'installed_device_model', 'connection_type', 'modem_model',
@@ -35,6 +36,7 @@ class InstallationInfoAdmin(admin.ModelAdmin):
     def device_serial_number_picture(self, obj):
         return format_html(f'<img src="/images/{obj.device_serial_number_image} "width="85" height="85""/>')
 
+
 class EnginRoomImageAdmin(admin.ModelAdmin):
     list_display = ['id', 'user', 'enginroom', 'enginroom_picture', 'status']
     list_filter = ['user', 'enginroom']
@@ -42,6 +44,7 @@ class EnginRoomImageAdmin(admin.ModelAdmin):
 
     def enginroom_picture(self, obj):
         return format_html(f'<img src="/images/{obj.images} "width="85" height="85""/>')
+
 
 admin.site.register(Enginroom, EnginroomAdmin)
 admin.site.register(locationPublicInfo, LocationPublicInfoAdmin)

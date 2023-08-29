@@ -4,172 +4,94 @@
 {% include 'head.html' with title="Installers App| Login User" %}
 {% endblock %}
 {% block content %}
-
-<div class="loginbox rtl-txt">
-  <img src="{% static '/images/human-icon-3d-render-illustration.jpg' %}" class="avatar">
-
-  <h1> ورود کاربر </h1>
-  <form action="" method="POST" id="login-form">
-    {% csrf_token %}
-    <p>نام کاربری</p>
-    <input type="text" id="username" name="username" placeholder="نام کاربری خود را وارد کنید" required>
-    <p>رمزعبور</p>
-    <input type="password" id="password" name="password" placeholder="رمزعبور خود را وارد کنید" required>
-    <p>لطفا جمع اعداد را درست وارد کنید</p>
-    <div class="submit__generated"></div>
-    <img width="32" height="32" src="https://img.icons8.com/windows/32/refresh.png" alt="refresh" class="refresh" />
-
-    <div class="checkbox-container">
-      <p>به خاطر سپردن نام کابری</p>
-      <input type="checkbox" id="rm-check" name="rm-check" />
+{% block body_class %}login-page{% endblock %}
+<div class="login-box rtl-txt">
+  <h2>ورودکاربر</h2>
+  <form id="login-form">
+    <div class="user-box">
+      <input type="text" name="username" id="username" required="">
+      <label>نام کاربری</label>
     </div>
-    <input type="submit" value="ورود" name="">
+    <div class="user-box ">
+      <input type="password" name="password" id="password" required="">
+      <label>رمزعبور</label>
+    </div>
+    <div style="height: 50px; background: whitesmoke; border-radius: 5px;" id="captcha-container">
+      <p class="text-center" id="code"></p>
+    </div>
+    <div class="user-box ">
+      <input type="text" name="captcha-input" id="captcha-input" required="">
+      <label>کپچا</label>
+    </div>
+
+    <input type="submit" value="ورود">
   </form>
+</div>
 
 
+<script>
 
-  <script>
-
-    var a, b, c, d,
-      submitContent,
-      captcha,
-      locked,
-      validSubmit = false,
-      timeoutHandle;
-    // var charsArray = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ@!#$%^&*";
-    // let rmCheck;
-    // let username;
-    // $(document).ready(function () {
-    //   rmCheck = $('#rm-check').prop('checked');
-    //   username = $('#username').val();
-    //   if (localStorage.checkbox && username === "") {
-    //     $('#rm-check').prop('checked', true);
-    //     $('#username').val(localStorage.username);
-    //   } else {
-    //     $('#rm-check').prop('checked', false);
-    //     $('#username').val("");
-    //   }
-    // });
-
-      let captchas = []
-      let index;
-    function generateCaptcha() {
-      // for (var i = 0; i < 4; i++) {
-      //   //below code will not allow Repetition of Characters
-      //   index = Math.floor(Math.random() * charsArray.length + 1); //get the next character from the array
-      //   if (captchas.indexOf(charsArray[index]) == -1)
-      //     captchas.push(charsArray[index]);
-      //   else i--;
-      // }
-      // console.log(captchas);
-      a = Math.ceil(Math.random() * 10);
-      b = Math.ceil(Math.random() * 10);
-      c = a + b;
-      submitContent = '<div class="captcha"> <span class="noisy">' + a + '</span> + <span class="noisy">' + b + '</span> ' +
-        '</div> <input class="submit__input" type="text" maxlength="2" size="2" required />';
-      $('.submit__generated').html(submitContent);
-
-      init();
+  let code = "";
+  var charsArray =
+    "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+  var length = 4;
+  var captcha = [];
+  function generateCaptcha() {
+    for (var i = 0; i < length; i++) {
+      var index = Math.floor(Math.random() * charsArray.length);
+      captcha.push(charsArray[index]);
     }
-    function checkCaptcha() {
-      if (captcha === c) {
-        // Pop the green valid icon
-        $('.submit__generated')
-          .removeClass('unvalid')
-          .addClass('valid');
-        $('.submit').removeClass('overlay');
-        $('.submit__overlay').fadeOut('fast');
+    return captcha.join("");
 
-        $('.submit__error').addClass('hide');
-        $('.submit__error--empty').addClass('hide');
-        validSubmit = true;
-      }
-      else {
-        if (captcha === '') {
-          $('.submit__error').addClass('hide');
-          $('.submit__error--empty').removeClass('hide');
-        }
-        else {
-          $('.submit__error').removeClass('hide');
-          $('.submit__error--empty').addClass('hide');
-        }
-        // Pop the red unvalid icon
-        $('.submit__generated')
-          .removeClass('valid')
-          .addClass('unvalid');
-        $('.submit').addClass('overlay');
-        $('.submit__overlay').fadeIn('fast');
-        validSubmit = false;
-      }
-      return validSubmit;
-    }
+  }
+  $(document).ready(function () {
+    code = generateCaptcha()
+    $('#code').text(code);
+    console.log(code);
+  });
+  $('#captcha-container').on('click', function () {
+    captcha = [];
+    code = generateCaptcha();
+    $('#code').text("");
+    console.log(code);
+    $('#code').text(code);
+  })
 
-    function unlock() { locked = false; }
-    $('img.refresh').on('click', function () {
-      setTimeout(unlock, 500);
-      generateCaptcha();
-      setTimeout(checkCaptcha, 0);
-    });
-    function init() {
-      $('#login-form').submit(function (e) {
-        e.preventDefault();
-        // rmCheck = $('#rm-check').prop('checked');
-        // username = $('#username').val();
-        // if (rmCheck === true && username !== "") {
-        //   localStorage.username = username;
-        //   localStorage.checkbox = true;
-        // } else {
-        //   localStorage.username = "";
-        //   localStorage.checkbox = false;
-        // }
-        if ($('.submit__generated').hasClass('valid')) {
-          // var formValues = [];
-          captcha = $('.submit__input').val();
-          if (captcha !== '') {
-            captcha = Number(captcha);
-          }
+  $('#login-form').submit(function (e) {
 
-          checkCaptcha();
+    e.preventDefault()
 
-          if (validSubmit === true) {
-            validSubmit = false;
-            let formData = $(this).serialize();
-            $.ajax({
-              url: '/api/login-user/',
-              type: 'POST',
-              data: formData,
-              success: function (response) {
-                console.log(response.user_id);
-                createAlert('success', 'ورودکاربر با موفقیت انجام شد.');
-                window.location.href = "/profile/"
-              },
-              error: function () {
-                createAlert('danger', 'نام کاربری یا رمزعبور درست نیست!!');
-                generateCaptcha();
-              }
-            });
+    console.log('input', $('#captcha-input').val());
+    console.log('code', code);
+    if ($('#captcha-input').val() === code) {
+      let formData = $(this).serialize();
+      $.ajax({
+        url: '/api/login-user/',
+        type: 'POST',
+        data: formData,
+        success: function (response) {
+          console.log(response.user_id);
+          createAlert('success', 'ورودکاربر با موفقیت انجام شد.');
+          window.location.href = "/dashboard/"
+        },
+        error: function () {
+          createAlert('danger', 'نام کاربری یا رمزعبور درست نیست!!');
 
-          }
-        }
-        else {
-          return false;
         }
       });
-
-      $('.submit__input').on('propertychange change keyup input paste', function () {
-        window.clearTimeout(timeoutHandle);
-        timeoutHandle = window.setTimeout(function () {
-          captcha = $('.submit__input').val();
-          if (captcha !== '') {
-            captcha = Number(captcha);
-          }
-          checkCaptcha();
-        }, 150);
-      });
-
+    }
+    else {
+      
+      createAlert('danger', 'کد وارد شده اشتباه است!!');
+      captcha = [];
+      code = generateCaptcha();
+      $('#code').text("");
+      console.log(code);
+      $('#code').text(code);
     }
 
-    generateCaptcha();
+  });
 
-  </script>
-  {% endblock content %}
+
+</script>
+{% endblock content %}

@@ -1,6 +1,69 @@
 {% load static %}
+{% if user.is_authenticated %}
+<nav>
+  <div class="logo-name">
+    <div class="logo-image">
+      <img src="{% static 'images/logo-romak.jpg'%}" alt="">
+    </div>
+    <span class="logo_name">روماک سیستم</span>
+  </div>
+  <div class="menu-items">
+    <ul class="nav-links">
+      <li><a href="/dashboard/">
+          <i class="uil uil-estate"></i>
+          <span class="link-name">داشبورد</span>
+        </a></li>
+      <li><a href="/enginrooms/">
+          <i class="uil uil-home"></i>
+          <span class="link-name">لیست موتورخانه ها</span>
+        </a></li>
+      <li><a href="#">
+          <i class="uil uil-chart"></i>
+          <span class="link-name">آنالیزها</span>
+        </a></li>
+      <li><a href="#">
+          <i class="uil uil-thumbs-up"></i>
+          <span class="link-name">لایک</span>
+        </a></li>
+      <li><a href="#">
+          <i class="uil uil-comments"></i>
+          <span class="link-name">نظر</span>
+        </a></li>
+      <li><a href="#">
+          <i class="uil uil-share"></i>
+          <span class="link-name">اشتراک</span>
+        </a></li>
+    </ul>
 
-<nav class="navbar navbar-expand-lg bg-body-tertiary sticky-top rtl-txt ">
+    <ul class="logout-mode">
+      <li><a id="logout-btn" href="/api/logout-user/">
+          <i class="uil uil-signout"></i>
+          <span class="link-name">خروج</span>
+        </a></li>
+      <li class="mode">
+        <a href="#">
+          <i class="uil"></i>
+          <span class="link-name">حالت تاریک</span>
+        </a>
+        <div class="mode-toggle">
+          <span class="switch"></span>
+        </div>
+      </li>
+    </ul>
+  </div>
+</nav>
+<section class="dashboard">
+  <div class="top">
+    <i class="uil uil-bars sidebar-toggle"></i>
+    <div class="search-box">
+      <i class="uil uil-search"></i>
+      <input type="text" placeholder="جستجو کنید...">
+    </div>
+
+    <img src="{% static 'images/profile_images/default_user.jpg'%}" alt="">
+  </div>
+  {% endif %}
+  <!-- <nav class="navbar navbar-expand-lg bg-body-tertiary sticky-top rtl-txt ">
   <div class="container-fluid">
     <a class="navbar-brand" href="/"><img src="{% static 'images/logo-romak.jpg' %}" class="navbar-img"></a>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarTogglerDemo02"
@@ -14,9 +77,9 @@
         <li class="nav-item">
           {% if request.session.session_key %}
           <a class="btn btn-outline-secondary" id="logout-btn" href="/api/logout-user/">خروج</a>
-          <a class="btn btn-sm btn-light" id="profile-btn" href="/profile/">پروفایل‌کاربری</a>
-          <a class="btn btn-sm btn-light" id="installation-form" href="/create-installation/">ایجاد اطلاعات نصب</a>
-          <a class="btn btn-sm btn-light" id="create-organ-btn" href="/enginroom-list/">لیست موتورخانه</a>
+          <a class="btn btn-sm btn-light" id="profile-btn" href="/profile/">پروفایل‌کاربری</a>-->
+  <!-- <a class="btn btn-sm btn-light" id="installation-form" href="/create-installation/">ایجاد اطلاعات نصب</a> -->
+  <!-- <a class="btn btn-sm btn-light" id="create-organ-btn" href="/enginroom-list/">لیست موتورخانه</a>
           {% if request.session.is_admin %}
           <a class="btn btn-sm btn-light" id="users-list-btn" href="/users-list/">لیست کاربران</a>
          
@@ -33,25 +96,55 @@
       </ul>
     </div>
 
-</nav>
+</nav> -->
 
-<script>
+  <script>
 
-  $('#logout-btn').click(function (e) {
-    e.preventDefault();
-    let href = $(this).attr('href');
-    if (href === '/api/logout-user/') {
-      $.ajax({
-        type: "GET",
-        url: href,
-        success: function (response) {
-          window.location.href = '/login/'
-        },
-        error: function () {
-          console.log('logout failed');
-        }
-      });
+    $('#logout-btn').click(function (e) {
+      e.preventDefault();
+      let href = $(this).attr('href');
+      if (href === '/api/logout-user/') {
+        $.ajax({
+          type: "GET",
+          url: href,
+          success: function (response) {
+            window.location.href = '/login/'
+          },
+          error: function () {
+            console.log('logout failed');
+          }
+        });
+      }
+    });
+
+    const body = $("body");
+    const modeToggle = $('.mode-toggle');
+    const sidebar = $('nav');
+    const sidebarToggle = $('.sidebar-toggle');
+
+    let getMode = localStorage.getItem("mode");
+    if (getMode && getMode === "dark") {
+      body.toggleClass('dark');
     }
-  });
-
-</script>
+    let getStatus = localStorage.getItem("status");
+    if (getStatus && getStatus === "close") {
+      sidebar.toggleClass('close');
+    }
+    modeToggle.on('click', function () {
+      body.toggleClass("dark");
+      if (body.hasClass("dark")) {
+        localStorage.setItem("mode", "dark");
+      } else {
+        localStorage.setItem("mode", "light");
+      }
+    });
+    sidebarToggle.on('click', function () {
+      sidebar.toggleClass("close");
+      if (sidebar.hasClass("close")) {
+        localStorage.setItem("status", "close");
+      }
+      else {
+        localStorage.setItem("status", "open");
+      }
+    });
+  </script>

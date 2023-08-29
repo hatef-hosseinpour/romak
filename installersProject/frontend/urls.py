@@ -6,9 +6,10 @@ from .FrontendViews.enginroomPublicInfoFrontView import *
 from .FrontendViews.locationPublicInfoFrontView import *
 from .FrontendViews.mainFrontendView import *
 urlpatterns = [
-    path('', view=homePageFrontView, name='front-index'),
+    path('', view=loginUserFrontView, name='front-index'),
     path('create-installation/', view=installationFrontView,
          name='create-installation'),
+     path('dashboard/', view=dashboardFrontView, name='front-dashboard'),
     path('login/', view=loginUserFrontView, name='front-login'),
     path('profile/', view=userProfileFrontView, name='front-profile'),
     path('users-list/', view=usersListFrontView, name='front-users-list'),
@@ -31,6 +32,9 @@ urlpatterns = [
          name='front-create-enginroom'),
     path('update-enginroom/<int:pk>', view=updateEnginroomFrontView,
          name='front-update-enginroom'),
+
+     path('enginrooms/', view=mapPageFrontView,
+         name='front-enginrooms'),
 
 
     # Enginroom Public Info URLs

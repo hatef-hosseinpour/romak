@@ -5,6 +5,8 @@ def homePageFrontView(request):
 
     return render(request, 'frontend/index.html')
 
+def dashboardFrontView(request):
+    return render(request, 'frontend/users/dashboard.html')
 
 def loginUserFrontView(request):
     if request.session.session_key:

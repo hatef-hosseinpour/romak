@@ -75,12 +75,4 @@ class EnginroomImagesViewSet(viewsets.ModelViewSet):
 
         return Response({'images_uploaded': len(enginroom_images)},
                         status=status.HTTP_201_CREATED)
-    # lookup_field = 'enginroom'
 
-    # def get_object(self):
-    #     queryset = self.get_queryset()
-    #     queryset = self.filter_queryset(queryset)
-    #     filter_kwargs = {self.lookup_field: self.kwargs[self.lookup_field]}
-    #     obj = queryset.get(**filter_kwargs)
-    #     self.check_object_permissions(self.request, obj)
-    #     return obj

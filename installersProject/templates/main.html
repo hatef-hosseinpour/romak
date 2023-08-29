@@ -1,10 +1,10 @@
-<html lang="en">
+<html lang="fa">
 {%load static%}
 {% block headcontent %}
 {% include 'head.html' with title="Installers App" %}
 {% endblock %}
 
-<body>
+<body class="{% block body_class %}{% endblock %}">
 
     <script src="{% static 'jquery/jquery.min.js'  %}"></script>
     <script src="{% static 'js/popper.min.js'  %}"></script>

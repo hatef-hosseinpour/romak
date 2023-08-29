@@ -168,7 +168,7 @@ class EnginRoomImage(models.Model):
     user = models.ForeignKey(
         User, on_delete=models.CASCADE, editable=True, null=True, default=None)
     # @param enginroom this data is about this enginroom
-    enginroom = models.OneToOneField(
+    enginroom = models.ForeignKey(
         Enginroom, on_delete=models.CASCADE, editable=True, null=True, default=None)
     # @param image in this table each enginroom can have any images
     images = models.ImageField(

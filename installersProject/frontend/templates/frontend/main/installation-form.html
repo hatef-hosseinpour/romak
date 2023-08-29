@@ -458,21 +458,21 @@
                 'location': locationInput,
                 'status': false
             }
-            $.ajax({
-                type: "POST",
-                url: "/api/location-public-info/",
-                data: JSON.stringify(locationInfoData),
-                contentType: "application/json",
-                headers: {
-                    "X-CSRFToken": $("[name=csrfmiddlewaretoken]").val(),
-                },
-                success: function (response) {
-                    isSuccessLocationInfo = true
-                },
-                error: function (error) {
-                    console.error('ERROR IN POST DATA TO LOCATION PUBLIC INFO', error.responseJSON);
-                }
-            });
+            // $.ajax({
+            //     type: "POST",
+            //     url: "/api/location-public-info/",
+            //     data: JSON.stringify(locationInfoData),
+            //     contentType: "application/json",
+            //     headers: {
+            //         "X-CSRFToken": $("[name=csrfmiddlewaretoken]").val(),
+            //     },
+            //     success: function (response) {
+            //         isSuccessLocationInfo = true
+            //     },
+            //     error: function (error) {
+            //         console.error('ERROR IN POST DATA TO LOCATION PUBLIC INFO', error.responseJSON);
+            //     }
+            // });
             console.log('location public info', locationInfoData)
         };
         reader.readAsDataURL(buildingImageInput);
@@ -510,21 +510,21 @@
 
         }
         console.log(enginroomInfoData);
-        $.ajax({
-            type: "POST",
-            url: "/api/enginroom-public-info/",
-            data: JSON.stringify(enginroomInfoData),
-            contentType: "application/json",
-            headers: {
-                "X-CSRFToken": $("[name=csrfmiddlewaretoken]").val(),
-            },
-            success: function (response) {
-                isSuccessEnginroomInfo = true;
-            },
-            error: function (error) {
-                console.error('ERROR IN POST DATA TO ENGINROOM PUBLIC INFO', error.responseJSON);
-            }
-        });
+        // $.ajax({
+        //     type: "POST",
+        //     url: "/api/enginroom-public-info/",
+        //     data: JSON.stringify(enginroomInfoData),
+        //     contentType: "application/json",
+        //     headers: {
+        //         "X-CSRFToken": $("[name=csrfmiddlewaretoken]").val(),
+        //     },
+        //     success: function (response) {
+        //         isSuccessEnginroomInfo = true;
+        //     },
+        //     error: function (error) {
+        //         console.error('ERROR IN POST DATA TO ENGINROOM PUBLIC INFO', error.responseJSON);
+        //     }
+        // });
         let selectInstalledModel = $('#select-installed-model').val();
         let selectConnectionType = $('#connection-type').val();
         let modemModel = $('#modem-model').val() || '';
@@ -568,22 +568,22 @@
                 'device_serial_number_image': deviceSerialImage,
                 'status': false
             }
-            $.ajax({
-                type: "POST",
-                url: "/api/installation-info/",
-                data: JSON.stringify(installationinfoData),
-                contentType: "application/json",
-                headers: {
-                    "X-CSRFToken": $("[name=csrfmiddlewaretoken]").val(),
-                },
-                success: function (response) {
-                    isSuccessInstallationinfo = true
+            // $.ajax({
+            //     type: "POST",
+            //     url: "/api/installation-info/",
+            //     data: JSON.stringify(installationinfoData),
+            //     contentType: "application/json",
+            //     headers: {
+            //         "X-CSRFToken": $("[name=csrfmiddlewaretoken]").val(),
+            //     },
+            //     success: function (response) {
+            //         isSuccessInstallationinfo = true
 
-                },
-                error: function (error) {
-                    console.error('ERROR IN POST DATA TO INSTALLATION INFO', error.responseJSON);
-                }
-            });
+            //     },
+            //     error: function (error) {
+            //         console.error('ERROR IN POST DATA TO INSTALLATION INFO', error.responseJSON);
+            //     }
+            // });
             console.log('installation info', installationinfoData)
         };
         deviceSerialImageReader.readAsDataURL(deviceSerialImageInput);
