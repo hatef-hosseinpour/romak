@@ -4,70 +4,195 @@
 {% include 'head.html' with title="Installers App| Create Installers" %}
 {% endblock %}
 {% block content %}
+<style>
+    .x {
+        display: flex;
+        flex-direction: column;
+        padding: 15px 20px;
+        transition: var(--tran-05);
+    }
+</style>
+<div class="container">
 
-<div class="loginbox" style="margin-top: 10%;">
-    <img src="{% static '/images/human-icon-3d-render-illustration.jpg' %}" class="avatar">
-    <h1> ایجاد کاربر </h1>
-    <form action="" method="POST" id="create-user-form" class="form-control">
-        {% csrf_token %}
-        <p>نام</p>
-        <input type="text" id="first-name" name="first-name" placeholder="نام کاربر را وارد کنید">
-        <p>نام خانوادگی</p>
-        <input type="text" id="last-name" name="last-name" placeholder="نام‌خانوادگی کاربر را وارد کنید">
-        <p>نام کاربری</p>
-        <input type="text" id="username" name="username" placeholder="نام کاربری کاربر را وارد کنید" required>
-        <p>رمزعبور</p>
-        <input type="password" id="password1" name="password1" placeholder="رمزعبور کاربر را وارد کنید" required>
-        <p>تاییدیه رمزعبور</p>
-        <input type="password" id="password2" name="password2" placeholder="رمزعبور کاربر را دوباره وارد کنید" required>
-        <input type="submit" value="ورود" name="" id="create-user">
+    <div class="search-box" style="display: flex; justify-content: center; align-items: center; flex-wrap: wrap;">
+        <select class="form-select" aria-label="Default select example">
+            <option value="search"></option>
+            <option value="engineRoom">نام موتورخانه</option>
+            <option value="organizatio">سازمان</option>
+            <option value="administration">نهاد</option>
+            <option value="city">شهر</option>
+            <option value="province">استان</option>
+        </select>
+        <input type="text" placeholder="جستجو کنید..." style="width: 100px; " class="x">
+
+
+    </div>
+    <header>ایجاد کاربر جدید</header>
+    <form>
+        <div class="field email-field">
+            <div class="input-field">
+                <label>نام کاربری</label>
+                <input type="email" class="email" />
+            </div>
+            <span class="error email-error">
+                <i class="uil uil-info-circle"></i>
+                <p class="error-text">نام کاربری خود را وارد کنید</p>
+            </span>
+        </div>
+        <div class="field create-password">
+            <div class="input-field">
+                <label>رمزعبور</label>
+                <input type="password" class="password" />
+                <i class="uil uil-eye-slash show-hide"></i>
+            </div>
+            <span class="error password-error">
+                <i class="uil uil-info-circle"></i>
+                <p class="error-text">
+
+                    رمزعبور شما باید حداقل ۸ کاراکتر به همراه اعداد حروف کوچک و بزرگ و کاراکترهای خاص باشد
+                </p>
+            </span>
+        </div>
+        <div class="field confirm-password">
+            <div class="input-field">
+                <label>تاییدیه رمزعبور</label>
+                <input type="password" class="cPassword" />
+                <i class="uil uil-eye-slash show-hide"></i>
+            </div>
+            <span class="error cPassword-error">
+                <i class="uil uil-info-circle"></i>
+                <p class="error-text">رمزعبور تطابق ندارد</p>
+            </span>
+        </div>
+        <div class="field create-role">
+            <div class="input-field">
+                <label>نقش کاربر</label>
+                <select class="form-select" aria-label="Default select example" class="role">
+                    <option value=""></option>
+                    <option value="user">کاربر</option>
+                    <option value="admin">مدیر</option>
+                </select>
+            </div>
+            <span class="error password-error">
+                <i class="uil uil-info-circle" style="margin-top: 8px;"></i>
+                <p class="error-text">
+                    رمزعبور شما باید حداقل ۸ کاراکتر به همراه اعداد حروف کوچک و بزرگ و کاراکترهای خاص باشد
+                </p>
+            </span>
+        </div>
+        <div class="input-field button">
+            <input type="submit" value="ثبت" />
+        </div>
     </form>
 
+</div>
 
-    <script>
-        $('#create-user').on('click', function (e) {
-            e.preventDefault();
-            let firstName = $('#first-name').val();
-            let lastName = $('#last-name').val();
-            let username = $('#username').val();
-            let password1 = $('#password1').val();
-            let password2 = $('#password2').val();
+<script>
 
-
-            if (password1 !== password2) {
-                createAlert('warning', 'رمزعبور و تاییدیه آن با هم تطابق ندارند!!')
+    const form = document.querySelector("form"),
+        emailField = form.querySelector(".email-field"),
+        emailInput = emailField.querySelector(".email"),
+        passField = form.querySelector(".create-password"),
+        passInput = passField.querySelector(".password"),
+        
+        cPassField = form.querySelector(".confirm-password"),
+        cPassInput = cPassField.querySelector(".cPassword");
+    function checkEmail() {
+        const emaiPattern = /^[^ ]+@[^ ]+\.[a-z]{2,3}$/;
+        if (!emailInput.value.match(emaiPattern)) {
+            return emailField.classList.add("invalid"); //adding invalid class if email value do not mathced with email pattern
+        }
+        emailField.classList.remove("invalid"); //removing invalid class if email value matched with emaiPattern
+    }
+    const eyeIcons = document.querySelectorAll(".show-hide");
+    eyeIcons.forEach((eyeIcon) => {
+        eyeIcon.addEventListener("click", () => {
+            const pInput = eyeIcon.parentElement.querySelector("input"); //getting parent element of eye icon and selecting the password input
+            if (pInput.type === "password") {
+                eyeIcon.classList.replace("uil-eye-slash", "uil-eye");
+                return (pInput.type = "text");
             }
-            else {
-                let data = {
-                    'username': username.toLowerCase(),
-                    'password': password1,
-                    'first_name': firstName,
-                    'last_name': lastName,
-                    'is_active': true
-                };
-                $.ajax({
-                    type: "POST",
-                    url: "/api/users/",
-                    data: JSON.stringify(data),
-                    contentType: "application/json",
-                    headers: {
-                        'X-CSRFToken': $('[name=csrfmiddlewaretoken]').val()
-                    },
-                    success: function (response) {
-                        createAlert('success', 'کاربر با موفقیت اضافه شد.')
-                        window.location.href = "/users-list/";
-                    },
-                    error: function (error) {
-                        if (error.responseJSON && error.responseJSON.username) {
-                            // let errorMessage = error.responseJSON.username[0]; 
-                            createAlert('danger', 'نام کاربری قبلا انتخاب شده‌است'); 
-                        } else {
-                            console.error("ERROR CREATING USER ERROR TEXT: ", error.responseJSON);
-                        }
+            eyeIcon.classList.replace("uil-eye", "uil-eye-slash");
+            pInput.type = "password";
+        });
+    });
+    function createPass() {
+        const passPattern =
+            /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+        if (!passInput.value.match(passPattern)) {
+            return passField.classList.add("invalid"); //adding invalid class if password input value do not match with passPattern
+        }
+        passField.classList.remove("invalid"); //removing invalid class if password input value matched with passPattern
+    }
+    function confirmPass() {
+        if (passInput.value !== cPassInput.value || cPassInput.value === "") {
+            return cPassField.classList.add("invalid");
+        }
+        cPassField.classList.remove("invalid");
+    }
+    // Calling Funtion on Form Sumbit
+    form.addEventListener("submit", (e) => {
+        e.preventDefault(); //preventing form submitting
+        checkEmail();
+        createPass();
+        confirmPass();
+        //calling function on key up
+        emailInput.addEventListener("keyup", checkEmail);
+        passInput.addEventListener("keyup", createPass);
+        cPassInput.addEventListener("keyup", confirmPass);
+        if (
+            !emailField.classList.contains("invalid") &&
+            !passField.classList.contains("invalid") &&
+            !cPassField.classList.contains("invalid")
+        ) {
+            location.href = form.getAttribute("action");
+        }
+    });
+
+    $('#create-user').on('click', function (e) {
+        e.preventDefault();
+        let firstName = $('#first-name').val();
+        let lastName = $('#last-name').val();
+        let username = $('#username').val();
+        let password1 = $('#password1').val();
+        let password2 = $('#password2').val();
+
+
+        if (password1 !== password2) {
+            createAlert('warning', 'رمزعبور و تاییدیه آن با هم تطابق ندارند!!')
+        }
+        else {
+            let data = {
+                'username': username.toLowerCase(),
+                'password': password1,
+                'first_name': firstName,
+                'last_name': lastName,
+                'is_active': true
+            };
+            $.ajax({
+                type: "POST",
+                url: "/api/users/",
+                data: JSON.stringify(data),
+                contentType: "application/json",
+                headers: {
+                    'X-CSRFToken': $('[name=csrfmiddlewaretoken]').val()
+                },
+                success: function (response) {
+                    createAlert('success', 'کاربر با موفقیت اضافه شد.')
+                    // Method patch => example Profile.added_by = {{request.session.user_id}}
+                    window.location.href = "/users-list/";
+                },
+                error: function (error) {
+                    if (error.responseJSON && error.responseJSON.username) {
+                        // let errorMessage = error.responseJSON.username[0]; 
+                        createAlert('danger', 'نام کاربری قبلا انتخاب شده‌است');
+                    } else {
+                        console.error("ERROR CREATING USER ERROR TEXT: ", error.responseJSON);
                     }
-                });
+                }
+            });
 
-            }
-        })
-    </script>
-    {% endblock%}
+        }
+    })
+</script>
+{% endblock%}

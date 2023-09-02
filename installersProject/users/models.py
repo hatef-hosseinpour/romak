@@ -12,6 +12,7 @@ class Profile(models.Model):
     profile_image = models.ImageField(null=True, blank=True, upload_to='profile_images/',
                                       default='default_user.jpg', max_length=200)
     phone_number = models.CharField(max_length=20, null=True, blank=True)
+    added_by = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True, related_name='added_users')
     # two_factor_authentication = models.BooleanField(default=True)
     # login_attempt_count = models.IntegerField(default=0)
 

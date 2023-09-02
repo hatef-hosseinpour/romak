@@ -13,8 +13,7 @@
                     <div class="row g-0">
                         <div class="col-md-4 gradient-custom text-center text-black"
                             style="border-top-left-radius: .5rem; border-bottom-left-radius: .5rem;">
-                            <img id="profile-image" alt="Avatar" class="img-fluid my-5"
-                                style="width: 120px; border-radius: 50%;" />
+
                             <h5 class="text-black" id="username"></h5>
                             {% if request.session.is_admin %}
                             <p id="role">ادمین</p>
@@ -55,23 +54,34 @@
 
 
 <script>
+    let user_id = "{{request.session.user_id}}"
+    $(document).ready(function () {
+        $.ajax({
+            type: "GET",
+            url: `/api/users/${user_id}/`,
+            success: function (response) {
+                $('#name').text(response.first_name || response.last_name ? response.first_name + ' ' + response.last_name : '--');
+                $("#email").text(response.email || '--')
+                $("#is-active").text(response.is_active ? 'فعال' : 'غیرفعال')
+                $('#username').text(response.username);
 
-    $.ajax({
-        type: "GET",
-        url: "/api/profile/",
-        success: function (response) {
-            $('#name').text(response.user.first_name || response.user.last_name ? response.user.first_name + ' ' + response.user.last_name : '--');
-            $("#phone-number").text(response.phone_number ? response.phone_number : '--')
-            $("#email").text(response.user.email ? response.user.email : '--')
-            $("#is-active").text(response.user.is_active ? 'فعال' : 'غیرفعال')
-            $('#username').text(response.user.username);
-            $('#profile-image').attr('src', response.profile_image)
+            }
+        });
+        $.ajax({
+            type: "GET",
+            url: `/api/users-profile/${user_id}/`,
+            success: function (response) {
+                $("#phone-number").text(response.phone_number ? response.phone_number : '--')
+                $('.gradient-custom').html('<img src="' + response.profile_image + '" alt="Avatar" class="img-fluid my-5" style="width: 120px; border-radius: 50%;" />')
+                console.log(response.profile_image);
 
-        },
-        error: function () {
-            console.log('Failed to retrieve profile data');
-        }
+            },
+            error: function () {
+                console.log('Failed to retrieve profile data');
+            }
+        });
     });
+
 
 </script>
 

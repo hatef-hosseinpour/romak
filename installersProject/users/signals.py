@@ -10,7 +10,7 @@ def createProfile(sender, instance, created, **kwargs):
     if created:
         Profile.objects.create(user=instance)
     else:
-        instance.profile.save()
+        instance.profile.save()     
 
 
 @receiver(pre_delete, sender=Profile)

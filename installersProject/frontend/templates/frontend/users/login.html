@@ -5,6 +5,15 @@
 {% endblock %}
 {% block content %}
 {% block body_class %}login-page{% endblock %}
+<style>
+  #captcha-container {
+  height: 50px;
+  background: whitesmoke;
+  border-radius: 5px;
+ 
+  margin-bottom: 15px;
+}
+</style>
 <div class="login-box rtl-txt">
   <h2>ورودکاربر</h2>
   <form id="login-form">
@@ -16,7 +25,7 @@
       <input type="password" name="password" id="password" required="">
       <label>رمزعبور</label>
     </div>
-    <div style="height: 50px; background: whitesmoke; border-radius: 5px;" id="captcha-container">
+    <div id="captcha-container">
       <p class="text-center" id="code"></p>
     </div>
     <div class="user-box ">

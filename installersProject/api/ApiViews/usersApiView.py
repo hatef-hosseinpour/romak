@@ -36,7 +36,8 @@ class LoginUserApiView(APIView):
 
             login(request, user)
 
-            is_admin = user.is_superuser
+            is_admin = user.is_superuser and user.is_staff
+            is_staff = user.is_staff
             profile = user.profile
             phone_number = profile.phone_number
             csrf_token = get_token(request)
@@ -45,10 +46,11 @@ class LoginUserApiView(APIView):
             request.session['user_id'] = user.id
             request.session['phone_number'] = phone_number
             request.session['is_admin'] = is_admin
+            request.session['is_staff'] = is_staff
             request.session['username'] = username
             # request.session.set_expiry(value)
 
-            return Response({'session_id': request.session.session_key, 'user_id': user.id, 'username': username, 'phone_number': phone_number, 'is_admin': is_admin, 'csrf_token': csrf_token}, status=status.HTTP_200_OK)
+            return Response({'session_id': request.session.session_key, 'user_id': user.id, 'username': username, 'phone_number': phone_number, 'is_admin': is_admin, 'is_staff': is_staff, 'csrf_token': csrf_token}, status=status.HTTP_200_OK)
         else:
             return Response({'session_id': request.session.session_key}, status=status.HTTP_401_UNAUTHORIZED)
 
@@ -63,7 +65,8 @@ class LogoutUserApiView(APIView):
 
 class UserProfileApiView(APIView):
     authentication_classes = [authentication.SessionAuthentication]
-    permission_classes = [permissions.IsAdminUser | permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAdminUser |
+                          permissions.IsAuthenticated]
 
     def get(self, request):
         user = request.user
@@ -74,12 +77,18 @@ class UserProfileApiView(APIView):
 
 class UsersListApiView(APIView):
     authentication_classes = [authentication.SessionAuthentication]
-    permission_classes = [permissions.IsAdminUser | permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAdminUser |
+                          permissions.IsAuthenticated]
 
     def get(self, request):
         current_user = request.user
-
-        users = User.objects.exclude(pk=current_user.pk)
+        profile = current_user.profile
+        if current_user.is_superuser and current_user.is_staff:
+            users = User.objects.all()
+        elif current_user.is_staff:
+            users = User.objects.filter(profile__added_by=current_user)
+        else:
+            users = User.objects.none()
         users_profile = Profile.objects.filter(user__in=users)
         serializer = UserListSerializer(users_profile, many=True)
 
@@ -104,12 +113,13 @@ class UsersListApiView(APIView):
 
 class UserViewSet(viewsets.ModelViewSet):
     authentication_classes = [authentication.SessionAuthentication]
-    permission_classes = [permissions.IsAdminUser | permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAdminUser |
+                          permissions.IsAuthenticated]
     queryset = User.objects.all()
     serializer_class = UserSerializers
 
     def perform_create(self, serializer):
-        
+
         password = self.request.data.get('password')
 
         hashed_password = make_password(password)
@@ -119,6 +129,7 @@ class UserViewSet(viewsets.ModelViewSet):
 
 class UserProfileViewSet(viewsets.ModelViewSet):
     authentication_classes = [authentication.SessionAuthentication]
-    permission_classes = [permissions.IsAdminUser | permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAdminUser |
+                          permissions.IsAuthenticated]
     queryset = Profile.objects.all()
     serializer_class = ProfileSerializers

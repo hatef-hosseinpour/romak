@@ -1,5 +1,68 @@
 {% load static %}
 {% if user.is_authenticated %}
+<style>
+  .dropdown-menus {
+    display: flex;
+  }
+
+  .dropdown-menus li {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    list-style: none;
+    padding: 0 14px;
+
+  }
+
+  .dropdown-menus li a {
+    height: 100%;
+    text-decoration: none;
+    white-space: nowrap;
+    color: #fff;
+    font-size: 15px;
+    font-weight: 500;
+  }
+
+  .dropdown-menus li:hover .js-arrow {
+    transform: rotate(180deg);
+  }
+
+  .dropdown-menus li .sub-menu {
+    position: absolute;
+    top: 50px;
+    left: 0;
+    line-height: 40px;
+    background: var(--border-color);
+    box-shadow: 0 1px 2px var(--text-color);
+    border-radius: 0 0 4px 4px;
+    display: none;
+    z-index: 2;
+    padding-left: 20px;
+    border-radius: 2px;
+  }
+
+  .dropdown-menus li:hover .js-sub-menu {
+    display: block;
+    transition-delay: 0.2s;
+  }
+
+  .dropdown-menus li .sub-menu li {
+    padding: 0 22px;
+    border-bottom: 1px solid var(--black-light-color);
+  }
+
+  .dropdown-menus li .sub-menu a {
+    color: var(--text-color);
+    font-size: 15px;
+    font-weight: 500;
+    pointer-events: visible;
+  }
+
+  .nav-links:hover li .link-name {
+    display: block;
+  }
+</style>
 <nav>
   <div class="logo-name">
     <div class="logo-image">
@@ -13,26 +76,20 @@
           <i class="uil uil-estate"></i>
           <span class="link-name">داشبورد</span>
         </a></li>
+
+
+
       <li><a href="/enginrooms/">
-          <i class="uil uil-home"></i>
+          <i class="uil uil-map-marker"></i>
           <span class="link-name">لیست موتورخانه ها</span>
         </a></li>
-      <li><a href="#">
-          <i class="uil uil-chart"></i>
-          <span class="link-name">آنالیزها</span>
+      <li><a href="/create-user/">
+          <i class="uil uil-user-plus"></i>
+          <span class="link-name">افزودن کاربر جدید</span>
         </a></li>
-      <li><a href="#">
-          <i class="uil uil-thumbs-up"></i>
-          <span class="link-name">لایک</span>
-        </a></li>
-      <li><a href="#">
-          <i class="uil uil-comments"></i>
-          <span class="link-name">نظر</span>
-        </a></li>
-      <li><a href="#">
-          <i class="uil uil-share"></i>
-          <span class="link-name">اشتراک</span>
-        </a></li>
+
+
+
     </ul>
 
     <ul class="logout-mode">
@@ -43,7 +100,7 @@
       <li class="mode">
         <a href="#">
           <i class="uil"></i>
-          <span class="link-name">حالت تاریک</span>
+          <span class="link-name"></span>
         </a>
         <div class="mode-toggle">
           <span class="switch"></span>
@@ -56,11 +113,23 @@
   <div class="top">
     <i class="uil uil-bars sidebar-toggle"></i>
     <div class="search-box">
-      <i class="uil uil-search"></i>
-      <input type="text" placeholder="جستجو کنید...">
+
     </div>
 
-    <img src="{% static 'images/profile_images/default_user.jpg'%}" alt="">
+    <ul class="dropdown-menus">
+      <li>
+        <a href="#"><img src="{% static 'images/profile_images/default_user.jpg'%}" alt="" id="profile-image"> Hatef
+        </a>
+
+        <ul class="js-sub-menu sub-menu">
+          <li><a href="/profile/">پروفایل</a></li>
+          <li><a href="/change-password">تغییر رمزعبور</a></li>
+          <li><a href="/api/logout-user/" id="logout-btn">خروج</a></li>
+        </ul>
+      </li>
+    </ul>
+  </div>
+  </div>
   </div>
   {% endif %}
   <!-- <nav class="navbar navbar-expand-lg bg-body-tertiary sticky-top rtl-txt ">
@@ -100,7 +169,8 @@
 
   <script>
 
-    $('#logout-btn').click(function (e) {
+
+    $('.sub-menu li #logout-btn').click(function (e) {
       e.preventDefault();
       let href = $(this).attr('href');
       if (href === '/api/logout-user/') {
@@ -125,6 +195,10 @@
     let getMode = localStorage.getItem("mode");
     if (getMode && getMode === "dark") {
       body.toggleClass('dark');
+      $('.mode a .uil').addClass('uil-sun');
+    }
+    else {
+      $('.mode a .uil').addClass('uil-moon');
     }
     let getStatus = localStorage.getItem("status");
     if (getStatus && getStatus === "close") {
@@ -132,10 +206,13 @@
     }
     modeToggle.on('click', function () {
       body.toggleClass("dark");
+
       if (body.hasClass("dark")) {
         localStorage.setItem("mode", "dark");
+        $('.mode a .uil').removeClass('uil-moon').addClass('uil-sun');
       } else {
         localStorage.setItem("mode", "light");
+        $('.mode a .uil').removeClass('uil-sun').addClass('uil-moon');
       }
     });
     sidebarToggle.on('click', function () {

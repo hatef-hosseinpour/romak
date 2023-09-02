@@ -5,92 +5,135 @@
 {% endblock %}
 {% block content %}
 
-<style>
-    .tab-container {
-        display: flex;
-        justify-content: space-between;
-        margin-bottom: 20px;
-    }
 
-    .tab-link {
-        padding: 10px 20px;
-        background-color: #f0f0f0;
-        cursor: pointer;
-    }
 
-    .tab-link.active {
-        background-color: #ccc;
-    }
-
-    .tab-content {
-        display: none;
-        padding: 20px;
-        background-color: #f0f0f0;
-    }
-
-    .tab-content.active {
-        display: block;
-    }
-</style>
-
-    <div class="dash-content">
-        <div class="overview">
-            <div class="title">
-                <i class="uil uil-tachometer-fast-alt"></i>
-                <span class="text">داشبورد</span>
+<div class="dash-content">
+    <div class="overview">
+        <div class="title">
+            <i class="uil uil-tachometer-fast-alt"></i>
+            <span class="text">داشبورد</span>
+        </div>
+        <div class="boxes">
+            <div class="box box1">
+                <i class="uil uil-clock"></i>
+                <span class="text">آخرین ورود</span>
+                <span class="number">۱۴۰۲-۰۶-۰۷</span>
             </div>
-            <div class="boxes">
-                <div class="box box1">
-                    <i class="uil uil-thumbs-up"></i>
-                    <span class="text">تعداد لایک ها</span>
-                    <span class="number">۵۰,۱۲۰</span>
-                </div>
-                <div class="box box2">
-                    <i class="uil uil-comments"></i>
-                    <span class="text">نظرات</span>
-                    <span class="number">۲۰,۱۲۰</span>
-                </div>
-                <div class="box box3">
-                    <i class="uil uil-share"></i>
-                    <span class="text">اشتراک گذاشته شده</span>
-                    <span class="number">۱۰,۱۲۰</span>
-                </div>
+            <div class="box box2">
+                <i class="uil uil-user-arrows"></i>
+                <span class="text">تعداد کاربران</span>
+                <span class="number">۲۰۰</span>
+            </div>
+            <div class="box box3">
+                <i class="uil uil-wifi"></i>
+                <span class="text">تعداد کاربران آنلاین</span>
+                <span class="number">۱۰</span>
+            </div>
+            <div class="box box3">
+                <i class="uil uil-wifi"></i>
+                <span class="text">تعداد کاربران آنلاین</span>
+                <span class="number">۱۰</span>
             </div>
         </div>
-        <div class="tab-container">
-            <div class="tab-link" data-tab="tab1">Tab 1</div>
-            <div class="tab-link" data-tab="tab2">Tab 2</div>
-        </div>
+    </div>
 
-        <div id="tab1" class="tab-content">
+
+
+
+    <ul class="nav nav-tabs mb-3" id="ex1" role="tablist" style="margin-top: 10px;">
+        {% if request.session.is_admin or request.session.is_staff %}
+        <li class="nav-item" role="presentation">
+            <a class="nav-link active" id="ex1-tab-2" data-bs-toggle="tab" href="#ex1-tabs-2" role="tab"
+                aria-controls="ex1-tabs-2" aria-selected="false">موتور خانه ها</a>
+        </li>
+        <li class="nav-item" role="presentation">
+            <a class="nav-link" id="ex1-tab-1" data-bs-toggle="tab" href="#ex1-tabs-1" role="tab"
+                aria-controls="ex1-tabs-1" aria-selected="true">کاربران</a>
+        </li>
+
+        {% else %}
+        <li class="nav-item" role="presentation">
+            <a class="nav-link active" id="ex1-tab-2" data-bs-toggle="tab" href="#ex1-tabs-2" role="tab"
+                aria-controls="ex1-tabs-2" aria-selected="false">موتور خانه ها</a>
+        </li>
+        {% endif %}
+
+    </ul>
+    <div class="tab-content " id="ex1-content">
+
+        <div class="tab-pane fade" id="ex1-tabs-1" role="tabpanel" aria-labelledby="ex1-tab-1">
             <div class="activity">
                 <div class="title">
-                    <i class="uil uil-clock-three"></i>
-                    <span class="text">فعالیت های اخیر</span>
+                    <i class="uil uil-user-md"></i>
+                    <span class="text fw-bold leaflet-shadow-pane">کاربران</span>
                 </div>
                 <div class="activity-data">
-                    <div class="data names">
-                        <span class="data-title">نام</span>
-                        <span class="data-list">احمد احمدی</span>
-                        <span class="data-list">رضا رضایی</span>
-                        <span class="data-list">محمد محمدی</span>
-                        <span class="data-list">سعید سعیدی</span>
-                        <span class="data-list">علی علوی</span>
-                        <span class="data-list">حامد حامدی</span>
-                        <span class="data-list">رحیم رحیمی</span>
-                    </div>
+                    <table class="table table-hover ">
+                        <thead>
+
+                            <tr>
+                                <th scope="col">نام</th>
+                                <th scope="col">ایمیل</th>
+                                <th scope="col">تاریخ ملحق شدن</th>
+                                <th scope="col">وضعیت</th>
+                                <th scope="col">وضعیت</th>
+                            </tr>
+                        </thead>
+
+
+
+                        <tbody>
+                            <tr>
+                                <th scope="row">1</th>
+                                <td>Mark</td>
+                                <td>Otto</td>
+                                <td>@mdo</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">2</th>
+                                <td>Jacob</td>
+                                <td>Thornton</td>
+                                <td>@fat</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">3</th>
+                                <td colspan="2">Larry the Bird</td>
+                                <td>@twitter</td>
+                                <td>@twitter</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">3</th>
+                                <td colspan="2">Larry the Bird</td>
+                                <td>@twitter</td>
+                                <td>@twitter</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+
+            </div>
+        </div>
+        <div class="tab-pane fade  show active" id="ex1-tabs-2" role="tabpanel" aria-labelledby="ex1-tab-2">
+            <div class="activity">
+                <div class="title">
+                    <i class="uil uil-list-ui-alt"></i>
+                    <span class="text fw-bold">لیست موتورخانه</span>
+                </div>
+                <div class="activity-data">
                     <div class="data email">
-                        <span class="data-title">ایمیل</span>
-                        <span class="data-list">ahmad@gmail.com</span>
-                        <span class="data-list">reza@gmail.com</span>
-                        <span class="data-list">mohammad@gmail.com</span>
-                        <span class="data-list">saeed@gmail.com</span>
-                        <span class="data-list">ali@gmail.com</span>
-                        <span class="data-list">hamed@gmail.com</span>
-                        <span class="data-list">rahim@gmail.com</span>
+                        <span class="data-title fw-bold">سازمان</span>
+                        <span class="data-list">دانشگاه</span>
+                        <span class="data-list">دانشگاه</span>
+                        <span class="data-list">دانشگاه</span>
+                        <span class="data-list">دانشگاه</span>
+                        <span class="data-list">دانشگاه</span>
+                        <span class="data-list">دانشگاه</span>
+                        <span class="data-list">دانشگاه</span>
                     </div>
+
                     <div class="data joined">
-                        <span class="data-title">تاریخ ملحق شدن</span>
+                        <span class="data-title fw-bold">تاریخ نصب</span>
                         <span class="data-list">2022-02-12</span>
                         <span class="data-list">2022-02-12</span>
                         <span class="data-list">2022-02-13</span>
@@ -100,106 +143,43 @@
                         <span class="data-list">2022-02-15</span>
                     </div>
                     <div class="data type">
-                        <span class="data-title">نوع</span>
-                        <span class="data-list">جدید</span>
+                        <span class="data-title fw-bold">نوع کاربری</span>
+                        <span class="data-list">گرمایشی</span>
                         <span class="data-list">عضو</span>
                         <span class="data-list">عضو</span>
-                        <span class="data-list">جدید</span>
+                        <span class="data-list">گرمایشی</span>
                         <span class="data-list">عضو</span>
-                        <span class="data-list">جدید</span>
+                        <span class="data-list">گرمایشی</span>
                         <span class="data-list">عضو</span>
                     </div>
-                    <div class="data status">
-                        <span class="data-title">وضعیت</span>
-                        <span class="data-list">لایک شده</span>
-                        <span class="data-list">لایک شده</span>
-                        <span class="data-list">لایک شده</span>
-                        <span class="data-list">لایک شده</span>
-                        <span class="data-list">لایک شده</span>
-                        <span class="data-list">لایک شده</span>
-                        <span class="data-list">لایک شده</span>
+                    <div class="data status ">
+                        <span class="data-title fw-bold">وضعیت</span>
+                        <span class="data-list">تایید</span>
+                        <span class="data-list">تایید</span>
+                        <span class="data-list">در انتظار تایید</span>
+                        <span class="data-list">رد شده</span>
+                        <span class="data-list">رد شده</span>
+                        <span class="data-list">رد شده</span>
+                        <span class="data-list">رد شده</span>
                     </div>
                 </div>
+
+
             </div>
         </div>
     </div>
-    <div id="tab2" class="tab-content">
-        <div class="activity">
-            <div class="title">
-                <i class="uil uil-clock-three"></i>
-                <span class="text">فعالیت های اخیر</span>
-            </div>
-            <div class="activity-data">
-                <div class="data names">
-                    <span class="data-title">نام</span>
-                    <span class="data-list">احمد احمدی</span>
-                    <span class="data-list">رضا رضایی</span>
-                    <span class="data-list">محمد محمدی</span>
-                    <span class="data-list">سعید سعیدی</span>
-                    <span class="data-list">علی علوی</span>
-                    <span class="data-list">حامد حامدی</span>
-                    <span class="data-list">رحیم رحیمی</span>
-                </div>
-                <div class="data email">
-                    <span class="data-title">ایمیل</span>
-                    <span class="data-list">ahmad@gmail.com</span>
-                    <span class="data-list">reza@gmail.com</span>
-                    <span class="data-list">mohammad@gmail.com</span>
-                    <span class="data-list">saeed@gmail.com</span>
-                    <span class="data-list">ali@gmail.com</span>
-                    <span class="data-list">hamed@gmail.com</span>
-                    <span class="data-list">rahim@gmail.com</span>
-                </div>
-                <div class="data joined">
-                    <span class="data-title">تاریخ ملحق شدن</span>
-                    <span class="data-list">2022-02-12</span>
-                    <span class="data-list">2022-02-12</span>
-                    <span class="data-list">2022-02-13</span>
-                    <span class="data-list">2022-02-13</span>
-                    <span class="data-list">2022-02-14</span>
-                    <span class="data-list">2022-02-14</span>
-                    <span class="data-list">2022-02-15</span>
-                </div>
-                <div class="data type">
-                    <span class="data-title">نوع</span>
-                    <span class="data-list">جدید</span>
-                    <span class="data-list">عضو</span>
-                    <span class="data-list">عضو</span>
-                    <span class="data-list">جدید</span>
-                    <span class="data-list">عضو</span>
-                    <span class="data-list">جدید</span>
-                    <span class="data-list">عضو</span>
-                </div>
-                <div class="data status">
-                    <span class="data-title">وضعیت</span>
-                    <span class="data-list">لایک شده</span>
-                    <span class="data-list">لایک شده</span>
-                    <span class="data-list">لایک شده</span>
-                    <span class="data-list">لایک شده</span>
-                    <span class="data-list">لایک شده</span>
-                    <span class="data-list">لایک شده</span>
-                    <span class="data-list">لایک شده</span>
-                </div>
-            </div>
-        </div>
-    </div>
-    </div>
-    </div>
+</div>
 
 
-</section>
+
 
 <script>
     $(document).ready(function () {
-        $('.tab-link').click(function () {
-            var tabId = $(this).data('tab');
-            $('.tab-content').hide();
-            $('#' + tabId).show();
-        });
+        // Check if the user is not an admin
+        if (!$('#ex1-tab-1').hasClass('active') && !$('#ex1-tab-2').hasClass('active')) {
+            // Hide all tabs except the second one for non-admin users
+            $('#ex1-content .tab-pane:not(#ex1-tabs-2)').hide();
+        }
     });
-
-    $('.tab-link:first').addClass('active');
-    $('.tab-content:first').addClass('active');
-
 </script>
 {% endblock content %}

@@ -18,11 +18,11 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
+from frontend.FrontendViews.usersFrontendView import *
 
 admin.site.site_header = 'Insallers Django administration'
 admin.site.site_title = 'Installers Django administration site'
 admin.site.index_title = 'Installers Django Site Administration'
-
 
 urlpatterns = [
     path(f'{settings.ADMIN_URL}/', admin.site.urls),

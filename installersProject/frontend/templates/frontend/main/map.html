@@ -5,5 +5,49 @@
 {% endblock %}
 {% block content %}
 
-<p>ddddd</p>
+
+
+<div class="dash-content">
+    <div class="overview">
+        <div id="maps" style="width: 800px; height: 600px; margin-right: 10%; top: 10%;"></div>
+    </div>
+</div>
+<script>
+    // Initialize the map
+    var map = L.map('maps').setView([35.6892, 51.3890], 5);
+
+    // Add a tile layer (you can use different tile providers)
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '© OpenStreetMap contributors <br> Romak system'
+    }).addTo(map);
+
+    // Example engine room data
+    var engineRooms = [
+        { name: 'خوابگاه', latlng: [35.70321924120019, 51.40270551339944], details: 'Details about ER 1' },
+        { name: 'تست', latlng: [36.46943082390814, 52.361716489683374], details: 'Details about ER 2' },
+        { name: '2تست', latlng: [36.62701460081053, 52.90992339277583], details: 'Details about ER 3' }
+        // Add more engine rooms...
+    ];
+
+    // Add markers for each engine room
+    engineRooms.forEach(function (room) {
+        $.ajax({
+            url: `https://nominatim.openstreetmap.org/reverse?format=json&lat=${room.latlng[0]}&lon=${room.latlng[1]}`,
+            dataType: 'json',
+            success: function (data) {
+                var cityName = data.address.city || data.address.town || data.address.village || "Unknown City";
+
+                var marker = L.marker(room.latlng).addTo(map);
+                marker.bindPopup(`<b>${cityName}</b><br>${room.details}`);
+            }
+        });
+    });
+
+    // Add event listener for marker clicks
+    map.on('popupopen', function (e) {
+        var marker = e.popup._source;
+        // Handle marker click, show details to admin user
+    });
+</script>
+
 {% endblock content %}
