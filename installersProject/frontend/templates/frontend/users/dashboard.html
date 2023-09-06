@@ -1,185 +1,221 @@
 {% extends 'main.html'%}
-{% load static %}
+{% load static%}
 {% block headcontent %}
 {% include 'head.html' with title="Installers App| User dashboard" %}
 {% endblock %}
 {% block content %}
 
 
-
-<div class="dash-content">
-    <div class="overview">
-        <div class="title">
-            <i class="uil uil-tachometer-fast-alt"></i>
-            <span class="text">داشبورد</span>
-        </div>
-        <div class="boxes">
-            <div class="box box1">
-                <i class="uil uil-clock"></i>
-                <span class="text">آخرین ورود</span>
-                <span class="number">۱۴۰۲-۰۶-۰۷</span>
-            </div>
-            <div class="box box2">
-                <i class="uil uil-user-arrows"></i>
-                <span class="text">تعداد کاربران</span>
-                <span class="number">۲۰۰</span>
-            </div>
-            <div class="box box3">
-                <i class="uil uil-wifi"></i>
-                <span class="text">تعداد کاربران آنلاین</span>
-                <span class="number">۱۰</span>
-            </div>
-            <div class="box box3">
-                <i class="uil uil-wifi"></i>
-                <span class="text">تعداد کاربران آنلاین</span>
-                <span class="number">۱۰</span>
-            </div>
-        </div>
-    </div>
-
-
-
-
-    <ul class="nav nav-tabs mb-3" id="ex1" role="tablist" style="margin-top: 10px;">
-        {% if request.session.is_admin or request.session.is_staff %}
-        <li class="nav-item" role="presentation">
-            <a class="nav-link active" id="ex1-tab-2" data-bs-toggle="tab" href="#ex1-tabs-2" role="tab"
-                aria-controls="ex1-tabs-2" aria-selected="false">موتور خانه ها</a>
+  
+<!-- Navbar -->
+<nav class="main-header navbar navbar-expand navbar-white navbar-light">
+  <!-- Left navbar links -->
+  <ul class="navbar-nav">
+    <li class="nav-item">
+      <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
+    </li>
+    <li class="nav-item d-none d-sm-inline-block">
+      <a href="" class="nav-link">Home</a>
+    </li>
+    <li class="nav-item d-none d-sm-inline-block">
+      <a href="#" class="nav-link">Contact</a>
+    </li>
+    {% if request.user.is_authenticated %}
+      {% if request.user.is_superuser %}
+        <li class="nav-item d-none d-sm-inline-block">
+          <a href="" class="nav-link">Change Password</a>
         </li>
-        <li class="nav-item" role="presentation">
-            <a class="nav-link" id="ex1-tab-1" data-bs-toggle="tab" href="#ex1-tabs-1" role="tab"
-                aria-controls="ex1-tabs-1" aria-selected="true">کاربران</a>
+        <li class="nav-item d-none d-sm-inline-block">
+          <a href="{% url 'admin:logout' %}" class="nav-link">Logout</a>
         </li>
+      {% else %}
+        <li class="nav-item d-none d-sm-inline-block">
+          <a href="" class="nav-link">Change Password</a>
+        </li>
+        <li class="nav-item d-none d-sm-inline-block">
+          <a href="" class="nav-link">Logout</a>
+        </li>
+      {% endif %}
+    {% else %}
+      <li class="nav-item d-none d-sm-inline-block">
+        <a href="" class="nav-link">Sign In</a>
+      </li>
+    {% endif %}
+  </ul>
 
+  <!-- Right navbar links -->
+  <ul class="navbar-nav ml-auto">
+    <!-- Navbar Search -->
+    <li class="nav-item">
+      <a class="nav-link" data-widget="navbar-search" href="#" role="button">
+        <i class="fas fa-search"></i>
+      </a>
+      <div class="navbar-search-block">
+        <form class="form-inline">
+          <div class="input-group input-group-sm">
+            <input class="form-control form-control-navbar" type="search" placeholder="Search" aria-label="Search">
+            <div class="input-group-append">
+              <button class="btn btn-navbar" type="submit">
+                <i class="fas fa-search"></i>
+              </button>
+              <button class="btn btn-navbar" type="button" data-widget="navbar-search">
+                <i class="fas fa-times"></i>
+              </button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </li>
+
+    <!-- Messages Dropdown Menu -->
+    <li class="nav-item dropdown">
+      <a class="nav-link" data-toggle="dropdown" href="#">
+        <i class="far fa-comments"></i>
+        <span class="badge badge-danger navbar-badge">3</span>
+      </a>
+      <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
+        <a href="#" class="dropdown-item">
+          <!-- Message Start -->
+          <div class="media">
+            <img src="{% static 'images/human-icon-3d-render-illustration.jpg' %}" alt="User Avatar" class="img-size-50 mr-3 img-circle">
+            <div class="media-body">
+              <h3 class="dropdown-item-title">
+                Brad Diesel
+                <span class="float-right text-sm text-danger"><i class="fas fa-star"></i></span>
+              </h3>
+              <p class="text-sm">Call me whenever you can...</p>
+              <p class="text-sm text-muted"><i class="far fa-clock mr-1"></i> 4 Hours Ago</p>
+            </div>
+          </div>
+          <!-- Message End -->
+        </a>
+        <div class="dropdown-divider"></div>
+        <a href="#" class="dropdown-item">
+          <!-- Message Start -->
+          <div class="media">
+            <img src="{% static 'images/human-icon-3d-render-illustration.jpg' %}" alt="User Avatar" class="img-size-50 img-circle mr-3">
+            <div class="media-body">
+              <h3 class="dropdown-item-title">
+                John Pierce
+                <span class="float-right text-sm text-muted"><i class="fas fa-star"></i></span>
+              </h3>
+              <p class="text-sm">I got your message bro</p>
+              <p class="text-sm text-muted"><i class="far fa-clock mr-1"></i> 4 Hours Ago</p>
+            </div>
+          </div>
+          <!-- Message End -->
+        </a>
+        <div class="dropdown-divider"></div>
+        <a href="#" class="dropdown-item">
+          <!-- Message Start -->
+          <div class="media">
+            <img src="{% static 'images/human-icon-3d-render-illustration.jpg' %}" alt="User Avatar" class="img-size-50 img-circle mr-3">
+            <div class="media-body">
+              <h3 class="dropdown-item-title">
+                Nora Silvester
+                <span class="float-right text-sm text-warning"><i class="fas fa-star"></i></span>
+              </h3>
+              <p class="text-sm">The subject goes here</p>
+              <p class="text-sm text-muted"><i class="far fa-clock mr-1"></i> 4 Hours Ago</p>
+            </div>
+          </div>
+          <!-- Message End -->
+        </a>
+        <div class="dropdown-divider"></div>
+        <a href="#" class="dropdown-item dropdown-footer">See All Messages</a>
+      </div>
+    </li>
+    <!-- Notifications Dropdown Menu -->
+    <li class="nav-item dropdown">
+      <a class="nav-link" data-toggle="dropdown" href="#">
+        <i class="far fa-bell"></i>
+        <span class="badge badge-warning navbar-badge">15</span>
+      </a>
+      <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
+        <span class="dropdown-item dropdown-header">15 Notifications</span>
+        <div class="dropdown-divider"></div>
+        <a href="#" class="dropdown-item">
+          <i class="fas fa-envelope mr-2"></i> 4 new messages
+          <span class="float-right text-muted text-sm">3 mins</span>
+        </a>
+        <div class="dropdown-divider"></div>
+        <a href="#" class="dropdown-item">
+          <i class="fas fa-users mr-2"></i> 8 friend requests
+          <span class="float-right text-muted text-sm">12 hours</span>
+        </a>
+        <div class="dropdown-divider"></div>
+        <a href="#" class="dropdown-item">
+          <i class="fas fa-file mr-2"></i> 3 new reports
+          <span class="float-right text-muted text-sm">2 days</span>
+        </a>
+        <div class="dropdown-divider"></div>
+        <a href="#" class="dropdown-item dropdown-footer">See All Notifications</a>
+      </div>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" data-widget="fullscreen" href="#" role="button">
+        <i class="fas fa-expand-arrows-alt"></i>
+      </a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" data-widget="control-sidebar" data-controlsidebar-slide="true" href="#" role="button">
+        <i class="fas fa-th-large"></i>
+      </a>
+    </li>
+  </ul>
+</nav>
+<!-- /.navbar -->
+
+<!-- Main Sidebar Container -->
+<aside class="main-sidebar sidebar-dark-primary elevation-4">
+  <!-- Brand Logo -->
+  <a href="/" class="brand-link">
+    <img src="{% static 'images/human-icon-3d-render-illustration.jpg' %}" alt="AdminLTE Logo" class="brand-image img-circle elevation-3"
+      style="opacity: .8">
+    <span class="brand-text font-weight-light">AdminLTE 3</span>
+  </a>
+
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <!-- Sidebar user panel (optional) -->
+    <div class="user-panel mt-3 pb-3 mb-3 d-flex">
+      <div class="image">
+        <img src="{% static 'images/human-icon-3d-render-illustration.jpg' %}" class="img-circle elevation-2" alt="User Image">
+      </div>
+      <div class="info">
+        {% if request.user.is_authenticated %}
+          <a href="#" class="d-block">{{request.user.username}}</a>
         {% else %}
-        <li class="nav-item" role="presentation">
-            <a class="nav-link active" id="ex1-tab-2" data-bs-toggle="tab" href="#ex1-tabs-2" role="tab"
-                aria-controls="ex1-tabs-2" aria-selected="false">موتور خانه ها</a>
-        </li>
-        {% endif %}
-
-    </ul>
-    <div class="tab-content " id="ex1-content">
-
-        <div class="tab-pane fade" id="ex1-tabs-1" role="tabpanel" aria-labelledby="ex1-tab-1">
-            <div class="activity">
-                <div class="title">
-                    <i class="uil uil-user-md"></i>
-                    <span class="text fw-bold leaflet-shadow-pane">کاربران</span>
-                </div>
-                <div class="activity-data">
-                    <table class="table table-hover ">
-                        <thead>
-
-                            <tr>
-                                <th scope="col">نام</th>
-                                <th scope="col">ایمیل</th>
-                                <th scope="col">تاریخ ملحق شدن</th>
-                                <th scope="col">وضعیت</th>
-                                <th scope="col">وضعیت</th>
-                            </tr>
-                        </thead>
-
-
-
-                        <tbody>
-                            <tr>
-                                <th scope="row">1</th>
-                                <td>Mark</td>
-                                <td>Otto</td>
-                                <td>@mdo</td>
-                            </tr>
-                            <tr>
-                                <th scope="row">2</th>
-                                <td>Jacob</td>
-                                <td>Thornton</td>
-                                <td>@fat</td>
-                            </tr>
-                            <tr>
-                                <th scope="row">3</th>
-                                <td colspan="2">Larry the Bird</td>
-                                <td>@twitter</td>
-                                <td>@twitter</td>
-                            </tr>
-                            <tr>
-                                <th scope="row">3</th>
-                                <td colspan="2">Larry the Bird</td>
-                                <td>@twitter</td>
-                                <td>@twitter</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-
-
-            </div>
-        </div>
-        <div class="tab-pane fade  show active" id="ex1-tabs-2" role="tabpanel" aria-labelledby="ex1-tab-2">
-            <div class="activity">
-                <div class="title">
-                    <i class="uil uil-list-ui-alt"></i>
-                    <span class="text fw-bold">لیست موتورخانه</span>
-                </div>
-                <div class="activity-data">
-                    <div class="data email">
-                        <span class="data-title fw-bold">سازمان</span>
-                        <span class="data-list">دانشگاه</span>
-                        <span class="data-list">دانشگاه</span>
-                        <span class="data-list">دانشگاه</span>
-                        <span class="data-list">دانشگاه</span>
-                        <span class="data-list">دانشگاه</span>
-                        <span class="data-list">دانشگاه</span>
-                        <span class="data-list">دانشگاه</span>
-                    </div>
-
-                    <div class="data joined">
-                        <span class="data-title fw-bold">تاریخ نصب</span>
-                        <span class="data-list">2022-02-12</span>
-                        <span class="data-list">2022-02-12</span>
-                        <span class="data-list">2022-02-13</span>
-                        <span class="data-list">2022-02-13</span>
-                        <span class="data-list">2022-02-14</span>
-                        <span class="data-list">2022-02-14</span>
-                        <span class="data-list">2022-02-15</span>
-                    </div>
-                    <div class="data type">
-                        <span class="data-title fw-bold">نوع کاربری</span>
-                        <span class="data-list">گرمایشی</span>
-                        <span class="data-list">عضو</span>
-                        <span class="data-list">عضو</span>
-                        <span class="data-list">گرمایشی</span>
-                        <span class="data-list">عضو</span>
-                        <span class="data-list">گرمایشی</span>
-                        <span class="data-list">عضو</span>
-                    </div>
-                    <div class="data status ">
-                        <span class="data-title fw-bold">وضعیت</span>
-                        <span class="data-list">تایید</span>
-                        <span class="data-list">تایید</span>
-                        <span class="data-list">در انتظار تایید</span>
-                        <span class="data-list">رد شده</span>
-                        <span class="data-list">رد شده</span>
-                        <span class="data-list">رد شده</span>
-                        <span class="data-list">رد شده</span>
-                    </div>
-                </div>
-
-
-            </div>
-        </div>
+          <a href="#" class="d-block">Alexander Pierce</a>
+        {% endif %}        
+      </div>
     </div>
-</div>
 
+    <!-- SidebarSearch Form -->
+    <div class="form-inline">
+      <div class="input-group" data-widget="sidebar-search">
+        <input class="form-control form-control-sidebar" type="search" placeholder="Search" aria-label="Search">
+        <div class="input-group-append">
+          <button class="btn btn-sidebar">
+            <i class="fas fa-search fa-fw"></i>
+          </button>
+        </div>
+      </div>
+    </div>
 
-
-
+    <!-- Sidebar Menu -->
+    <nav class="mt-2">
+     {% include 'menu-list.html'%}
+    </nav>
+    
+    <!-- /.sidebar-menu -->
+  </div>
+  <!-- /.sidebar -->
+</aside>
 <script>
-    $(document).ready(function () {
-        // Check if the user is not an admin
-        if (!$('#ex1-tab-1').hasClass('active') && !$('#ex1-tab-2').hasClass('active')) {
-            // Hide all tabs except the second one for non-admin users
-            $('#ex1-content .tab-pane:not(#ex1-tabs-2)').hide();
-        }
-    });
-</script>
+  document.getElementById('toggle-sidebar').addEventListener('click', function () {
+    var sidebar = document.querySelector('.main-sidebar');
+    sidebar.classList.toggle('sidebar-open');
+});
+</script> 
 {% endblock content %}

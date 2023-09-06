@@ -3,104 +3,201 @@
 {% block headcontent %}
 {% include 'head.html' with title="Installers App| Login User" %}
 {% endblock %}
-{% block content %}
 {% block body_class %}login-page{% endblock %}
-<style>
-  #captcha-container {
-  height: 50px;
-  background: whitesmoke;
-  border-radius: 5px;
- 
-  margin-bottom: 15px;
-}
-</style>
+{% block content %}
+
 <div class="login-box rtl-txt">
-  <h2>ورودکاربر</h2>
-  <form id="login-form">
-    <div class="user-box">
-      <input type="text" name="username" id="username" required="">
-      <label>نام کاربری</label>
-    </div>
-    <div class="user-box ">
-      <input type="password" name="password" id="password" required="">
-      <label>رمزعبور</label>
-    </div>
-    <div id="captcha-container">
-      <p class="text-center" id="code"></p>
-    </div>
-    <div class="user-box ">
-      <input type="text" name="captcha-input" id="captcha-input" required="">
-      <label>کپچا</label>
-    </div>
+  <div class="login-logo">
+    <h2> Romak system <img src="{% static 'images/logo-romak.jpg' %}" height="80px" width="80px"
+        style="border-radius:50%;" /></h2>
+  </div>
+  <!-- /.login-logo -->
+  <div class="card">
+    <div class="card-body login-card-body">
+      <p class="login-box-msg">ورود کاربری</p>
 
-    <input type="submit" value="ورود">
-  </form>
-</div>
+      <form id="login-form">
+        {% csrf_token %}
+
+        <div class="input-group mb-3">
+          <input type="text" name="username" placeholder="نام کاربری" class="form-control" id="username">
+          <div class="input-group-append">
+            <div class="input-group-text">
+              <span class="fas fa-user"></span>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-7">
+          <!-- Right column for the error message -->
+          <div class="text-right" style="display: none;" id="username-error-container">
+            <p class="text-danger mb-3" id="username-error">
+              <i class="fas fa-exclamation-circle"></i> نام کاربری را وارد کنید.
+            </p>
+          </div>
+        </div>
+
+        <div class="input-group mb-3">
+          <input type="password" name="password" placeholder="رمزعبور" class="form-control" id="password">
+          <div class="input-group-append">
+            <div class="input-group-text">
+              <span class="fas fa-lock"></span>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-7" style="display: none;" id="password-error-container">
+          <!-- Right column for the error message -->
+          <div class="text-right">
+            <p class="text-danger mb-3" id="password-error">
+              <i class="fas fa-exclamation-circle"></i> رمزعبور را وارد کنید.
+            </p>
+          </div>
+        </div>
+        <div id="captcha-container">
+          <p class="text-center" id="code"></p>
+        </div>
+        <div class="input-group mb-3 col-12">
+          <input type="text" name="text" placeholder="کد را وارد کنید" class="form-control" id="captcha-input">
+          <div class="input-group-append">
+            <div class="input-group-text">
+              <span class="fas "></span>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-8">
+          <!-- Right column for the error message -->
+          <div class="text-right" style="display: none;" id="captcha-error-container">
+            <p class="text-danger mb-3" id="captcha-error">
+              <i class="fas fa-exclamation-circle"></i> کد کپچا را درست وارد کنید.
+            </p>
+          </div>
+        </div>
+
+        <div class="row">
+          <!-- <div class="col-8">
+            <div class="icheck-secondry">
+              <input type="checkbox" id="remember">
+              <label for="remember">
+                مرا به خاطر بسپار
+              </label>
+            </div>
+          </div> -->
+          <!-- /.col -->
+          <div class="col-12">
+            <button type="submit" class="btn btn-primary btn-block">ورود</button>
+          </div>
+          <!-- /.col -->
+        </div>
+      </form>
+
+      <!--
+      <div class="social-auth-links text-center mb-3">
+        <p>- OR -</p>
+        <a href="#" class="btn btn-block btn-primary">
+          <i class="fab fa-facebook mr-2"></i> Sign in using Facebook
+        </a>
+        <a href="#" class="btn btn-block btn-danger">
+          <i class="fab fa-google-plus mr-2"></i> Sign in using Google+
+        </a>
+      </div>
+      -->
+      <!-- /.social-auth-links -->
 
 
-<script>
+      <!-- /.login-card-body -->
+    </div>
+  </div>
 
-  let code = "";
-  var charsArray =
-    "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
-  var length = 4;
-  var captcha = [];
-  function generateCaptcha() {
-    for (var i = 0; i < length; i++) {
-      var index = Math.floor(Math.random() * charsArray.length);
-      captcha.push(charsArray[index]);
+  <script>
+
+    let code = "";
+    let charsArray = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+    let length = 5;
+    let captcha = [];
+
+    function generateCaptcha() {
+
+
+      for (var i = 0; i < length; i++) {
+        var index = Math.floor(Math.random() * charsArray.length);
+        captcha.push(charsArray[index]);
+      }
+
+
+      return captcha.join("");
+
+
     }
-    return captcha.join("");
+    $(document).ready(function () {
+      code = generateCaptcha()
 
-  }
-  $(document).ready(function () {
-    code = generateCaptcha()
-    $('#code').text(code);
-    console.log(code);
-  });
-  $('#captcha-container').on('click', function () {
-    captcha = [];
-    code = generateCaptcha();
-    $('#code').text("");
-    console.log(code);
-    $('#code').text(code);
-  })
-
-  $('#login-form').submit(function (e) {
-
-    e.preventDefault()
-
-    console.log('input', $('#captcha-input').val());
-    console.log('code', code);
-    if ($('#captcha-input').val() === code) {
-      let formData = $(this).serialize();
-      $.ajax({
-        url: '/api/login-user/',
-        type: 'POST',
-        data: formData,
-        success: function (response) {
-          console.log(response.user_id);
-          createAlert('success', 'ورودکاربر با موفقیت انجام شد.');
-          window.location.href = "/dashboard/"
-        },
-        error: function () {
-          createAlert('danger', 'نام کاربری یا رمزعبور درست نیست!!');
-
-        }
-      });
-    }
-    else {
-      
-      createAlert('danger', 'کد وارد شده اشتباه است!!');
+      $('#code').text(code);
+      console.log(code);
+    });
+    $('#captcha-container').on('click', function () {
       captcha = [];
       code = generateCaptcha();
       $('#code').text("");
       console.log(code);
       $('#code').text(code);
-    }
+    })
 
-  });
+    $('#login-form').submit(function (e) {
+
+      e.preventDefault()
+      // Check if the username input is empty
+      if ($('#username').val() === '') {
+        $('#username-error-container').show(); // Display the username error message container
+      } else {
+        $('#username-error-container').hide(); // Hide the username error message container
+      }
+
+      // Check if the password input is empty
+      if ($('#password').val() === '') {
+        $('#password-error-container').show(); // Display the password error message container
+      } else {
+        $('#password-error-container').hide(); // Hide the password error message container
+      }
+
+      // Check if the captcha input is empty
+      if ($('#captcha-input').val() === '') {
+        $('#captcha-error-container').show(); // Display the captcha error message container
+      } else {
+        $('#captcha-error-container').hide(); // Hide the captcha error message container
+      }
+
+      console.log('input', $('#captcha-input').val());
+      console.log('code', code);
+
+      if ($('#captcha-input').val() === code) {
+
+        let formData = $(this).serialize();
+        $.ajax({
+          url: '/api/login-user/',
+          type: 'POST',
+          data: formData,
+          success: function (response) {
+            console.log(response.user_id);
+            createAlert('success', 'ورودکاربر با موفقیت انجام شد.');
+            window.location.href = "/dashboard/"
+          },
+          error: function () {
+            createAlert('danger', 'نام کاربری یا رمزعبور درست نیست!!');
+
+          }
+        });
+      }
+      else {
+
+        $('#captcha-error-container ').show()
+        captcha = [];
+        code = generateCaptcha();
+        $('#code').text("");
+        console.log(code);
+        $('#code').text(code);
+      }
+
+    });
 
 
-</script>
-{% endblock content %}
+  </script>
+  {% endblock content %}

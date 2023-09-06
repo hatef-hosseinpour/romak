@@ -12,41 +12,96 @@
         transition: var(--tran-05);
     }
 </style>
+<nav>
+    <div class="logo-name">
+        <div class="logo-image">
+            <img src="{% static 'images/logo-romak.jpg'%}" alt="">
+        </div>
+        <span class="logo_name">روماک سیستم</span>
+    </div>
+    <div class="menu-items">
+        <ul class="nav-links">
+            <li><a href="/dashboard/">
+                    <i class="bi bi-house-door"></i>
+                    <span class="link-name">داشبورد</span>
+                </a></li>
+
+
+
+            <li><a href="/enginrooms/">
+                    <i class="bi bi-map"></i>
+                    <span class="link-name">لیست موتورخانه ها</span>
+                </a></li>
+            <li><a href="/create-user/">
+                    <i class="bi bi-person-add"></i>
+                    <span class="link-name">افزودن کاربر جدید</span>
+                </a></li>
+
+
+
+        </ul>
+
+        <ul class="logout-mode">
+            <li><a id="logout-btn" href="/api/logout-user/">
+                    <i class="bi bi-box-arrow-right"></i>
+                    <span class="link-name">خروج</span>
+                </a></li>
+            <li class="mode">
+                <a href="#">
+                    <i class="bi bi-moon"></i>
+                    <span class="link-name"></span>
+                </a>
+                <div class="mode-toggle">
+                    <span class="switch"></span>
+                </div>
+            </li>
+        </ul>
+    </div>
+</nav>
+<section class="dashboard">
+    <div class="top">
+        <i class="bi bi-list sidebar-toggle"></i>
+        <div class="search-box">
+           
+        </div>
+
+        <ul class="dropdown-menus">
+            <li>
+                <a href="#"><img src="{% static 'images/profile_images/default_user.jpg'%}" alt="" id="profile-image">
+                    {{request.session.username}}
+                </a>
+
+                <ul class="js-sub-menu sub-menu">
+                    <li><a href="/profile/">پروفایل</a></li>
+                    <li><a href="/change-password">تغییر رمزعبور</a></li>
+                    <li><a href="" id="logout-btn">خروج</a></li>
+                </ul>
+            </li>
+        </ul>
+    </div>
 <div class="container">
 
-    <div class="search-box" style="display: flex; justify-content: center; align-items: center; flex-wrap: wrap;">
-        <select class="form-select" aria-label="Default select example">
-            <option value="search"></option>
-            <option value="engineRoom">نام موتورخانه</option>
-            <option value="organizatio">سازمان</option>
-            <option value="administration">نهاد</option>
-            <option value="city">شهر</option>
-            <option value="province">استان</option>
-        </select>
-        <input type="text" placeholder="جستجو کنید..." style="width: 100px; " class="x">
-
-
-    </div>
+    
     <header>ایجاد کاربر جدید</header>
     <form>
         <div class="field email-field">
             <div class="input-field">
-                <label>نام کاربری</label>
-                <input type="email" class="email" />
+                <!-- <label>نام کاربری</label> -->
+                <input type="email" class="email" placeholder="نام کاربری"/>
             </div>
             <span class="error email-error">
-                <i class="uil uil-info-circle"></i>
+                <i class="uil bi-info-circle"></i>
                 <p class="error-text">نام کاربری خود را وارد کنید</p>
             </span>
         </div>
         <div class="field create-password">
             <div class="input-field">
-                <label>رمزعبور</label>
-                <input type="password" class="password" />
-                <i class="uil uil-eye-slash show-hide"></i>
+                <!-- <label>رمزعبور</label> -->
+                <input type="password" class="password" placeholder="رمزعبور"/>
+                <i class="uil bi-eye-slash show-hide"></i>
             </div>
             <span class="error password-error">
-                <i class="uil uil-info-circle"></i>
+                <i class="uil bi-info-circle"></i>
                 <p class="error-text">
 
                     رمزعبور شما باید حداقل ۸ کاراکتر به همراه اعداد حروف کوچک و بزرگ و کاراکترهای خاص باشد
@@ -55,12 +110,12 @@
         </div>
         <div class="field confirm-password">
             <div class="input-field">
-                <label>تاییدیه رمزعبور</label>
-                <input type="password" class="cPassword" />
-                <i class="uil uil-eye-slash show-hide"></i>
+                <!-- <label>تاییدیه رمزعبور</label> -->
+                <input type="password" class="cPassword" placeholder="تاییدیه رمزعبور"/>
+                <i class="uil bi-eye-slash show-hide"></i>
             </div>
             <span class="error cPassword-error">
-                <i class="uil uil-info-circle"></i>
+                <i class="uil bi-info-circle"></i>
                 <p class="error-text">رمزعبور تطابق ندارد</p>
             </span>
         </div>
@@ -68,13 +123,13 @@
             <div class="input-field">
                 <label>نقش کاربر</label>
                 <select class="form-select" aria-label="Default select example" class="role">
-                    <option value=""></option>
+                    <option hidden></option>
                     <option value="user">کاربر</option>
                     <option value="admin">مدیر</option>
                 </select>
             </div>
             <span class="error password-error">
-                <i class="uil uil-info-circle" style="margin-top: 8px;"></i>
+                <i class="uil bi-info-circle" style="margin-top: 8px;"></i>
                 <p class="error-text">
                     رمزعبور شما باید حداقل ۸ کاراکتر به همراه اعداد حروف کوچک و بزرگ و کاراکترهای خاص باشد
                 </p>
@@ -86,7 +141,8 @@
     </form>
 
 </div>
-
+</section>
+<script src="{% static 'js/togglesidebar.js'%}"></script>
 <script>
 
     const form = document.querySelector("form"),
@@ -94,7 +150,7 @@
         emailInput = emailField.querySelector(".email"),
         passField = form.querySelector(".create-password"),
         passInput = passField.querySelector(".password"),
-        
+        role_field = 
         cPassField = form.querySelector(".confirm-password"),
         cPassInput = cPassField.querySelector(".cPassword");
     function checkEmail() {
@@ -109,10 +165,10 @@
         eyeIcon.addEventListener("click", () => {
             const pInput = eyeIcon.parentElement.querySelector("input"); //getting parent element of eye icon and selecting the password input
             if (pInput.type === "password") {
-                eyeIcon.classList.replace("uil-eye-slash", "uil-eye");
+                eyeIcon.classList.replace("bi-eye-slash", "bi-eye");
                 return (pInput.type = "text");
             }
-            eyeIcon.classList.replace("uil-eye", "uil-eye-slash");
+            eyeIcon.classList.replace("bi-eye", "bi-eye-slash");
             pInput.type = "password";
         });
     });

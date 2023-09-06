@@ -4,17 +4,20 @@
 {% include 'head.html' with title="Installers App" %}
 {% endblock %}
 
-<body class="{% block body_class %}{% endblock %}">
+<body class="hold-transition {% block body_class %}{% endblock %}">
 
+   
+   
     <script src="{% static 'jquery/jquery.min.js'  %}"></script>
     <script src="{% static 'js/popper.min.js'  %}"></script>
     <script src="{% static 'js/bootstrap.min.js'  %}"></script>
     <script src="{% static 'js/bootstrap.bundle.min.js'  %}"></script>
     <script src="{% static 'js/leaflet.js'  %}"></script>
+    <script src="{% static 'js/adminlte.js' %}"></script>
+    
 
 
-    {% include 'navbar.html'%}
-
+  
 
 
 
@@ -25,6 +28,7 @@
                 aria-hidden="true">&times;</span></span>
         <strong>{{message}}</strong>
     </div>
+   
     <script>
 
         $('#close').click(function (e) {
@@ -39,11 +43,11 @@
     <script>
         function createAlert(type, message) {
             // Create the alert HTML
-            var alertHtml = '<div class="alert alert-' + type + ' alert-dismissible fade show rtl-txt sticky-top" role="alert" id="close">' +
-                '<span type="button" class="close" data-dismiss="alert" aria-label="Close" id="close">' +
+            var alertHtml = '<div class="alert alert-' + type + ' alert-dismissible fade show rtl-txt sticky-top" role="alert" id="close" >' +
+                '<span type="button" class="close" data-dismiss="alert" aria-label="Close" id="close" dir="ltr">' +
                 '<span aria-hidden="true">&times;</span>' +
                 '</span>' +
-                '<strong>' + message + '</strong>'
+                '<strong style="color:black;">' + message + '</strong>'
             '</div>';
 
 
@@ -60,12 +64,12 @@
                 $(this).fadeOut()
             });
         }
+
     </script>
     {% block content %}
 
 
     {% endblock content %}
-
 
 </body>
 

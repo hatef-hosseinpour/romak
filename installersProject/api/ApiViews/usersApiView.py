@@ -86,7 +86,7 @@ class UsersListApiView(APIView):
         if current_user.is_superuser and current_user.is_staff:
             users = User.objects.all()
         elif current_user.is_staff:
-            users = User.objects.filter(profile__added_by=current_user)
+            users = User.objects.filter(profile__owner=current_user)
         else:
             users = User.objects.none()
         users_profile = Profile.objects.filter(user__in=users)

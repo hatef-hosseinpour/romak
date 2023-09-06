@@ -1,16 +1,22 @@
 from django.shortcuts import render, redirect
+from django.contrib.auth.decorators import login_required
+
+
 
 
 def homePageFrontView(request):
 
     return render(request, 'frontend/index.html')
 
+
 def dashboardFrontView(request):
+    
     return render(request, 'frontend/users/dashboard.html')
+
 
 def loginUserFrontView(request):
     if request.session.session_key:
-        return redirect('front-profile')
+        return redirect('dashboard')
 
     return render(request, 'frontend/users/login.html')
 
