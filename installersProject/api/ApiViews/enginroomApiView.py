@@ -7,7 +7,8 @@ from django.contrib.auth.models import User
 
 class EnginroomViewSet(viewsets.ModelViewSet):
     authentication_classes = [authentication.SessionAuthentication]
-    permission_classes = [permissions.IsAdminUser | permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAdminUser |
+                          permissions.IsAuthenticated]
     serializer_class = EnginroomSerializers
 
     def get_queryset(self):
@@ -18,4 +19,4 @@ class EnginroomViewSet(viewsets.ModelViewSet):
         elif user.is_staff and not user.is_superuser:
             return Enginroom.objects.filter(creator__profile__owner=user)
         else:
-            return Enginroom.objects.filter(creator = user)
+            return Enginroom.objects.filter(creator=user)

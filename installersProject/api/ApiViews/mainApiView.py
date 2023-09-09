@@ -14,6 +14,16 @@ class EnginroomPublicInfoViewSet(viewsets.ModelViewSet):
 
     lookup_field = 'enginroom'
 
+    def get_queryset(self):
+        user = self.request.user
+
+        if user.is_superuser and user.is_staff:
+            return EnginRoomPublicInfo.objects.all()
+        elif user.is_staff and not user.is_superuser:
+            return EnginRoomPublicInfo.objects.filter(user__profile__owner=user)
+        else:
+            return EnginRoomPublicInfo.objects.filter(user=user)
+
     def get_object(self):
         queryset = self.get_queryset()
         queryset = self.filter_queryset(queryset)
@@ -31,6 +41,16 @@ class LocationPublicInfoViewSet(viewsets.ModelViewSet):
     serializer_class = LocationPublicInfoSerializers
 
     lookup_field = 'enginroom'
+
+    def get_queryset(self):
+        user = self.request.user
+
+        if user.is_superuser and user.is_staff:
+            return locationPublicInfo.objects.all()
+        elif user.is_staff and not user.is_superuser:
+            return locationPublicInfo.objects.filter(user__profile__owner=user)
+        else:
+            return locationPublicInfo.objects.filter(user=user)
 
     def get_object(self):
         queryset = self.get_queryset()
@@ -50,6 +70,16 @@ class InstallationInfoViewSet(viewsets.ModelViewSet):
 
     lookup_field = 'enginroom'
 
+    def get_queryset(self):
+        user = self.request.user
+
+        if user.is_superuser and user.is_staff:
+            return InstallationInfo.objects.all()
+        elif user.is_staff and not user.is_superuser:
+            return InstallationInfo.objects.filter(user__profile__owner=user)
+        else:
+            return InstallationInfo.objects.filter(user=user)
+
     def get_object(self):
         queryset = self.get_queryset()
         queryset = self.filter_queryset(queryset)
@@ -67,6 +97,16 @@ class EnginroomImagesViewSet(viewsets.ModelViewSet):
     queryset = EnginRoomImage.objects.all()
     serializer_class = EnginroomImagesSerializers
 
+    def get_queryset(self):
+        user = self.request.user
+
+        if user.is_superuser and user.is_staff:
+            return EnginRoomImage.objects.all()
+        elif user.is_staff and not user.is_superuser:
+            return EnginRoomImage.objects.filter(user__profile__owner=user)
+        else:
+            return EnginRoomImage.objects.filter(user=user)
+
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -75,4 +115,3 @@ class EnginroomImagesViewSet(viewsets.ModelViewSet):
 
         return Response({'images_uploaded': len(enginroom_images)},
                         status=status.HTTP_201_CREATED)
-

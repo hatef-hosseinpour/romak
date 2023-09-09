@@ -104,7 +104,8 @@ class UsersListApiView(APIView):
                 'email': data['user']['email'],
                 'is_active': data['user']['is_active'],
                 'profile_image': data['profile_image'],
-                'phone_number': data['phone_number']
+                'phone_number': data['phone_number'],
+                'owner': data['owner']
             }
 
             userList.append(user_data)
