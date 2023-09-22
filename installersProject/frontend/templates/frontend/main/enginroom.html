@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+{% load static %}
+{% block headcontent %}
+{% include 'head.html' with title="Installers App| Enginroom List" %}
+{% endblock %}
+<!-- /header content -->
+
+<body class="nav-md">
+
+    <div class="container body">
+        <div class="main_container">
+            <div class="col-md-3 left_col hidden-print">
+                <div class="left_col scroll-view">
+                    {% include 'navbar.html'%}
+                </div>
+            </div>
+
+            <!-- top navigation -->
+            <div class="top_nav hidden-print">
+                <div class="nav_menu">
+                    <nav>
+                        <div class="nav toggle">
+                            <a id="menu_toggle"><i class="fa fa-bars"></i></a>
+                        </div>
+
+                        <ul class="nav navbar-nav navbar-right">
+                            <li class="">
+                                <a href="javascript:;" class="user-profile dropdown-toggle" data-toggle="dropdown"
+                                    aria-expanded="false">
+                                    {{request.session.username}} <span class=" fa fa-angle-down"></span>
+                                </a>
+                                <ul class="dropdown-menu dropdown-usermenu pull-right">
+                            </li>
+                            <li><a href="/profile/"><i class="fa fa-user pull-right"></i>
+                                    پروفایل</a></li>
+                            <li><a href="/change-password/"><i class="fa fa-lock pull-right"></i>
+                                    تغییر رمزعبور</a></li>
+                            <hr>
+                            <li><a id="logout" onclick="logout()"><i class="fa fa-sign-out pull-right"></i>
+                                    خروج</a></li>
+                        </ul>
+                        </li>
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+            <!-- /top navigation -->
+            <!-- /header content -->
+
+            <!-- page content -->
+            <div class="right_col" role="main">
+                <div class="">
+                    <div class="page-title">
+                        <div class="title_left">
+                            <h3>صفحه ساده</h3>
+                        </div>
+
+                        <div class="title_right">
+                            <div class="col-md-5 col-sm-5 col-xs-12 form-group pull-right top_search">
+                                <div class="input-group">
+                                    {% csrf_token %}
+                                    <input type="text" class="form-control" placeholder="جست و جو برای...">
+                                    <span class="input-group-btn">
+                                        <button class="btn btn-default" type="button"><i
+                                                class="fa fa-search"></i></button>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="clearfix"></div>
+
+                    <div class="col-md-12 col-sm-12 col-xs-12">
+                        <div class="x_panel">
+                            <div class="x_title">
+                                <div class="row x_title">
+
+                                    <h1> ایجاد موتورخانه </h1>
+                                    <form action="" method="POST" id="enginroom-form">
+                                        {% csrf_token %}
+                                        <p>نام موتورخانه</p>
+                                        <input type="text" id="enginroom-name" name="enginroom-name"
+                                            class="form-control" placeholder="نام موتورخانه را وارد کنید">
+                                        <p>نام سازمان</p>
+                                        <input type="text" id="organization" name="organization" class="form-control"
+                                            placeholder="نام سازمان را وارد کنید">
+                                        <p>نام نهاد</p>
+                                        <input type="text" id="administration" name="administration"
+                                            class="form-control" placeholder="نام‌ نهاد را وارد کنید">
+                                        <input type="hidden" name="creator" id="creator"
+                                            value="{{request.session.user_id}}">
+                                        <input type="submit" value="ثبت" name="" id="enginroom-submit">
+                                    </form>
+                                </div>
+
+
+
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            <!-- /page content -->
+
+            <!-- /page content -->
+
+            <!-- footer content -->
+            <footer class="hidden-print">
+                <div class="pull-left">
+
+                </div>
+                <div class="clearfix"></div>
+            </footer>
+            <!-- /footer content -->
+        </div>
+    </div>
+    <div id="lock_screen">
+        <table>
+            <tr>
+                <td>
+                    <div class="clock"></div>
+                    <span class="unlock">
+                        <span class="fa-stack fa-5x">
+                            <i class="fa fa-square-o fa-stack-2x fa-inverse"></i>
+                            <i id="icon_lock" class="fa fa-lock fa-stack-1x fa-inverse"></i>
+                        </span>
+                    </span>
+                </td>
+            </tr>
+        </table>
+    </div>
+    {% include 'scripts.html' %}
+
+    
+    <script>
+        let page = "{{ page }}";
+        let organ_id = "{{ organ_id }}";
+        let enginroomData;
+        let enginroomName;
+        let organization;
+        let administration;
+        let creator;
+
+        let info;
+
+
+        console.log('page', page);
+        console.log('organ id', organ_id);
+
+
+        if (page === "updateOrgan") {
+            console.log(page);
+            $(document).ready(function () {
+                $.ajax({
+                    type: "GET",
+                    url: `/api/enginroom/${organ_id}/`,
+                    success: function (response) {
+
+                        $('#enginroom-name').val(response.enginroom_name);
+                        $('#organization').val(response.organization);
+                        $('#administration').val(response.administration);
+
+                    }
+                });
+                $('#enginroom-submit').on('click', function (e) {
+                    e.preventDefault()
+                    enginroomName = $('#enginroom-name').val();
+                    organization = $('#organization').val();
+                    administration = $('#administration').val();
+                    creator = $('#creator').val();
+                    enginroomData = {
+                        'enginroom_name': enginroomName,
+                        'organization': organization,
+                        'administration': administration,
+                        'creator': creator
+
+                    }
+                    $.ajax({
+                        type: "PUT",
+                        url: `/api/enginroom/${organ_id}/`,
+                        data: JSON.stringify(enginroomData),
+                        contentType: "application/json",
+                        headers: {
+                            'X-CSRFToken': $('[name=csrfmiddlewaretoken]').val()
+                        },
+                        success: function (response) {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'تایید',
+                                text: 'موتورخانه با موفقیت بروز رسانی شد.',
+                            });
+
+                            window.location.href = '/enginroom-list/'
+
+                        },
+                        error: function (error) {
+                            console.error('ERROR FROM update DATA:', error.responseJSON);
+
+
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'خطا',
+                                text: 'خطایی رخ داده است. لطفاً مجدداً تلاش کنید.',
+                            });
+
+                        }
+                    });
+                })
+
+            });
+        }
+        else {
+            $(document).ready(function () {
+                $('#enginroom-submit').on('click', function (e) {
+                    e.preventDefault()
+                    enginroomName = $('#enginroom-name').val();
+                    organization = $('#organization').val();
+                    administration = $('#administration').val();
+                    creator = $('#creator').val();
+                    enginroomData = {
+                        'enginroom_name': enginroomName,
+                        'organization': organization,
+                        'administration': administration,
+                        'creator': creator
+
+                    }
+
+                    $.ajax({
+                        type: "POST",
+                        url: "/api/enginroom/",
+                        data: JSON.stringify(enginroomData),
+                        contentType: "application/json",
+                        headers: {
+                            'X-CSRFToken': $('[name=csrfmiddlewaretoken]').val()
+                        },
+                        success: function (response) {
+                            if (response.detail === 'already exists') {
+                                Swal.fire({
+                                icon: 'error',
+                                title: 'خطا',
+                                text: 'موتورخانه قبلا ثبت شده است.',
+                            });
+                            }
+                            else {
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'تایید',
+                                    text: 'موتورخانه با موفقیت ثبت شد.',
+                                });
+
+                                window.location.href = '/enginroom-list/';
+                            }
+                        },
+                        error: function (error) {
+                            console.error('ERROR FROM CREATE DATA:', error.responseJSON);
+                            // Handle the case where enginroom_name already exists
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'خطا',
+                                text: 'موتورخانه قبلا ثبت شده است.',
+                                
+                            });
+
+
+
+                        }
+                    });
+
+
+
+                })
+
+            });
+
+        }
+    </script>
+</body>
+
+</html>

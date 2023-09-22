@@ -8,15 +8,5 @@ $(document).ready(function () {
             selectElement.append(option)
         })
     }
-    $.ajax({
-        type: "GET",
-        url: "/api/enginroom/",
-        success: function (response) {
-            listOfEnginroom(response)
-        },
-        error: function (error) {
-            console.error('Error fetcing Enginroom details:', error.reponseJSON);
-
-        }
-    });
+    
 });

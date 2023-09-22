@@ -4,6 +4,7 @@
 # @file this serializer convert objects into datatype understandable by frontend, information of Users and Enginroom converted into format understandable for frontend
 
 from rest_framework import serializers
+from rest_framework.exceptions import ValidationError
 from users.models import Profile
 from main.models import Enginroom, locationPublicInfo, EnginRoomPublicInfo, InstallationInfo, EnginRoomImage
 from django.contrib.auth.models import User
@@ -64,6 +65,15 @@ class ProfileSerializers(serializers.ModelSerializer):
 # @brief A class for serialize Enginroom objects
 class EnginroomSerializers(serializers.ModelSerializer):
 
+    # def validate_enginroom_name(self, value):
+    #     # Check if there is an Enginroom with the same name in the database
+    #     existing_enginroom = Enginroom.objects.filter(enginroom_name=value).exists()
+
+    #     if existing_enginroom:
+    #         raise ValidationError(f'An Enginroom with the name "{value}" already exists.')
+
+    #     return value
+
     # @param creator_username this readonly field just for representing username of User that create
     creator_username = serializers.CharField(
         source='creator.username', read_only=True)
@@ -97,7 +107,14 @@ class LocationPublicInfoSerializers(serializers.ModelSerializer):
         model = locationPublicInfo
         # @param fields What fields of the LocationPublicInfo model do we want to serialize
         fields = ['id', 'user', 'installer_username', 'enginroom', 'enginroom_name', 'address', 'phone_number1', 'phone_number2',
-                  'building_metrage', 'meter_subscription_number', 'building_image', 'location', 'status']
+                  'building_metrage', 'meter_subscription_number', 'building_image', 'location', 'status', 'province', 'city']
+    def update(self, instance, validated_data):
+        # Delete old profile image if new image is provided
+        if 'building_image' in validated_data and instance.building_image and 'no-image.jpg' not in instance.building_image.path:
+            if os.path.exists(instance.building_image.path):
+                os.remove(instance.building_image.path)
+
+        return super().update(instance, validated_data)
 
 
 # @brief A class for serialize Location Public Info objects

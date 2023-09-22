@@ -16,7 +16,7 @@ def dashboardFrontView(request):
 
 def loginUserFrontView(request):
     if request.session.session_key:
-        return redirect('dashboard')
+        return redirect('/dashboard/')
 
     return render(request, 'frontend/users/login.html')
 

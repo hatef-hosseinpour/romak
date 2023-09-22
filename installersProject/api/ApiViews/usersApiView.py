@@ -94,6 +94,7 @@ class UsersListApiView(APIView):
 
         userList = []
         for data in serializer.data:
+           
             user_data = {
                 'id': data['user']['id'],
                 'is_staff': data['user']['is_staff'],

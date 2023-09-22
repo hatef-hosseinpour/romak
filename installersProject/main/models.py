@@ -38,6 +38,9 @@ class locationPublicInfo(models.Model):
         Enginroom, on_delete=models.CASCADE, editable=True, null=True, default=None)
     # @param address the address of this enginroom
     address = models.TextField(null=True, blank=True)
+
+    province = models.CharField(max_length=200, null=True, blank=True)
+    city = models.CharField(max_length=200, null=True, blank=True)
     # @param phone number 1 the phone number of Contact phone number 1
     phone_number1 = models.CharField(max_length=20, null=True, blank=True)
     # @param phone number 1 the phone number of Contact phone number 2
@@ -143,7 +146,7 @@ class InstallationInfo(models.Model):
         verbose_name='installed_at', null=True, blank=True)
     # @param  device_serial_number_image the user should take a picture from serial of device number
     device_serial_number_image = models.ImageField(
-        null=True, blank=True, upload_to='device_serial_number/', default='no-image.jpg')
+        null=True, blank=True, upload_to='device_serial_number_images/', default='no-image.jpg')
     # @param status this field defaul to false after user fill information of installation admin can accept it and after accept of admin this field change to true
     status = models.BooleanField(default=False, null=True)
 

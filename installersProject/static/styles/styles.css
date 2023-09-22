@@ -14,15 +14,6 @@
   font-family: vazir;
 }
 
-body.login-page{
-  box-sizing: border-box;
-  background-color: #e9eced;
-  align-items: center;
-  display: flex;
-  flex-direction: column;
-  height: 100vh;
-  justify-content: center;
-}
 
 
 
@@ -34,9 +25,10 @@ body.login-page{
   padding: 10px;
   letter-spacing: 10px;
   font-size: 20px;
-  color: #ccdbdc;
+  font-weight:bold ;
+  color: #fff;
   text-shadow: -1px -1px 0 black, 1px -1px 0 black, -1px 1px 0 black, 1px 1px 0 black;
-  transform: skew(-25deg);
+  transform: skew(-40deg);
 }
 
 
@@ -46,14 +38,10 @@ body.login-page{
   /* Vertically align content in the center */
 }
 
-/* Optional: Add some spacing between the checkbox and the text */
-input[type="checkbox"] {
-  margin-right: 8px;
-  margin-top: 15px;
-}
 #captcha-container {
   height: 50px;
   background: whitesmoke;
+  background-image: url('../images/noisy-captcha.jpg');
   border-radius: 5px;
 
   margin-bottom: 15px;
@@ -84,4 +72,8 @@ input[type="checkbox"] {
   padding: 10px;
   margin-bottom: 10px;
   border-radius: 10px;
+}
+
+tr:not(.heading):hover {
+  cursor: pointer;
 }

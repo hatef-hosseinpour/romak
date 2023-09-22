@@ -6,20 +6,10 @@ $(document).ready(function () {
         attribution: 'Map data © <a href="https://openstreetmap.org">OpenStreetMap</a> contributors'
     }).addTo(map);
 
-    var locationField = $('#location-input');
-    if (locationField && locationField.val()) {
-        var loc = locationField.val().split(',');
-        var lat = parseFloat(loc[0]);
-        var lng = parseFloat(loc[1]);
-        map.setView([lat, lng], 13);
-        var marker = L.marker([lat, lng]).addTo(map);
-        locationField.val(lat + ',' + lng);
-    }
-
     var marker;
     map.on('click', function (e) {
         $('#location-input').val(e.latlng.lat + ',' + e.latlng.lng);
-        $("#map").removeClass("invalid");
+       
         console.log($('#location-input').val());
         $.ajax({
             url: '//', // Add your URL here for the fetch

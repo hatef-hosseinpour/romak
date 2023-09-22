@@ -1,636 +1,1069 @@
-{% extends 'main.html'%}
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
 {% load static %}
 {% block headcontent %}
-{% include 'head.html' with title="Installers App| Enginroom installation info" %}
+{% include 'head.html' with title="Installers App| Dashboard" %}
 {% endblock %}
-{% block content %}
-
+<!-- /header content -->
 <style>
-    html * {
-        box-sizing: border-box;
-    }
-
-    p {
-        margin: 0;
-    }
-
-    .upload-box {
-        padding: 40px;
-    }
-
-
-
-    .upload-btn {
-        display: inline-block;
-        font-weight: 600;
-        color: #fff;
-        text-align: center;
-        min-width: 116px;
-        padding: 5px;
-        transition: all 0.3s ease;
-        cursor: pointer;
-        border: 2px solid;
-        background-color: #4045ba;
-        border-color: #4045ba;
+    /* Style the input fields */
+    input[type=file]::file-selector-button {
+        margin-right: 10px;
+        background: #34495E;
+        padding: 10px 20px;
         border-radius: 10px;
-        line-height: 26px;
-        font-size: 14px;
-    }
-
-    .upload-btn:hover {
-        background-color: unset;
-        color: #4045ba;
-    }
-
-    .upload-btn-box {
-        margin-bottom: 10px;
-    }
-
-    .upload-img-wrap {
-        display: flex;
-        flex-wrap: wrap;
-        margin: 0 -10px;
-    }
-
-    .upload-img-box {
-        width: 200px;
-        padding: 0 10px;
-        margin-bottom: 12px;
-
-    }
-
-    .upload-img-close {
-        width: 24px;
-        height: 24px;
-        border-radius: 50%;
-        background-color: rgba(0, 0, 0, 0.5);
-        position: absolute;
-        top: 10px;
-        right: 10px;
-        text-align: center;
-        line-height: 24px;
-        z-index: 1;
+        color: #fff;
         cursor: pointer;
+        transition: background .2s ease-in-out;
     }
 
-    .upload-img-close:after {
-        content: '\2716';
-        font-size: 14px;
-        color: white;
+    input[type=file]::file-selector-button:hover {
+        background: #34495E;
     }
 
-    .img-bg {
-        background-repeat: no-repeat;
-        background-position: center;
-        background-size: cover;
-        position: relative;
-        padding-bottom: 100%;
-        margin-bottom: 10px;
+    input {
+        padding: 10px;
+        width: 100%;
+        font-size: 17px;
+        border: 1px solid #aaaaaa;
     }
 
-    .modal {
-        position: fixed;
-        top: 0;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        margin: auto;
-        background: #FFF;
-        box-shadow: 0 0 8px rgba(0, 0, 0, .3);
-        transition: margin-top 0.3s ease, height 0.3s ease;
-        transform: translateZ(0);
-        box-sizing: border-box;
-        z-index: 999;
-        border-radius: 3px;
-        max-width: 600px;
-        display: block;
-        height: 400px;
-        overflow: scroll;
+    /* Mark input boxes that gets an error on validation: */
+    input.invalid {
+        background-color: #ffdddd;
+    }
+
+    /* Hide all steps by default: */
+    .tab {
+        display: none;
+    }
+
+    /* Make circles that indicate the steps of the form: */
+    .step {
+        height: 20px;
+        width: 20px;
+        margin: 0 2px;
+        background-color: #04AA6D;
+        border: none;
+        border-radius: 50%;
+        display: inline-block;
+        opacity: 0.2;
+    }
+
+    /* Mark the active step: */
+    .step.active {
+        opacity: 1;
+        background-color: #04AA6D;
+    }
+
+    /* Mark the steps that are finished and valid: */
+    .step.finish {
+        background-color: #04AA6D;
     }
 </style>
 
-
-
-
-
-<form id="installationForm" action="" class="rtl-txt form-control" method="POST">
-    {%csrf_token%}
-    <h1>اطلاعات نصب</h1>
-
-    <!-- Begin Location Public info -->
-    <div class="tab rtl-txt ">
-        <h3 class="text-center">اطلاعات عمومی محل نصب</h3>
-        <p>نام موتورخانه</p>
-        <select class="form-select" id="select-enginroom" aria-label="---" name="select-enginroom">
-            <option>---</option>
-        </select>
-        <br>
-        <p>آدرس</p>
-        <textarea class="form-control" id="address" name="address" rows="5"></textarea>
-        <p style="margin-top: 5%;">تلفن رابط۱</p>
-        <input type="text" class="form-control" id="phone-number1" name="phone-number1">
-        <p>تلفن رابط۲</p>
-        <input type="text" class="form-control" id="phone-number2" name="phone-number2">
-        <p>متراژ بنا</p>
-        <input type="number" class="form-control" id="building-metrage" name="building-metrage">
-        <p>شماره اشتراک کنتور</p>
-        <input type="text" class="form-control" id="meter-subscribtion" name="meter-subscribtion">
-        <p>عکس ساختمان</p>
-        <input type="file" accept="image/jpeg,image/png" class="form-control" id="building-image" name="building-image">
-        <input type="hidden" class="form-control" id="user" name="user" value="{{ request.session.user_id }}">
-        <input type="hidden" class="form-control" id="location-input" name="location-input">
-        <p>موقعیت محل نصب</p>
-
-
-        <div id="map"
-            style="width: 100%; height: 300px; padding: 10px; margin-top: 10px; border-radius: 10px; margin-bottom:10px;"
-            onmousedown="mapInteracted = true;">
-
-        </div>
-        <!-- <a id="locate-button" class="btn btn-info leaflet-bar leaflet-control">
-            <span class="fa fa-map-marker">لوکیشن محل</span>
-        </a> -->
-    </div>
-    <!-- End Location Public info -->
-
-    <!-- Begin Enginroom Public info -->
-    <div class="tab">
-        <h3 class="text-center">اطلاعات عمومی موتورخانه</h3>
-        <p>نوع کاربری</p>
-        <select class="form-select" id="select-usage" aria-label="">
-            <option>---</option>
-            <option value="heating">گرمایشی</option>
-            <option value="sanitary">آبگرم بهداشتی</option>
-            <option value="both">هردو (گرمایشی و آبگرم بهداشتی)</option>
-        </select>
-
-        <br>
-        <div class="checkbox-container">
-            <p class="col-md-7">آیا مبدل آب استخر/ جکوزی / گرمایش از کف دارد؟</p><br>
-            <input type="checkbox" id="has-exchanger" class="" name="has-exchanger">
-        </div>
-        <div id="exchanger" class="rtl-txt" style="display: none;">
-            <p>تعداد مبدل آب استخر</p>
-            <input type="number" min="0" class="form-control" id="pool" name="pool">
-            <p>تعداد مبدل جکوزی</p>
-            <input type="number" min="0" class="form-control" id="jaccuzi" name="jaccuzi">
-            <p>تعداد مبدل گرمایش از کف</p>
-            <input type="number" min="0" class="form-control" id="floor-heating" name="floor-heating">
-        </div>
-        <p>تعداد دیگ‌ها</p>
-        <input type="number" min="0" class="form-control" id="boilers" name="boilers">
-        <p>تعداد پمپ‌های سیرکوله</p>
-        <input type="number" min="0" class="form-control" id="circulate-pump" name="circulate-pump">
-        <p>تعداد منبع کوئلی</p>
-        <input type="number" min="0" class="form-control" id="coil-source" name="coil-source">
-        <p>تعداد پمپ‌های منبع کوئلی</p>
-        <input type="number" min="0" class="form-control" id="coil-source-pump" name="coil-source-pump">
-        <p>تعداد پمپ‌های آبگرم مصرفی</p>
-        <input type="number" min="0" class="form-control" id="hotwater-pump" name="hotwater-pump">
-
-    </div>
-    <!-- End Enginroom Public info -->
-
-    <!-- Begin Installation info -->
-    <div class="tab">
-        <p>مدل دستگاه نصب‌شده</p>
-        <select class="form-select" id="select-installed-model" aria-label="Default select example">
-            <option>---</option>
-            <option value="8relays">۸ رله‌ای</option>
-            <option value="12relays">۱۲ رله‌ای</option>
-            <option value="16relays">۱۶ رله‌ای</option>
-        </select>
-        <p>نوع ارتباط</p>
-        <select class="form-select" id="connection-type" aria-label="Default select example">
-            <option>---</option>
-            <option value="internet">اینترنت</option>
-            <option value="intranet">اینترانت</option>
-            <option value="ethernet">اترنت</option>
-        </select>
-        <p>مدل مودم</p>
-        <input type="text" class="form-control" id="modem-model" name="modem-model">
-        <div class="checkbox-container ">
-            <p class="col-md-7">آیا سیم‌کارت دارد؟</p><br>
-            <input type="checkbox" id="has-simcard" class="" name="has-simcard">
-        </div>
-        <div id="simcard" class="rtl-txt" style="display: none;">
-            <p>شماره سیم‌کارت مودم</p>
-            <input type="text" class="form-control" id="modem-simcard" name="modem-simcard">
-        </div>
-        <p>تاریخ نصب</p>
-        <input data-jdp type="text" class="form-control" id="installation-date" name="installation-date" />
-        <p>عکس شماره سریال دستگاه</p>
-        <input type="file" accept="image/jpeg,image/png" class="form-control" id="device-serial-image"
-            name="device-serial-image" />
-    </div>
-    <!-- End Installation info -->
-
-    <!--Begin Images of enginroom-->
-    <div class="tab">
-        <!--<div class="upload-box">
-            <div class="upload-box-btn">
-                <label class="upload--btn">
-                    <p>بارگزاری عکس‌ها</p>
-                    <input type="file" multiple="" data-max-length="20" accept="image/jpeg,image/png"
-                        class="upload-inputfile" name="enginroom-images">
-                </label>
+<body class="nav-md">
+    <div class="container body">
+        <div class="main_container">
+            <div class="col-md-3 left_col hidden-print">
+                <div class="left_col scroll-view">
+                    {% include 'navbar.html'%}
+                </div>
             </div>
-            <div class="upload--img-wrap"></div>
-        </div>-->
-        <p>بارگزاری عکس‌ها</p>
-        <input type="file" accept="image/jpeg,image/png" multiple class="form-control" name="enginroom-images"
-            id="enginroom-images">
-        <div id="base64-container"></div>
-    </div>
 
-    <!--End Images of enginroom-->
-    </div>
+            <!-- top navigation -->
+            <div class="top_nav hidden-print">
+                <div class="nav_menu">
+                    <nav>
+                        <div class="nav toggle">
+                            <a id="menu_toggle"><i class="fa fa-bars"></i></a>
+                        </div>
 
-    <div style="overflow:auto;">
-        <div style="float:right;">
-            <button type="button" id="prevBtn" onclick="nextPrev(-1)">قبلی</button>
-            <button type="button" id="nextBtn" onclick="nextPrev(1)">بعدی</button>
+                        <ul class="nav navbar-nav navbar-right">
+                            <li class="">
+                                <a href="javascript:;" class="user-profile dropdown-toggle" data-toggle="dropdown"
+                                    aria-expanded="false">
+                                    {{request.session.username}} <span class=" fa fa-angle-down"></span>
+                                </a>
+                                <ul class="dropdown-menu dropdown-usermenu pull-right">
+                            </li>
+                            <li><a href="/profile/"><i class="fa fa-user pull-right"></i>
+                                    پروفایل</a></li>
+                            <li><a href="/change-password/"><i class="fa fa-lock pull-right"></i>
+                                    تغییر رمزعبور</a></li>
+                            <hr>
+                            <li><a id="logout" onclick="logout()"><i class="fa fa-sign-out pull-right"></i>
+                                    خروج</a></li>
+                        </ul>
+                        </li>
+
+
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+            <!-- /top navigation -->
+            <!-- /header content -->
+
+            <!-- page content -->
+            <div class="right_col" role="main">
+                <div class="">
+                    <div class="page-title">
+                        <div class="title_left">
+                            <h3>صفحه ساده</h3>
+                        </div>
+
+                        <div class="title_right">
+                            <div class="col-md-5 col-sm-5 col-xs-12 form-group pull-right top_search">
+                                <div class="input-group">
+                                    <input type="text" class="form-control" placeholder="جست و جو برای...">
+                                    <span class="input-group-btn">
+                                        <button class="btn btn-default" type="button"><i
+                                                class="fa fa-search"></i></button>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="clearfix"></div>
+
+                    <div class="row">
+                        <div class="col-md-12 col-sm-12 col-xs-12">
+                            <div class="x_panel">
+                                <div class="x_title">
+                                    <h2>صفحه ساده</h2>
+                                    <ul class="nav navbar-right panel_toolbox">
+                                        <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
+                                        </li>
+                                        <li class="dropdown">
+                                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button"
+                                                aria-expanded="false"><i class="fa fa-wrench"></i></a>
+                                            <ul class="dropdown-menu" role="menu">
+                                                <li><a href="#">تنظیمات 1</a>
+                                                </li>
+                                                <li><a href="#">تنظیمات 2</a>
+                                                </li>
+                                            </ul>
+                                        </li>
+                                        <li><a class="close-link"><i class="fa fa-close"></i></a>
+                                        </li>
+                                    </ul>
+                                    <div class="clearfix"></div>
+                                </div>
+                                <div class="x_content">
+                                    <div id="installationForm" class="rtl-txt">
+                                        {% csrf_token %}
+                                        <!-- Begin Location Public info -->
+                                        <div class="tab rtl-txt ">
+                                            <h3 class="text-center">اطلاعات عمومی محل نصب</h3>
+                                            <p>نام موتورخانه</p>
+                                            <strong id="enginroom"> </strong>
+                                            <br>
+                                            <p>آدرس</p>
+                                            <textarea class="form-control" id="address" name="address"
+                                                rows="5"></textarea>
+                                            <p>استان</p>
+                                            <select class="form-select" style="width: 100%;" id="select-province"
+                                                aria-label="انتخاب کنید" name="select-province">
+                                                <option>انتخاب کنید</option>
+                                            </select>
+                                            <p>شهر</p>
+                                            <select class="form-select" style="width: 100%;" id="select-city"
+                                                aria-label="انتخاب کنید" name="select-city">
+                                                <option>انتخاب کنید</option>
+                                            </select>
+                                            <p>تلفن رابط۱</p>
+                                            <input type="text" class="form-control" id="phone-number1"
+                                                name="phone-number1">
+                                            <p>تلفن رابط۲</p>
+                                            <input type="text" class="form-control" id="phone-number2"
+                                                name="phone-number2">
+                                            <p>متراژ بنا</p>
+                                            <input type="number" class="form-control" id="building-metrage"
+                                                name="building-metrage">
+                                            <p>شماره اشتراک کنتور</p>
+                                            <input type="text" class="form-control" id="meter-subscribtion"
+                                                name="meter-subscribtion">
+                                            <p>عکس ساختمان</p>
+                                            <img style="max-width: 120px; max-height: 120px;" class="thumbnail"
+                                                with="30px" heigh="30px" id="building-image-preview">
+
+                                            <input type="file" accept="image/jpeg,image/png" id="building-image"
+                                                name="building-image">
+                                            <input type="hidden" class="form-control" id="user" name="user"
+                                                value="{{ request.session.user_id }}">
+                                            <input type="hidden" class="form-control" id="location-input"
+                                                name="location-input">
+                                            <p>موقعیت محل نصب</p>
+                                            <div id="map" class="jumbotron" style="height: 300px;"
+                                                onmousedown="mapInteracted = true;">
+
+                                            </div>
+
+                                        </div>
+
+                                        <!-- End Location Public info -->
+
+                                        <!-- Begin Enginroom Public info -->
+                                        <div class="tab">
+                                            <h3 class="text-center">اطلاعات عمومی موتورخانه</h3>
+                                            <p>نوع کاربری</p>
+                                            <select class="form-select" style="width: 100%;" id="select-usage"
+                                                aria-label="">
+                                                <option>انتخاب کنید</option>
+                                                <option value="heating">گرمایشی</option>
+                                                <option value="sanitary">آبگرم بهداشتی</option>
+                                                <option value="both">هردو (گرمایشی و آبگرم بهداشتی)</option>
+                                            </select>
+
+                                            <br>
+                                            <div class="checkbox-container">
+                                                <p class="col-md-7">آیا مبدل آب استخر/ جکوزی / گرمایش از کف دارد؟</p>
+                                                <br>
+                                                <input type="checkbox" id="has-exchanger" class="" name="has-exchanger">
+                                            </div>
+                                            <div id="exchanger" class="rtl-txt" style="display: none;">
+                                                <p>تعداد مبدل آب استخر</p>
+                                                <input type="number" min="0" class="form-control" id="pool" name="pool">
+                                                <p>تعداد مبدل جکوزی</p>
+                                                <input type="number" min="0" class="form-control" id="jaccuzi"
+                                                    name="jaccuzi">
+                                                <p>تعداد مبدل گرمایش از کف</p>
+                                                <input type="number" min="0" class="form-control" id="floor-heating"
+                                                    name="floor-heating">
+                                            </div>
+                                            <p>تعداد دیگ‌ها</p>
+                                            <input type="number" min="0" class="form-control" id="boilers"
+                                                name="boilers">
+                                            <p>تعداد پمپ‌های سیرکوله</p>
+                                            <input type="number" min="0" class="form-control" id="circulate-pump"
+                                                name="circulate-pump">
+                                            <p>تعداد منبع کوئلی</p>
+                                            <input type="number" min="0" class="form-control" id="coil-source"
+                                                name="coil-source">
+                                            <p>تعداد پمپ‌های منبع کوئلی</p>
+                                            <input type="number" min="0" class="form-control" id="coil-source-pump"
+                                                name="coil-source-pump">
+                                            <p>تعداد پمپ‌های آبگرم مصرفی</p>
+                                            <input type="number" min="0" class="form-control" id="hotwater-pump"
+                                                name="hotwater-pump">
+
+                                        </div>
+                                        <!-- End Enginroom Public info -->
+
+                                        <!-- Begin Installation info -->
+                                        <div class="tab">
+                                            <h3 class="text-center">اطلاعات نصب</h3>
+                                            <p>مدل دستگاه نصب‌شده</p>
+                                            <select class="form-select" style="width: 100%;" id="select-installed-model"
+                                                aria-label="انتخاب کنید">
+                                                <option>انتخاب کنید</option>
+                                                <option value="8relays">۸ رله‌ای</option>
+                                                <option value="12relays">۱۲ رله‌ای</option>
+                                                <option value="16relays">۱۶ رله‌ای</option>
+                                            </select>
+                                            <p>نوع ارتباط</p>
+                                            <select class="form-select" style="width: 100%;" id="connection-type"
+                                                aria-label="انتخاب کنید">
+                                                <option>انتخاب کنید</option>
+                                                <option value="internet">اینترنت</option>
+                                                <option value="intranet">اینترانت</option>
+                                                <option value="ethernet">اترنت</option>
+                                            </select>
+                                            <p>مدل مودم</p>
+                                            <input type="text" class="form-control" id="modem-model" name="modem-model">
+                                            <div class="checkbox-container ">
+                                                <p class="col-md-7">آیا سیم‌کارت دارد؟</p><br>
+                                                <input type="checkbox" id="has-simcard" class="" name="has-simcard">
+                                            </div>
+                                            <div id="simcard" class="rtl-txt" style="display: none;">
+                                                <p>شماره سیم‌کارت مودم</p>
+                                                <input type="text" class="form-control" id="modem-simcard"
+                                                    name="modem-simcard">
+                                            </div>
+                                            <p>تاریخ نصب</p>
+                                            <input data-jdp type="text" class="form-control" id="installation-date"
+                                                name="installation-date" />
+                                            <p>عکس شماره سریال دستگاه</p>
+                                            <img style="max-width: 120px; max-height: 120px;" class="thumbnail"
+                                                with="30px" heigh="30px" id="device-serial-image-preview">
+                                            <input type="file" accept="image/jpeg,image/png" id="device-serial-image"
+                                                name="device-serial-image" />
+                                        </div>
+                                        <!-- End Installation info -->
+
+                                        <!--Begin Images of enginroom-->
+                                        <div class="tab">
+                                            <h3 class="text-center">تصاویر موتورخانه</h3>
+                                            <div class="container">
+                                                <div id="image-container"></div>
+                                            </div>
+                                            <p>بارگزاری عکس‌ها</p>
+                                            <input type="file" accept="image/jpeg,image/png" multiple
+                                                name="enginroom-images" id="enginroom-images">
+                                            <div id="base64-container"></div>
+                                        </div>
+
+                                        <!--End Images of enginroom-->
+                                    </div>
+                                    <div class="clearfix"></div>
+                                    <div>
+                                        <div id="btn-container">
+
+                                            <button type="button" id="prevBtn" class="btn btn-sm btn-secondary"
+                                                onclick="nextPrev(-1)">قبلی</button>
+                                            <button type="button" id="nextBtn" class="btn btn-sm btn-secondary"
+                                                onclick="nextPrev(1)">بعدی</button>
+                                            <button type="button" class="btn btn-sm btn-default" onclick="saveStep()"
+                                                id="sub">ثبت این مرحله</button>
+
+                                        </div>
+                                    </div>
+
+                                    <!-- Circles which indicates the steps of the form: -->
+                                    <div style="text-align:center;margin-top:40px;">
+                                        <span class="step"></span>
+                                        <span class="step"></span>
+                                        <span class="step"></span>
+                                        <span class="step"></span>
+                                    </div>
+                                </div>
+                                <div class="clearfix"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
+        <!-- /page content -->
+
+        <!-- /page content -->
+
+        <!-- footer content -->
+        <footer class="hidden-print">
+            <div class="pull-left">
+
+            </div>
+            <div class="clearfix"></div>
+        </footer>
+        <!-- /footer content -->
     </div>
-
-    <!-- Circles which indicates the steps of the form: -->
-    <div style="text-align:center;margin-top:40px;">
-        <span class="step"></span>
-        <span class="step"></span>
-        <span class="step"></span>
-        <span class="step"></span>
     </div>
-
-</form>
-
-
-
-
-
-<script src="{% static 'js/map.js' %}"></script>
-<script src="{% static 'js/getenginroom.js' %}"></script>
-<!-- <script src="{% static 'js/multipleimages.js' %}"></script> -->
-<script src="{% static 'js/jalalidatepicker.min.js' %}"></script>
-<!-- <script src="{% static 'js/calendar.js' %}"> </script>
-<script src="{% static 'js/jquery.Bootstrap-PersianDateTimePicker.min.js' %}"> </script> -->
-<script>
-
-
-
-    function toggleExchanger() {
-        if ($('#has-exchanger').prop('checked')) {
-            $('#exchanger').fadeIn();
-
-        } else {
-            $('#exchanger').fadeOut();
-
-        }
-    }
-    function toggleModem() {
-        if ($('#has-simcard').prop('checked')) {
-            $('#simcard').fadeIn();
-
-        } else {
-            $('#simcard').fadeOut();
-
-        }
-    }
-
-
-    $(document).ready(function () {
-
-        toggleModem();
-        $('#has-simcard').on('click', toggleModem);
-
-        toggleExchanger();
-        $('#has-exchanger').on('click', toggleExchanger);
-
-
-        jalaliDatepicker.startWatch({ time: true });
-
-
-    });
-
-
-    let checkExchanger;
-    let checkSimcard;
-    var mapInteracted = false;
-
-    let locationInfoData;
-    let enginroomInfoData;
-    let installationinfoData;
-    let enginroomImagesData = new FormData();
-
-
-    let isSuccessLocationInfo = false;
-    let isSuccessEnginroomInfo = false;
-    let isSuccessInstallationinfo = false;
-    let isSuccessEnginroomImages = false;
-
-
-    var currentTab = 0; // Current tab is set to be the first tab (0)
-    showTab(currentTab); // Display the current tab
-
-    function showTab(n) {
-        // This function will display the specified tab of the form ...
-        var x = $(".tab");
-        x.eq(n).show();
-        // ... and fix the Previous/Next buttons:
-        if (n == 0) {
-            $("#prevBtn").hide();
-        } else {
-            $("#prevBtn").show();
-        }
-        if (n == (x.length - 1)) {
-            $("#nextBtn").html("تایید");
-        } else {
-            $("#nextBtn").html("بعدی");
-        }
-        // ... and run a function that displays the correct step indicator:
-        fixStepIndicator(n);
-    }
-
-    function nextPrev(n) {
-        // This function will figure out which tab to display
-        var x = $(".tab");
-        // Exit the function if any field in the current tab is invalid:
-        if (n == 1 && !validateForm()) return false;
-        // Hide the current tab:
-        x.eq(currentTab).hide();
-        // Increase or decrease the current tab by 1:
-        currentTab = currentTab + n;
-        // if you have reached the end of the form... :
-        if (currentTab >= x.length) {
-            //...the form gets submitted:
-            $("#installationForm").submit();
-
-            return false;
-        }
-        // Otherwise, display the correct tab:
-        showTab(currentTab);
-    }
-
-    function validateForm() {
-        // This function deals with validation of the form fields
-        let x, y, z, w, i, valid = true;
-        x = $(".tab").eq(currentTab);
-        let select = x.find("select");
-        let address = x.find("#address");
-        let imageInputs = x.find("input[type='file'][accept*='image']");
-
-        select.each(function () {
-            if ($(this).val() === "---") {
-                $(this).addClass('invalid');
-                valid = false;
-            } else {
-                $(this).removeClass('invalid');
-
-            }
-        })
-        imageInputs.each(function () {
-            if ($(this).val() === "") {
-                $(this).addClass('invalid');
-                valid = false;
-            } else {
-                $(this).removeClass('invalid');
-
-            }
-        })
-
-        if (address.val() === "") {
-            $("#address").addClass("invalid");
-            valid = false;
-        }
-        else {
-            $("#address").removeClass('invalid');
-
-        }
-
-        if (!mapInteracted) {
-            $("#map").addClass("invalid");
-            valid = false;
-        }
-
-
-        // If the valid status is true, mark the step as finished and valid:
-        if (valid) {
-            $(".step").eq(currentTab).addClass("finish");
-        }
-        return valid; // return the valid status
-    }
-
-    function fixStepIndicator(n) {
-        // This function removes the "active" class of all steps...
-        var x = $(".step");
-        x.removeClass("active");
-        // ... and adds the "active" class to the current step:
-        x.eq(n).addClass("active");
-    }
-    $("#installationForm").submit(function (event) {
-        // Prevent the default form submission behavior
-        event.preventDefault();
-
-        let selectEnginroom = $('#select-enginroom').val();
+    <div id="lock_screen">
+        <table>
+            <tr>
+                <td>
+                    <div class="clock"></div>
+                    <span class="unlock">
+                        <span class="fa-stack fa-5x">
+                            <i class="fa fa-square-o fa-stack-2x fa-inverse"></i>
+                            <i id="icon_lock" class="fa fa-lock fa-stack-1x fa-inverse"></i>
+                        </span>
+                    </span>
+                </td>
+            </tr>
+        </table>
+    </div>
+    {% include 'scripts.html' %}
+    <script>
+        $('select').select2();
+        let id = '{{id}}'
+        let selectEnginroom = id;
         let user = $('#user').val();
+        let currentTab;
+        let currentbuildingImageURL;
+        let currendeviceSerialImageURL;
+        $(document).ready(function () {
 
-        let address = $('#address').val() || '';
-        let phoneNumber1 = $('#phone-number1').val() || '';
-        let phoneNumber2 = $('#phone-number1').val() || '';
-        let buildingMetrage = $('#building-metrage').val() || 0;
-        let meterSubscribtion = $('#meter-subscribtion').val() || '';
-        let buildingImageInput = $("#building-image")[0].files[0];
 
-        let locationInput = $('#location-input').val();
+            //#region Get Enginroom to find enginroom name and step
+            $.ajax({
+                type: "GET",
+                url: "/api/enginroom/" + id + "/",
+                success: function (response) {
+                    $('#enginroom').text(response.enginroom_name)
+                    currentTab = parseInt(response.step);
+                    showTab(currentTab);
+                    console.log(currentTab);
+                },
+                error: function (error) {
+                    console.error('Error fetcing Enginroom details:', error.reponseJSON);
 
-        let reader = new FileReader();
-        reader.onloadend = function () {
-            let buildingImage = reader.result;
-
-            locationInfoData = {
-                'user': user,
-                'enginroom': selectEnginroom,
-                'address': address,
-                'phone_number1': phoneNumber1,
-                'phone_number2': phoneNumber2,
-                'building_metrage': buildingMetrage,
-                'meter_subscription_number': meterSubscribtion,
-                'building_image': buildingImage,
-                'location': locationInput,
-                'status': false
-            }
-            // $.ajax({
-            //     type: "POST",
-            //     url: "/api/location-public-info/",
-            //     data: JSON.stringify(locationInfoData),
-            //     contentType: "application/json",
-            //     headers: {
-            //         "X-CSRFToken": $("[name=csrfmiddlewaretoken]").val(),
-            //     },
-            //     success: function (response) {
-            //         isSuccessLocationInfo = true
-            //     },
-            //     error: function (error) {
-            //         console.error('ERROR IN POST DATA TO LOCATION PUBLIC INFO', error.responseJSON);
-            //     }
-            // });
-            console.log('location public info', locationInfoData)
-        };
-        reader.readAsDataURL(buildingImageInput);
-
-        checkExchanger = $("#has-exchanger").prop("checked");
-        $("#has-exchanger").on("change", function () {
-            checkExchanger = $(this).prop("checked");
-        });
-
-        let usage = $('#select-usage').val();
-        // let hasExchanger = checkExchanger;
-        let numberOfPoolExchangers = checkExchanger ? $('#pool').val() : 0;
-        let numberOfJaccuziExchangers = checkExchanger ? $('#jaccuzi').val() : 0;
-        let numberOfFloorHeatingExchangers = checkExchanger ? $('#floor-heating').val() : 0;
-        let numberOfBoilers = $('#boilers').val();
-        let numberOfCirculatingPumps = $('#circulate-pump').val();
-        let numberOfCoilSources = $('#coil-source').val();
-        let numberOfCoilSourcesPumps = $('#coil-source-pump').val();
-        let numberOfHotWaterPumps = $('#hotwater-pump').val();
-
-        enginroomInfoData = {
-            'usage': usage,
-            'has_exchanger': checkExchanger,
-            'number_of_pool_exchangers': numberOfPoolExchangers || 0,
-            'number_of_jaccuzi_exchangers': numberOfJaccuziExchangers || 0,
-            'number_of_floor_heating_exchangers': numberOfFloorHeatingExchangers || 0,
-            'number_of_boilers': numberOfBoilers || 0,
-            'number_of_circulating_pumps': numberOfCirculatingPumps || 0,
-            'number_of_coil_sources': numberOfCoilSources || 0,
-            'number_of_coil_sources_pumps': numberOfCoilSourcesPumps || 0,
-            'number_of_hot_water_pumps': numberOfHotWaterPumps || 0,
-            'user': user,
-            'enginroom': selectEnginroom,
-            'status': false
-
-        }
-        console.log(enginroomInfoData);
-        // $.ajax({
-        //     type: "POST",
-        //     url: "/api/enginroom-public-info/",
-        //     data: JSON.stringify(enginroomInfoData),
-        //     contentType: "application/json",
-        //     headers: {
-        //         "X-CSRFToken": $("[name=csrfmiddlewaretoken]").val(),
-        //     },
-        //     success: function (response) {
-        //         isSuccessEnginroomInfo = true;
-        //     },
-        //     error: function (error) {
-        //         console.error('ERROR IN POST DATA TO ENGINROOM PUBLIC INFO', error.responseJSON);
-        //     }
-        // });
-        let selectInstalledModel = $('#select-installed-model').val();
-        let selectConnectionType = $('#connection-type').val();
-        let modemModel = $('#modem-model').val() || '';
-        checkSimcard = $("#has-simcard").prop("checked");
-        $("#has-simcard").on("change", function () {
-            checkSimcard = $(this).prop("checked");
-        });
-        let modelSimcard = $("#modem-simcard").val() || '';
-        let installationDate = $("#installation-date").val();
-        let dateAndTimeComponents = installationDate.split(' ');
-        let dateComponent = dateAndTimeComponents[0];
-        let timeComponent = dateAndTimeComponents[1];
-
-        let dateComponents = dateComponent.split('/');
-        let year = parseInt(dateComponents[0]);
-        let month = parseInt(dateComponents[1]) - 1; // JavaScript months are 0-indexed
-        let day = parseInt(dateComponents[2]);
-
-        let timeComponents = timeComponent.split(':');
-        let hours = parseInt(timeComponents[0]);
-        let minutes = parseInt(timeComponents[1]);
-        let seconds = parseInt(timeComponents[2]);
-
-        let formattedInstallationDate = new Date(year, month, day, hours, minutes, seconds).toISOString();
-
-        console.log(formattedInstallationDate);
-        let deviceSerialImageInput = $("#device-serial-image")[0].files[0];
-        let deviceSerialImageReader = new FileReader();
-        deviceSerialImageReader.onloadend = function () {
-            let deviceSerialImage = deviceSerialImageReader.result;
-
-            installationinfoData = {
-                'user': user,
-                'enginroom': selectEnginroom,
-                'installed_device_model': selectInstalledModel,
-                'connection_type': selectConnectionType,
-                'modem_model': modemModel,
-                'has_simcard': checkSimcard,
-                'modem_simcard_number': modelSimcard,
-                'installation_date': formattedInstallationDate,
-                'device_serial_number_image': deviceSerialImage,
-                'status': false
-            }
-            // $.ajax({
-            //     type: "POST",
-            //     url: "/api/installation-info/",
-            //     data: JSON.stringify(installationinfoData),
-            //     contentType: "application/json",
-            //     headers: {
-            //         "X-CSRFToken": $("[name=csrfmiddlewaretoken]").val(),
-            //     },
-            //     success: function (response) {
-            //         isSuccessInstallationinfo = true
-
-            //     },
-            //     error: function (error) {
-            //         console.error('ERROR IN POST DATA TO INSTALLATION INFO', error.responseJSON);
-            //     }
-            // });
-            console.log('installation info', installationinfoData)
-        };
-        deviceSerialImageReader.readAsDataURL(deviceSerialImageInput);
-
-        // if (isSuccessLocationInfo && isSuccessEnginroomInfo && isSuccessInstallationinfo) {
-        //     createAlert('success', 'اطلاعات محل نصب و موتورخانه و نصب با موفقیت ثبت شد.');
-        // }
-        // else {
-        //     createAlert('danger', 'خطایی رخ داده است');
-        // }
-
-        var files = $('#enginroom-images')[0].files;
-        enginroomImagesData = new FormData();
-        var imagesData = []
-        var user_id = '{{request.session.user_id}}'
-        enginroomImagesData.append('enginroom', selectEnginroom);
-        enginroomImagesData.append('user', user_id);
-
-        // Create a function to handle image processing and uploading
-        for (var i = 0; i < files.length; i++) {
-            enginroomImagesData.append('images', files[i]);
-
-            let images_reader = new FileReader();
-            images_reader.onload = function (event) {
-                var image_data = event.target.result
-                imagesData.push(image_data);
-                // console.log(imagesData)
-                if (imagesData.length === files.length) {
-                    // console.log(imagesData.length)
-                    // // Convert the imagesData array to JSON and append it to FormData
-                    enginroomImagesData.append('images_data', imagesData);
-
-                    for (var pair of enginroomImagesData.entries()) {
-                        console.log(pair[0] + ': ' + pair[1]);
-                    }
-                   
-                    uploadImages(enginroomImagesData);
                 }
-            };
-            images_reader.readAsDataURL(files[i]);
+            });
+            //#endregion
+            //#region GET location, enginroom and installation info with enginroom images(later)
+            $.ajax({
+                type: "GET",
+                url: "/api/location-public-info/" + id + "/",
+                success: function (response) {
+                    $('#address').text(response.address || 'xx')
+
+                    $('#select-province').val(response.province);
+                    $('#select-city').val(response.city)
+                    // Trigger the change event on the province select to populate the city select
+                    // $('#select-province').trigger('change');
+                    $('#select-province').trigger('change', [response.city]);
+
+                    $('#phone-number1').val(response.phone_number1 || '')
+                    $('#phone-number2').val(response.phone_number2 || '')
+                    $('#building-metrage').val(response.building_metrage || 0)
+                    $('#meter-subscribtion').val(response.meter_subscription_number || '')
+                    $('#building-image-preview').attr('src', response.building_image)
+                    currentbuildingImageURL = response.building_image;
+                    $('#location-input').val(response.location)
+                    var loc = $('#location-input').val().split(',');
+                    var lat = parseFloat(loc[0]);
+                    var lng = parseFloat(loc[1]);
+                    map.setView([lat, lng], 13);
+                    var marker = L.marker([lat, lng]).addTo(map);
+                    $('#location-input').val(lat + ',' + lng);
+
+
+                },
+                error: function (error) {
+                    console.error('Error fetcing location-public-info details:', error.reponseJSON);
+
+                }
+            });
+
+            $.ajax({
+                type: "GET",
+                url: "/api/enginroom-public-info/" + id + "/",
+                success: function (response) {
+                    $('#select-usage').val(response.usage || 'انتخاب کنید');
+                    $('#select-usage').trigger('change');
+                    $('#hotwater-pump').val(response.number_of_hot_water_pumps || '');
+                    $('#coil-source-pump').val(response.number_of_coil_sources_pumps || '');
+                    $('#coil-source').val(response.number_of_coil_sources || '');
+                    $('#circulate-pump').val(response.number_of_circulating_pumps || '');
+                    $('#boilers').val(response.number_of_boilers || '');
+                    $('#floor-heating').val(response.number_of_floor_heating_exchangers || '');
+                    $('#jaccuzi').val(response.number_of_jaccuzi_exchangers || '');
+                    $('#pool').val(response.number_of_pool_exchangers || '');
+                    $("#has-exchanger").prop("checked", response.has_exchanger);
+                    if (response.has_exchanger === true) {
+                        $('#exchanger').fadeIn();
+                    }
+
+
+                },
+                error: function (error) {
+                    console.error('Error fetcing enginroom-public-info details:', error.reponseJSON);
+
+                }
+            });
+
+            $.ajax({
+                type: "GET",
+                url: "/api/installation-info/" + id + "/",
+                success: function (response) {
+                    $('#select-installed-model').val(response.installed_device_model || 'انتخاب کنید');
+                    $('#select-installed-model').trigger('change');
+                    $('#connection-type').val(response.connection_type || 'انتخاب کنید');
+                    $('#connection-type').trigger('change');
+                    $('#modem-model').val(response.modem_model || '');
+                    $("#has-simcard").prop("checked", response.has_simcard);
+                    if (response.has_simcard === true) {
+                        $('#simcard').fadeIn();
+                    }
+                    $('#modem-simcard').val(response.modem_simcard_number || '');
+                    $('#installation-date').val(response.installation_date || '');
+                    $('#device-serial-image-preview').attr('src', response.device_serial_number_image)
+                    currendeviceSerialImageURL = response.device_serial_number_image;
+                },
+                error: function (error) {
+                    console.error('Error fetcing enginroom-public-info details:', error.reponseJSON);
+
+                }
+            });
+
+            let div = $('#image-container')
+
+            $.ajax({
+                type: "GET",
+                url: `/api/enginroom-images/?enginroom=${selectEnginroom}&user=${user}`,
+                success: function (response) {
+                    for (var i = 0; i < response.length; i++) {
+                        div.append(`
+                <img id="image-${response[i].id}" class="img-fluid thumbnail" src="${response[i].images}" width="200px" height="200px">
+                <a id="btn-${response[i].id}" onclick="deleteImage(${response[i].id})" class="btn btn-default"><i class="fa fa-trash"></i> حذف </a>
+            `);
+
+
+                    }
+                }
+            });
+
+
+            //////api/enginroom-images/?enginroom=53&user=1///////////////
+            //#endregion
+
+            //#region location
+            var map = L.map('map').setView([35.6892, 51.3890], 13);
+
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                maxZoom: 19,
+                attribution: 'Map data © <a href="https://openstreetmap.org">OpenStreetMap</a> contributors'
+            }).addTo(map);
+
+            var marker;
+            map.on('click', function (e) {
+                $('#location-input').val(e.latlng.lat + ',' + e.latlng.lng);
+                console.log($('#location-input').val());
+                $.ajax({
+                    url: '//', // Add your URL here for the fetch
+                    type: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                        "X-CSRFToken": $("[name=csrfmiddlewaretoken]").val(),
+                    },
+                    data: {
+                        location: e.latlng.lat + ',' + e.latlng.lng
+                    },
+                    success: function (response) {
+                        // Handle success response
+                        console.log($('#location-input').val());
+                    }
+                });
+
+                if (marker) {
+                    map.removeLayer(marker);
+                }
+                marker = L.marker(e.latlng).addTo(map);
+            });
+
+            map.doubleClickZoom.disable();
+
+            // Locate button click event handler
+            $('#locate-button').click(function () {
+                if ("geolocation" in navigator) {
+                    navigator.geolocation.getCurrentPosition(function (position) {
+                        var lat = position.coords.latitude;
+                        var lng = position.coords.longitude;
+
+                        map.setView([lat, lng], 13);
+                        if (marker) {
+                            map.removeLayer(marker);
+                        }
+                        marker = L.marker([lat, lng]).addTo(map);
+
+                        $('#location-input').val(lat + ',' + lng);
+                    }, function (error) {
+                        console.error("Error getting current position:", error.message);
+                    });
+                } else {
+                    console.error("Geolocation is not available.");
+                }
+            });
+
+            //#endregion 
+
+            //#region  Province and cities
+            $.ajax({
+                type: "GET",
+                url: "../static/iran-cities/province.csv",
+                dataType: "text",
+                success: function (data) {
+                    var provinceOptions = data.split("\n");
+                    var provinceSelect = $("#select-province");
+
+                    for (var i = 0; i < provinceOptions.length; i++) {
+                        var parts = provinceOptions[i].split(",");
+                        var option = $("<option></option>")
+                            .val(parts[0])
+                            .text(parts[1]);
+                        provinceSelect.append(option);
+                    }
+                }
+            });
+
+            $("#select-province").change(function () {
+                var selectedProvinceId = $(this).val();
+
+                // Load city data from city.csv and filter by the selected province
+                $.ajax({
+                    type: "GET",
+                    url: "../static/iran-cities/city.csv",
+                    dataType: "text",
+                    success: function (data) {
+                        var cityOptions = data.split("\n");
+                        var citySelect = $("#select-city");
+                        citySelect.empty(); // Clear previous options
+
+                        for (var i = 0; i < cityOptions.length; i++) {
+                            var parts = cityOptions[i].split(",");
+                            var cityProvinceId = parts[1];
+
+                            if (cityProvinceId === selectedProvinceId) {
+                                var option = $("<option></option>")
+                                    .val(parts[0])
+                                    .text(parts[3]);
+                                citySelect.append(option);
+                            }
+                        }
+                    }
+                });
+            });
+
+            //#endregion
+
+            //#region display the selected  device serial image
+            $("#device-serial-image").change(function () {
+                readDeviceSerialURL(this);
+            });
+
+
+            function readDeviceSerialURL(input) {
+                if (input.files && input.files[0]) {
+                    var reader = new FileReader();
+
+                    reader.onload = function (e) {
+                        // Update the src attribute of the img tag
+                        $("#device-serial-image-preview").attr("src", e.target.result)
+                    };
+
+                    reader.readAsDataURL(input.files[0]); // Read the selected file
+                }
+            }
+            //#endregion
+
+            //#region display the selected image
+            $("#building-image").change(function () {
+                readURL(this);
+            });
+
+
+            function readURL(input) {
+                if (input.files && input.files[0]) {
+                    var reader = new FileReader();
+
+                    reader.onload = function (e) {
+                        // Update the src attribute of the img tag
+                        $("#building-image-preview").attr("src", e.target.result)
+                    };
+
+                    reader.readAsDataURL(input.files[0]); // Read the selected file
+                }
+            }
+            //#endregion
+
+            //#region has exchanger
+            function toggleExchanger() {
+                if ($('#has-exchanger').prop('checked')) {
+                    $('#exchanger').fadeIn();
+
+                } else {
+                    $('#exchanger').fadeOut();
+
+                }
+            }
+            //#endregion
+
+            //#region has model
+            function toggleModem() {
+                if ($('#has-simcard').prop('checked')) {
+                    $('#simcard').fadeIn();
+
+                } else {
+                    $('#simcard').fadeOut();
+
+                }
+            }
+            //#endregion
+
+
+
+            toggleModem();
+            $('#has-simcard').on('click', toggleModem);
+
+            toggleExchanger();
+            $('#has-exchanger').on('click', toggleExchanger);
+
+
+            jalaliDatepicker.startWatch({ time: true });
+
+
+        });
+
+        function deleteImage(id) {
+
+            $.ajax({
+                type: "DELETE",
+                url: `/api/enginroom-images/${id}/`,
+                headers: {
+                    'X-CSRFToken': $('input[name="csrfmiddlewaretoken"]').val() // Include the CSRF token in the headers
+                },
+                success: function (response) {
+
+
+
+                    // Show a success message using SweetAlert
+                    Swal.fire('حذف شد!', 'با موفقیت حذف شد.', 'success');
+                    $(`#image-${id}`).hide()
+                    $(`#btn-${id}`).hide()
+
+                },
+                error: function (error) {
+                    console.error('Error deleting Engineroom:', error.responseJSON);
+                    // You can handle errors here, e.g., display an error message using SweetAlert
+                    Swal.fire('خطا', 'خطایی در حذف اتفاق افتاده است.', 'error');
+                }
+            });
+        }
+        let checkExchanger;
+        let checkSimcard;
+
+
+
+        //#region showTab
+        function showTab(n) {
+            var tabs = $(".tab");
+            tabs.eq(n).slideToggle("slow")
+            $("html, body").animate({ scrollTop: 0 }, "slow");
+
+            if (n == 0) {
+                $("#prevBtn").hide();
+            } else {
+                $("#prevBtn").show();
+            }
+            if (n == (tabs.length - 1)) {
+                $("#nextBtn").hide();
+            } else {
+                $("#nextBtn").html("بعدی");
+            }
+
+            fixStepIndicator(n);
+        }
+        //#endregion
+
+        //#region next previous
+        function nextPrev(n) {
+
+            var tabs = $(".tab");
+            tabs.eq(currentTab).hide();
+            currentTab = currentTab + n;
+
+            // console.log(currentTab);
+            if (currentTab === 3) {
+
+                $("#nextBtn").hide();
+
+            }
+            else if (currentTab > 3) {
+                $('#submit').hide();
+                $("#nextBtn").hide();
+                $("#prevBtn").show();
+            } else {
+
+                $("#nextBtn").show();
+
+            }
+
+            showTab(currentTab);
+
+
         }
 
+        function saveStep() {
 
+            let locationInfoData;
+            if (currentTab == 0) {
+                let address = $('#address').val() || '';
+                let phoneNumber1 = $('#phone-number1').val() || '';
+                let phoneNumber2 = $('#phone-number1').val() || '';
+                let buildingMetrage = $('#building-metrage').val() || 0;
+                let meterSubscribtion = $('#meter-subscribtion').val() || '';
+                let buildingImageInput = $("#building-image")[0].files[0];
+
+                let locationInput = $('#location-input').val();
+                if (!buildingImageInput) {
+                    // If no new image uploaded, fetch the current image and convert to base64
+                    getBase64FromImageUrl(currentbuildingImageURL, function (buildingbase64Image) {
+
+                        locationInfoData = {
+                            'user': user,
+                            'enginroom': selectEnginroom,
+                            'address': address,
+                            'phone_number1': phoneNumber1,
+                            'phone_number2': phoneNumber2,
+                            'building_metrage': buildingMetrage,
+                            'meter_subscription_number': meterSubscribtion,
+                            'building_image': buildingbase64Image,
+                            'location': locationInput,
+                            'status': false
+                        }
+
+                        $.ajax({
+                            type: "PUT",
+                            url: "/api/location-public-info/" + id + "/",
+                            data: JSON.stringify(locationInfoData),
+                            contentType: "application/json",
+                            headers: {
+                                "X-CSRFToken": $("[name=csrfmiddlewaretoken]").val(),
+                            },
+                            success: function (response) {
+                                updateStep(currentTab)
+                            },
+                            error: function (error) {
+                                console.error('ERROR IN POST DATA TO LOCATION PUBLIC INFO', error.responseJSON);
+                            }
+                        });
+
+                    });
+                } else {
+                    // If new image uploaded, convert it to base64
+                    let reader = new FileReader();
+                    reader.onloadend = function () {
+                        let buildingImage = reader.result;
+                        locationInfoData = {
+                            'user': user,
+                            'enginroom': selectEnginroom,
+                            'address': address,
+                            'phone_number1': phoneNumber1,
+                            'phone_number2': phoneNumber2,
+                            'building_metrage': buildingMetrage,
+                            'meter_subscription_number': meterSubscribtion,
+                            'building_image': buildingImage,
+                            'location': locationInput,
+                            'status': false
+                        }
+
+                        console.log('Data to be sent:', locationInfoData);
+
+
+                        $.ajax({
+                            type: "PUT",
+                            url: "/api/location-public-info/" + id + "/",
+                            data: JSON.stringify(locationInfoData),
+                            contentType: "application/json",
+                            headers: {
+                                "X-CSRFToken": $("[name=csrfmiddlewaretoken]").val(),
+                            },
+                            success: function (response) {
+                                updateStep(currentTab)
+                            },
+                            error: function (error) {
+                                console.error('ERROR IN POST DATA TO LOCATION PUBLIC INFO', error.responseJSON);
+                            }
+                        });
+
+                    };
+                    reader.readAsDataURL(buildingImageInput);
+                }
+
+
+            }
+            else if (currentTab == 1) {
+                checkExchanger = $("#has-exchanger").prop("checked");
+                $("#has-exchanger").on("change", function () {
+                    checkExchanger = $(this).prop("checked");
+                });
+
+                let usage = $('#select-usage').val();
+                // let hasExchanger = checkExchanger;
+                let numberOfPoolExchangers = checkExchanger ? $('#pool').val() : 0;
+                let numberOfJaccuziExchangers = checkExchanger ? $('#jaccuzi').val() : 0;
+                let numberOfFloorHeatingExchangers = checkExchanger ? $('#floor-heating').val() : 0;
+                let numberOfBoilers = $('#boilers').val();
+                let numberOfCirculatingPumps = $('#circulate-pump').val();
+                let numberOfCoilSources = $('#coil-source').val();
+                let numberOfCoilSourcesPumps = $('#coil-source-pump').val();
+                let numberOfHotWaterPumps = $('#hotwater-pump').val();
+
+                let enginroomInfoData = {
+                    'usage': usage,
+                    'has_exchanger': checkExchanger,
+                    'number_of_pool_exchangers': numberOfPoolExchangers || 0,
+                    'number_of_jaccuzi_exchangers': numberOfJaccuziExchangers || 0,
+                    'number_of_floor_heating_exchangers': numberOfFloorHeatingExchangers || 0,
+                    'number_of_boilers': numberOfBoilers || 0,
+                    'number_of_circulating_pumps': numberOfCirculatingPumps || 0,
+                    'number_of_coil_sources': numberOfCoilSources || 0,
+                    'number_of_coil_sources_pumps': numberOfCoilSourcesPumps || 0,
+                    'number_of_hot_water_pumps': numberOfHotWaterPumps || 0,
+                    'user': user,
+                    'enginroom': selectEnginroom,
+                    'status': false
+
+                }
+                console.log(enginroomInfoData);
+                $.ajax({
+                    type: "PUT",
+                    url: "/api/enginroom-public-info/" + id + "/",
+                    data: JSON.stringify(enginroomInfoData),
+                    contentType: "application/json",
+                    headers: {
+                        "X-CSRFToken": $("[name=csrfmiddlewaretoken]").val(),
+                    },
+                    success: function (response) {
+                        updateStep(currentTab)
+                    },
+                    error: function (error) {
+                        console.error('ERROR IN POST DATA TO ENGINROOM PUBLIC INFO', error.responseJSON);
+                    }
+                });
+
+            }
+            else if (currentTab == 2) {
+
+
+
+                let selectInstalledModel = $('#select-installed-model').val();
+                let selectConnectionType = $('#connection-type').val();
+                let modemModel = $('#modem-model').val() || '';
+                checkSimcard = $("#has-simcard").prop("checked");
+                $("#has-simcard").on("change", function () {
+                    checkSimcard = $(this).prop("checked");
+                });
+                let modelSimcard = $("#modem-simcard").val() || '';
+                let installationDate = $("#installation-date").val();
+                let dateAndTimeComponents = installationDate.split(' ');
+                let dateComponent = dateAndTimeComponents[0];
+                let timeComponent = dateAndTimeComponents[1];
+
+                let dateComponents = dateComponent.split('/');
+                let year = parseInt(dateComponents[0]);
+                let month = parseInt(dateComponents[1]) - 1; // JavaScript months are 0-indexed
+                let day = parseInt(dateComponents[2]);
+
+                let timeComponents = timeComponent.split(':');
+                let hours = parseInt(timeComponents[0]);
+                let minutes = parseInt(timeComponents[1]);
+                let seconds = parseInt(timeComponents[2]);
+
+                let formattedInstallationDate = new Date(year, month, day, hours, minutes, seconds).toISOString();
+
+                console.log(formattedInstallationDate);
+                let deviceSerialImageInput = $("#device-serial-image")[0].files[0];
+                let deviceSerialImageReader = new FileReader();
+                let installationinfoData;
+
+
+
+
+                if (!deviceSerialImageInput) {
+                    // If no new image uploaded, fetch the current image and convert to base64
+                    getBase64FromImageUrl(currendeviceSerialImageURL, function (deviceSerialbase64Image) {
+
+                        installationinfoData = {
+                            'user': user,
+                            'enginroom': selectEnginroom,
+                            'installed_device_model': selectInstalledModel,
+                            'connection_type': selectConnectionType,
+                            'modem_model': modemModel,
+                            'has_simcard': checkSimcard,
+                            'modem_simcard_number': modelSimcard,
+                            'installation_date': formattedInstallationDate,
+                            'device_serial_number_image': deviceSerialbase64Image,
+                            'status': false
+                        }
+
+                        $.ajax({
+                            type: "PUT",
+                            url: "/api/installation-info/" + id + "/",
+                            data: JSON.stringify(installationinfoData),
+                            contentType: "application/json",
+                            headers: {
+                                "X-CSRFToken": $("[name=csrfmiddlewaretoken]").val(),
+                            },
+                            success: function (response) {
+                                updateStep(currentTab)
+
+                            },
+                            error: function (error) {
+                                console.error('ERROR IN POST DATA TO INSTALLATION INFO', error.responseJSON);
+                            }
+                        });
+                        console.log('installation info', installationinfoData)
+
+                    });
+                } else {
+                    // If new image uploaded, convert it to base64
+                    let reader = new FileReader();
+                    reader.onloadend = function () {
+                        let deviceSerialImage = reader.result;
+                        installationinfoData = {
+                            'user': user,
+                            'enginroom': selectEnginroom,
+                            'installed_device_model': selectInstalledModel,
+                            'connection_type': selectConnectionType,
+                            'modem_model': modemModel,
+                            'has_simcard': checkSimcard,
+                            'modem_simcard_number': modelSimcard,
+                            'installation_date': formattedInstallationDate,
+                            'device_serial_number_image': deviceSerialImage,
+                            'status': false
+                        }
+
+                        console.log('Data to be sent:', installationinfoData);
+
+
+                        $.ajax({
+                            type: "PUT",
+                            url: "/api/installation-info/" + id + "/",
+                            data: JSON.stringify(installationinfoData),
+                            contentType: "application/json",
+                            headers: {
+                                "X-CSRFToken": $("[name=csrfmiddlewaretoken]").val(),
+                            },
+                            success: function (response) {
+                                updateStep(currentTab)
+
+                            },
+                            error: function (error) {
+                                console.error('ERROR IN POST DATA TO INSTALLATION INFO', error.responseJSON);
+                            }
+                        });
+                        console.log('installation info', installationinfoData)
+
+                    };
+                    reader.readAsDataURL(deviceSerialImageInput);
+                }
+
+            }
+            else if (currentTab == 3) {
+                var files = $('#enginroom-images')[0].files;
+                enginroomImagesData = new FormData();
+                var imagesData = []
+                enginroomImagesData.append('enginroom', selectEnginroom);
+                enginroomImagesData.append('user', user);
+
+                // Create a function to handle image processing and uploading
+                for (var i = 0; i < files.length; i++) {
+                    enginroomImagesData.append('images', files[i]);
+
+                    let images_reader = new FileReader();
+                    images_reader.onload = function (event) {
+                        var image_data = event.target.result
+                        imagesData.push(image_data);
+                        // console.log(imagesData)
+                        if (imagesData.length === files.length) {
+                            // console.log(imagesData.length)
+                            // // Convert the imagesData array to JSON and append it to FormData
+                            enginroomImagesData.append('images_data', imagesData);
+
+                            for (var pair of enginroomImagesData.entries()) {
+                                console.log(pair[0] + ': ' + pair[1]);
+                            }
+
+                            uploadImages(enginroomImagesData);
+                        }
+                    };
+                    images_reader.readAsDataURL(files[i]);
+                }
+
+
+            }
+            else {
+                window.location.href = '/enginroom-list/';
+            }
+        }
 
 
         function uploadImages(enginroomImagesData) {
-           
+
             $.ajax({
                 url: '/api/enginroom-images/',
                 method: 'POST',
@@ -642,19 +1075,65 @@
                 },
                 success: function (response) {
                     console.log('Images uploaded successfully', response);
+                    updateStep(currentTab)
                 },
                 error: function (error) {
                     console.error('Error uploading images', error.responseJSON);
                 }
             });
         }
-    });
+        //#region Function to fetch the current image and convert it to base64
+        function getBase64FromImageUrl(url, callback) {
+            let img = new Image();
+            img.setAttribute("crossOrigin", "anonymous");
 
+            img.onload = function () {
+                let canvas = document.createElement("canvas");
+                canvas.width = this.width;
+                canvas.height = this.height;
 
+                let ctx = canvas.getContext("2d");
+                ctx.drawImage(this, 0, 0);
 
+                let dataURL = canvas.toDataURL("image/jpeg");
+                callback(dataURL.replace(/^data:image\/(png|jpg);base64,/, ""));
+                console.log(dataURL);
+            };
 
+            img.src = url;
+        }
+        //#endregion
 
+        function updateStep(tab) {
+            const requestData = { 'step': tab };
+            $.ajax({
+                type: "PATCH",
+                url: "/api/enginroom/" + id + "/",
+                data: JSON.stringify(requestData),
+                contentType: "application/json",
+                headers: {
+                    "X-CSRFToken": $("[name=csrfmiddlewaretoken]").val(),
+                },
+                success: function (response) {
+                    console.log('SUCCESS');
+                },
+                error: function (error) {
+                    console.error('Error fetcing Enginroom details:', error.reponseJSON);
+                }
+            });
+        }
+        //#endregion
 
+        //#region  add or remove active tab
+        function fixStepIndicator(n) {
 
-</script>
-{% endblock content %}
+            var tabs = $(".step");
+            tabs.removeClass("active");
+
+            tabs.eq(n).addClass("active");
+        }
+        //#endregion
+    </script>
+</body>
+
+</html>

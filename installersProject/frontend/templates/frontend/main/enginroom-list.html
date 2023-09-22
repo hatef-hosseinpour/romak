@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+{% load static %}
+{% block headcontent %}
+{% include 'head.html' with title="Installers App| Enginroom List" %}
+{% endblock %}
+<!-- /header content -->
+
+<body class="nav-md">
+
+    <div class="container body">
+        <div class="main_container">
+            <div class="col-md-3 left_col hidden-print">
+                <div class="left_col scroll-view">
+                    {% include 'navbar.html'%}
+                </div>
+            </div>
+
+            <!-- top navigation -->
+            <div class="top_nav hidden-print">
+                <div class="nav_menu">
+                    <nav>
+                        <div class="nav toggle">
+                            <a id="menu_toggle"><i class="fa fa-bars"></i></a>
+                        </div>
+
+                        <ul class="nav navbar-nav navbar-right">
+                            <li class="">
+                                <a href="javascript:;" class="user-profile dropdown-toggle" data-toggle="dropdown"
+                                    aria-expanded="false">
+                                    {{request.session.username}} <span class=" fa fa-angle-down"></span>
+                                </a>
+                                <ul class="dropdown-menu dropdown-usermenu pull-right">
+                            </li>
+                            <li><a href="/profile/"><i class="fa fa-user pull-right"></i>
+                                    پروفایل</a></li>
+                            <li><a href="/change-password/"><i class="fa fa-lock pull-right"></i>
+                                    تغییر رمزعبور</a></li>
+                            <hr>
+                            <li><a id="logout" onclick="logout()"><i class="fa fa-sign-out pull-right"></i>
+                                    خروج</a></li>
+                        </ul>
+                        </li>
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+            <!-- /top navigation -->
+            <!-- /header content -->
+
+            <!-- page content -->
+            <div class="right_col" role="main">
+                <div class="">
+                    <div class="page-title">
+                        <div class="title_left">
+                            <h3>صفحه ساده</h3>
+                        </div>
+
+                        <div class="title_right">
+                            <div class="col-md-5 col-sm-5 col-xs-12 form-group pull-right top_search">
+                                <div class="input-group">
+                                    {% csrf_token %}
+                                    <input type="text" class="form-control" placeholder="جست و جو برای...">
+                                    <span class="input-group-btn">
+                                        <button class="btn btn-default" type="button"><i
+                                                class="fa fa-search"></i></button>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="clearfix"></div>
+
+                    <div class="col-md-12 col-sm-12 col-xs-12">
+                        <div class="x_panel">
+                            <div class="x_title">
+                                <div class="row x_title">
+                                    <div class="col-md-6">
+                                        <h3>فعالیت های شبکه
+                                            <small>عنوان نمودار زیر عنوان</small>
+                                        </h3>
+                                    </div>
+
+                                </div>
+
+                                <div class="col-xs-12 col-sm-6 col-md-4 col-lg-3">
+                                    <label for="heard">نصاب:</label>
+                                    <select id="heard" class="form-control" required>
+                                        <option hidden>انتخاب کنید</option>
+                                        <option value="press">اخبار</option>
+                                        <option value="net">اینترنت</option>
+                                        <option value="mouth">دهان به دهان</option>
+                                    </select>
+                                </div>
+                                <div class="col-xs-12 col-sm-6 col-md-4 col-lg-3">
+                                    <label for="heard">سازمان:</label>
+                                    <select id="heard" class="form-control" required>
+                                        <option hidden>انتخاب کنید</option>
+                                        <option value="press">اخبار</option>
+                                        <option value="net">اینترنت</option>
+                                        <option value="mouth">دهان به دهان</option>
+                                    </select>
+                                </div>
+                                <div class="col-xs-12 col-sm-6 col-md-4 col-lg-3">
+                                    <label for="heard">وزارت‌خانه:</label>
+                                    <select id="heard" class="form-control" required>
+                                        <option hidden>انتخاب کنید</option>
+                                        <option value="press">اخبار</option>
+                                        <option value="net">اینترنت</option>
+                                        <option value="mouth">دهان به دهان</option>
+                                    </select>
+                                </div>
+                                <div class="clearfix"></div>
+                            </div>
+
+                            <div class="x_content">
+
+                                <!-- <p>با افزودن کلاس <code dir="ltr">bulk_action</code> برای جدول، جدول دارای اعمال همگانی
+                                    می‌شود.</p> -->
+
+                                <div class="table-responsive">
+                                    <table class="table table-striped jambo_table table-bordered dataTable no-footer"
+                                        id="enginroom-list">
+                                        <thead>
+                                            <tr class="headings">
+
+                                                <th class="column-title">نام موتورخانه</th>
+                                                <th class="column-title">سازمان</th>
+                                                <th class="column-title">وزارت خانه</th>
+                                                <th class="column-title">نام نصاب</th>
+                                                <th class="column-title">وضعیت</th>
+                                                <th class="column-title">اطلاعات</th>
+                                                <th class="column-title no-link last"><span class="nobr">عمل</span>
+                                                </th>
+                                            </tr>
+                                        </thead>
+
+                                        <tbody>
+                                           
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            <!-- /page content -->
+
+            <!-- /page content -->
+
+            <!-- footer content -->
+            <footer class="hidden-print">
+                <div class="pull-left">
+
+                </div>
+                <div class="clearfix"></div>
+            </footer>
+            <!-- /footer content -->
+        </div>
+    </div>
+    <div id="lock_screen">
+        <table>
+            <tr>
+                <td>
+                    <div class="clock"></div>
+                    <span class="unlock">
+                        <span class="fa-stack fa-5x">
+                            <i class="fa fa-square-o fa-stack-2x fa-inverse"></i>
+                            <i id="icon_lock" class="fa fa-lock fa-stack-1x fa-inverse"></i>
+                        </span>
+                    </span>
+                </td>
+            </tr>
+        </table>
+    </div>
+    {% include 'scripts.html' %}
+    <script>
+
+        function showDetail(id) {
+            const enginroomUrl = `/api/enginroom/${id}/`;
+            window.location.href = enginroomUrl;
+        }
+
+        $(document).ready(function () {
+            $('#enginroom-list').DataTable();
+            function listOfEnginroom(resp) {
+                const tableBody = $('#enginroom-list tbody');
+                tableBody.empty()
+                resp.forEach(function (obj) {
+                    const row = `
+                   
+                    <tr id="enginroom_${obj.id}" data-enginroom-id="${obj.id}">
+        
+
+                    <td class="enginroom-name" onclick="showDetail(${obj.id})">${obj.enginroom_name}</td>
+                    <td class=" " onclick="showDetail(${obj.id})">${obj.organization}</td>
+                    <td class=" " onclick="showDetail(${obj.id})">${obj.administration}</td>
+                    <td class=" " onclick="showDetail(${obj.id})">${obj.creator_username}</td>
+                    <td class="a-right a-right ">تایید</td>
+                    <td class=" "><a href="/create-installation/${obj.id}" class="btn btn-default btn-sm small"> تکمیل اطلاعات </a></td>
+                    <td class=" last">
+                        <a><i class="btn btn-sm btn-danger fa fa-trash delete-button" data-toggle="modal" data-target="#deleteConfirmationModal" data-enginroom-id="${obj.id}" data-enginroom-name="${obj.enginroom_name}"></i></i></a>
+                        <a href="/update-enginroom/${obj.id}"><i class="btn btn-sm btn-warning fa fa-pencil"></i></a>
+                    </td>
+                    </tr>
+                                        
+
+                    </tr>
+                `;
+                    tableBody.append(row);
+                });
+            }
+            $.ajax({
+                type: "GET",
+                url: "/api/enginroom/",
+                success: function (response) {
+                    listOfEnginroom(response)
+
+                },
+                error: function (error) {
+                    console.error('Error fetcing Enginroom details:', error.reponseJSON);
+
+                }
+            });
+
+
+        });
+        $('select').select2();
+        let enginroomToDeleteId;
+
+        // When the trash button is clicked
+        $(document).on('click', '.delete-button', function () {
+            const enginroomId = $(this).data('enginroom-id');
+            const enginroomName = $(this).data('enginroom-name'); // Add data-enginroom-name attribute to your HTML
+
+            // Display a SweetAlert confirmation dialog
+            Swal.fire({
+                title: 'آیا مطمئن هستید؟',
+                text: `آیا می‌خواهید "${enginroomName}" را حذف کنید؟`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'بله',
+                cancelButtonText: 'خیر'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // User clicked "بله," proceed with the deletion
+                   
+                    deleteEnginroom(enginroomId);
+                }
+            });
+        });
+
+        // Function to delete the Engineroom using AJAX
+        function deleteEnginroom(enginroomId) {
+            $.ajax({
+                type: "DELETE",
+                url: `/api/enginroom/${enginroomId}/`,
+                headers: {
+                    'X-CSRFToken': $('input[name="csrfmiddlewaretoken"]').val() // Include the CSRF token in the headers
+                },
+                success: function (response) {
+                    // Remove the row from the table
+                    $(`#enginroom_${enginroomId}`).remove();
+                    // Hide the modal
+                    $('#deleteConfirmationModal').modal('hide');
+                    // Show a success message using SweetAlert
+                    Swal.fire('حذف شد!', `"${enginroomName}" با موفقیت حذف شد.`, 'success');
+                },
+                error: function (error) {
+                    console.error('Error deleting Engineroom:', error.responseJSON);
+                    // You can handle errors here, e.g., display an error message using SweetAlert
+                    Swal.fire('خطا', 'خطایی در حذف اتفاق افتاده است.', 'error');
+                }
+            });
+        }
+
+        // $.ajax({
+        //     type: "DELETE",
+        //     url: `/api/enginroom/${enginroomToDeleteId}/`,
+        //     headers: {
+        //         "X-CSRFToken": $('input[name="csrfmiddlewaretoken"]').val() // Include the CSRF token in the headers
+        //     },
+        //     success: function (response) {
+        //         // Remove the row from the table
+        //         $(`#enginroom${enginroomToDeleteId}`).remove();
+        //         // Hide the modal
+        //         $('#deleteConfirmationModal').modal('hide');
+        //     },
+        //     error: function (error) {
+        //         console.error('Error deleting Engineroom:', error.responseJSON);
+        //         // You can handle errors here, e.g., display an error message.
+        //     }
+        // });
+
+
+    </script>
+
+</body>
+
+</html>

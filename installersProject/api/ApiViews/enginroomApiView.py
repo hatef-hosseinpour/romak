@@ -20,3 +20,19 @@ class EnginroomViewSet(viewsets.ModelViewSet):
             return Enginroom.objects.filter(creator__profile__owner=user)
         else:
             return Enginroom.objects.filter(creator=user)
+        
+    def create(self, request, *args, **kwargs):
+        enginroom_name = request.data.get('enginroom_name')
+
+        # Check if an Enginroom with the same name already exists
+        existing_enginroom = Enginroom.objects.filter(enginroom_name=enginroom_name).exists()
+        
+        if existing_enginroom:
+            return Response({'detail': 'already exists'}, status=status.HTTP_400_BAD_REQUEST)
+
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)

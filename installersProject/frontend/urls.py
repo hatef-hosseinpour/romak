@@ -7,7 +7,7 @@ from .FrontendViews.locationPublicInfoFrontView import *
 from .FrontendViews.mainFrontendView import *
 urlpatterns = [
     path('', view=loginUserFrontView, name='front-index'),
-    path('create-installation/', view=installationFrontView,
+    path('create-installation/<int:pk>', view=installationFrontView,
          name='create-installation'),
      path('dashboard/', view=dashboardFrontView, name='front-dashboard'),
     path('login/', view=loginUserFrontView, name='front-login'),
@@ -33,7 +33,7 @@ urlpatterns = [
     path('update-enginroom/<int:pk>', view=updateEnginroomFrontView,
          name='front-update-enginroom'),
 
-     path('enginrooms/', view=mapPageFrontView,
+     path('enginrooms-map/', view=mapPageFrontView,
          name='front-enginrooms'),
 
 
