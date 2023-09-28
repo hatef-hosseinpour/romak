@@ -1,254 +1,271 @@
-{% extends 'main.html'%}
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
 {% load static %}
 {% block headcontent %}
-{% include 'head.html' with title="Installers App| Create Installers" %}
+{% include 'head.html' with title="Installers App| Enginroom List" %}
 {% endblock %}
-{% block content %}
-<style>
-    .x {
-        display: flex;
-        flex-direction: column;
-        padding: 15px 20px;
-        transition: var(--tran-05);
-    }
-</style>
-<nav>
-    <div class="logo-name">
-        <div class="logo-image">
-            <img src="{% static 'images/logo-romak.jpg'%}" alt="">
-        </div>
-        <span class="logo_name">روماک سیستم</span>
-    </div>
-    <div class="menu-items">
-        <ul class="nav-links">
-            <li><a href="/dashboard/">
-                    <i class="bi bi-house-door"></i>
-                    <span class="link-name">داشبورد</span>
-                </a></li>
+<!-- /header content -->
 
+<body class="nav-md">
 
-
-            <li><a href="/enginrooms/">
-                    <i class="bi bi-map"></i>
-                    <span class="link-name">لیست موتورخانه ها</span>
-                </a></li>
-            <li><a href="/create-user/">
-                    <i class="bi bi-person-add"></i>
-                    <span class="link-name">افزودن کاربر جدید</span>
-                </a></li>
-
-
-
-        </ul>
-
-        <ul class="logout-mode">
-            <li><a id="logout-btn" href="/api/logout-user/">
-                    <i class="bi bi-box-arrow-right"></i>
-                    <span class="link-name">خروج</span>
-                </a></li>
-            <li class="mode">
-                <a href="#">
-                    <i class="bi bi-moon"></i>
-                    <span class="link-name"></span>
-                </a>
-                <div class="mode-toggle">
-                    <span class="switch"></span>
+    <div class="container body">
+        <div class="main_container">
+            <div class="col-md-3 left_col hidden-print">
+                <div class="left_col scroll-view">
+                    {% include 'navbar.html'%}
                 </div>
-            </li>
-        </ul>
+            </div>
+
+            <!-- top navigation -->
+            <div class="top_nav hidden-print">
+                <div class="nav_menu">
+                    <nav>
+                        <div class="nav toggle">
+                            <a id="menu_toggle"><i class="fa fa-bars"></i></a>
+                        </div>
+
+                        <ul class="nav navbar-nav navbar-right">
+                            <li class="">
+                                <a href="javascript:;" class="user-profile dropdown-toggle" data-toggle="dropdown"
+                                    aria-expanded="false">
+                                    {{request.session.username}} <span class=" fa fa-angle-down"></span>
+                                </a>
+                                <ul class="dropdown-menu dropdown-usermenu pull-right">
+                            </li>
+                            <li><a href="/profile/"><i class="fa fa-user pull-right"></i>
+                                    پروفایل</a></li>
+                            <li><a href="/change-password/"><i class="fa fa-lock pull-right"></i>
+                                    تغییر رمزعبور</a></li>
+                            <hr>
+                            <li><a id="logout" onclick="logout()"><i class="fa fa-sign-out pull-right"></i>
+                                    خروج</a></li>
+                        </ul>
+                        </li>
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+            <!-- /top navigation -->
+            <!-- /header content -->
+
+            <!-- page content -->
+            <div class="right_col" role="main">
+                <div class="">
+                    <div class="page-title">
+                        <div class="title_left">
+                            <h3>صفحه ساده</h3>
+                        </div>
+
+                        <div class="title_right">
+                            <div class="col-md-5 col-sm-5 col-xs-12 form-group pull-right top_search">
+                                <div class="input-group">
+                                    {% csrf_token %}
+                                    <input type="text" class="form-control" placeholder="جست و جو برای...">
+                                    <span class="input-group-btn">
+                                        <button class="btn btn-default" type="button"><i
+                                                class="fa fa-search"></i></button>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="clearfix"></div>
+
+                    <div class="col-md-12 col-sm-12 col-xs-12">
+                        <div class="x_panel">
+                            <div class="x_title">
+                                <div class="row x_title">
+
+                                    <h1 class="text-center"> کاربر جدید </h1>
+                                    <form id="create-user-form">
+                                        {% csrf_token %}
+                                        <p>نام کاربری</p>
+                                        <input type="text" id="username" name="username" class="form-control"
+                                            placeholder="نام کاربری" />
+                                        <p>رمزعبور</p>
+                                        <input type="password" id="password" name="password" class="form-control"
+                                            placeholder="رمزعبور" />
+                                        <p>تاییدیه رمزعبور</p>
+                                        <input type="password" id="cPassword" name="cPassword" class="form-control"
+                                            placeholder="تاییدیه رمزعبور" />
+                                        <p>نقش کاربر</p>
+                                        <select class="form-control" aria-label="Default select example" id="role"
+                                            name=role>
+                                            <option hidden></option>
+                                            {% if request.session.is_admin %}
+                                            <option value="admin">سرپرست</option>
+                                            {% endif%}
+                                            <option value="staff">مدیر</option>
+                                            <option value="installer">نصاب</option>
+                                          </select>
+                                        <div class="clearfix"></div>
+                                        <br>
+                                        <input type="submit" value="ثبت" name="" id="user-submit">
+                                    </form>
+                                </div>
+
+
+
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            <!-- /page content -->
+
+            <!-- /page content -->
+
+            <!-- footer content -->
+            <footer class="hidden-print">
+                <div class="pull-left">
+
+                </div>
+                <div class="clearfix"></div>
+            </footer>
+            <!-- /footer content -->
+        </div>
     </div>
-</nav>
-<section class="dashboard">
-    <div class="top">
-        <i class="bi bi-list sidebar-toggle"></i>
-        <div class="search-box">
-           
-        </div>
-
-        <ul class="dropdown-menus">
-            <li>
-                <a href="#"><img src="{% static 'images/profile_images/default_user.jpg'%}" alt="" id="profile-image">
-                    {{request.session.username}}
-                </a>
-
-                <ul class="js-sub-menu sub-menu">
-                    <li><a href="/profile/">پروفایل</a></li>
-                    <li><a href="/change-password">تغییر رمزعبور</a></li>
-                    <li><a href="" id="logout-btn">خروج</a></li>
-                </ul>
-            </li>
-        </ul>
+    <div id="lock_screen">
+        <table>
+            <tr>
+                <td>
+                    <div class="clock"></div>
+                    <span class="unlock">
+                        <span class="fa-stack fa-5x">
+                            <i class="fa fa-square-o fa-stack-2x fa-inverse"></i>
+                            <i id="icon_lock" class="fa fa-lock fa-stack-1x fa-inverse"></i>
+                        </span>
+                    </span>
+                </td>
+            </tr>
+        </table>
     </div>
-<div class="container">
+    {% include 'scripts.html' %}
 
-    
-    <header>ایجاد کاربر جدید</header>
-    <form>
-        <div class="field email-field">
-            <div class="input-field">
-                <!-- <label>نام کاربری</label> -->
-                <input type="email" class="email" placeholder="نام کاربری"/>
-            </div>
-            <span class="error email-error">
-                <i class="uil bi-info-circle"></i>
-                <p class="error-text">نام کاربری خود را وارد کنید</p>
-            </span>
-        </div>
-        <div class="field create-password">
-            <div class="input-field">
-                <!-- <label>رمزعبور</label> -->
-                <input type="password" class="password" placeholder="رمزعبور"/>
-                <i class="uil bi-eye-slash show-hide"></i>
-            </div>
-            <span class="error password-error">
-                <i class="uil bi-info-circle"></i>
-                <p class="error-text">
+    <script>
+        $(document).ready(function () {
 
-                    رمزعبور شما باید حداقل ۸ کاراکتر به همراه اعداد حروف کوچک و بزرگ و کاراکترهای خاص باشد
-                </p>
-            </span>
-        </div>
-        <div class="field confirm-password">
-            <div class="input-field">
-                <!-- <label>تاییدیه رمزعبور</label> -->
-                <input type="password" class="cPassword" placeholder="تاییدیه رمزعبور"/>
-                <i class="uil bi-eye-slash show-hide"></i>
-            </div>
-            <span class="error cPassword-error">
-                <i class="uil bi-info-circle"></i>
-                <p class="error-text">رمزعبور تطابق ندارد</p>
-            </span>
-        </div>
-        <div class="field create-role">
-            <div class="input-field">
-                <label>نقش کاربر</label>
-                <select class="form-select" aria-label="Default select example" class="role">
-                    <option hidden></option>
-                    <option value="user">کاربر</option>
-                    <option value="admin">مدیر</option>
-                </select>
-            </div>
-            <span class="error password-error">
-                <i class="uil bi-info-circle" style="margin-top: 8px;"></i>
-                <p class="error-text">
-                    رمزعبور شما باید حداقل ۸ کاراکتر به همراه اعداد حروف کوچک و بزرگ و کاراکترهای خاص باشد
-                </p>
-            </span>
-        </div>
-        <div class="input-field button">
-            <input type="submit" value="ثبت" />
-        </div>
-    </form>
-
-</div>
-</section>
-<script src="{% static 'js/togglesidebar.js'%}"></script>
-<script>
-
-    const form = document.querySelector("form"),
-        emailField = form.querySelector(".email-field"),
-        emailInput = emailField.querySelector(".email"),
-        passField = form.querySelector(".create-password"),
-        passInput = passField.querySelector(".password"),
-        role_field = 
-        cPassField = form.querySelector(".confirm-password"),
-        cPassInput = cPassField.querySelector(".cPassword");
-    function checkEmail() {
-        const emaiPattern = /^[^ ]+@[^ ]+\.[a-z]{2,3}$/;
-        if (!emailInput.value.match(emaiPattern)) {
-            return emailField.classList.add("invalid"); //adding invalid class if email value do not mathced with email pattern
-        }
-        emailField.classList.remove("invalid"); //removing invalid class if email value matched with emaiPattern
-    }
-    const eyeIcons = document.querySelectorAll(".show-hide");
-    eyeIcons.forEach((eyeIcon) => {
-        eyeIcon.addEventListener("click", () => {
-            const pInput = eyeIcon.parentElement.querySelector("input"); //getting parent element of eye icon and selecting the password input
-            if (pInput.type === "password") {
-                eyeIcon.classList.replace("bi-eye-slash", "bi-eye");
-                return (pInput.type = "text");
-            }
-            eyeIcon.classList.replace("bi-eye", "bi-eye-slash");
-            pInput.type = "password";
-        });
-    });
-    function createPass() {
-        const passPattern =
-            /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
-        if (!passInput.value.match(passPattern)) {
-            return passField.classList.add("invalid"); //adding invalid class if password input value do not match with passPattern
-        }
-        passField.classList.remove("invalid"); //removing invalid class if password input value matched with passPattern
-    }
-    function confirmPass() {
-        if (passInput.value !== cPassInput.value || cPassInput.value === "") {
-            return cPassField.classList.add("invalid");
-        }
-        cPassField.classList.remove("invalid");
-    }
-    // Calling Funtion on Form Sumbit
-    form.addEventListener("submit", (e) => {
-        e.preventDefault(); //preventing form submitting
-        checkEmail();
-        createPass();
-        confirmPass();
-        //calling function on key up
-        emailInput.addEventListener("keyup", checkEmail);
-        passInput.addEventListener("keyup", createPass);
-        cPassInput.addEventListener("keyup", confirmPass);
-        if (
-            !emailField.classList.contains("invalid") &&
-            !passField.classList.contains("invalid") &&
-            !cPassField.classList.contains("invalid")
-        ) {
-            location.href = form.getAttribute("action");
-        }
-    });
-
-    $('#create-user').on('click', function (e) {
-        e.preventDefault();
-        let firstName = $('#first-name').val();
-        let lastName = $('#last-name').val();
-        let username = $('#username').val();
-        let password1 = $('#password1').val();
-        let password2 = $('#password2').val();
-
-
-        if (password1 !== password2) {
-            createAlert('warning', 'رمزعبور و تاییدیه آن با هم تطابق ندارند!!')
-        }
-        else {
-            let data = {
-                'username': username.toLowerCase(),
-                'password': password1,
-                'first_name': firstName,
-                'last_name': lastName,
-                'is_active': true
-            };
-            $.ajax({
-                type: "POST",
-                url: "/api/users/",
-                data: JSON.stringify(data),
-                contentType: "application/json",
-                headers: {
-                    'X-CSRFToken': $('[name=csrfmiddlewaretoken]').val()
+            $("#create-user-form").validate({
+                rules: {
+                    username: {
+                        required: true,
+                        minlength: 3
+                    },
+                    password: {
+                        required: true,
+                        minlength: 6
+                    },
+                    cPassword: {
+                        required: true,
+                        equalTo: "#password"
+                    },
+                    role: {
+                        required: true
+                    }
                 },
-                success: function (response) {
-                    createAlert('success', 'کاربر با موفقیت اضافه شد.')
-                    // Method patch => example Profile.added_by = {{request.session.user_id}}
-                    window.location.href = "/users-list/";
+                messages: {
+                    username: {
+                        required: "نام کاربری را وارد کنید",
+                        minlength: "نام کاربری باید حداقل 3 کاراکتر داشته باشد"
+                    },
+                    password: {
+                        required: "رمزعبور را وارد کنید",
+                        minlength: "رمزعبور باید حداقل 6 کاراکتر داشته باشد"
+                    },
+                    cPassword: {
+                        required: "تاییدیه رمزعبور را وارد کنید",
+                        equalTo: "تاییدیه رمزعبور با رمزعبور مطابقت ندارد"
+                    },
+                    role: {
+                        required: "نقش کاربر را انتخاب کنید"
+                    }
                 },
-                error: function (error) {
-                    if (error.responseJSON && error.responseJSON.username) {
-                        // let errorMessage = error.responseJSON.username[0]; 
-                        createAlert('danger', 'نام کاربری قبلا انتخاب شده‌است');
-                    } else {
-                        console.error("ERROR CREATING USER ERROR TEXT: ", error.responseJSON);
+
+                errorPlacement: function (error, element) {
+                    error.insertAfter(element);
+                },
+                submitHandler: function (form) {
+                    let username = $('[name=username]').val()
+                    let password = $('#password').val();
+                    let cPassword = $('#cPassword').val();
+                    let isSuperuser;
+                    let isStaff;
+
+
+                    if ($('#role').val() === 'admin') {
+                        isSuperuser = true;
+                        isStaff = true;
+                    }
+                    else if ($('#role').val() === 'staff') {
+                        isSuperuser = false;
+                        isStaff = true;
+                    }
+                    else if ($('#role').val() === 'installer') {
+                        isSuperuser = false;
+                        isStaff = false;
+                    }
+                    if (password === cPassword) {
+                        let data = {
+                            'username': username.toLowerCase(),
+                            'password': password,
+                            'is_active': true,
+                            'is_superuser': isSuperuser,
+                            'is_staff': isStaff
+                        };
+
+                        
+                        $.ajax({
+                            type: "POST",
+                            url: "/api/users/",
+                            data: JSON.stringify(data),
+                            contentType: "application/json",
+                            headers: {
+                                'X-CSRFToken': $('[name=csrfmiddlewaretoken]').val()
+                            },
+                            success: function (response) {
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'موفقیت',
+                                    text: 'کاربر با موفقیت اضافه شد.',
+                                    timer: 1500,
+                                }).then(function () {
+                                    // Redirect to users-list
+                                    window.location.href = "/users-list/";
+                                });
+                            },
+                            error: function (error) {
+                                if (error.responseJSON && error.responseJSON.username) {
+                                    Swal.fire({
+                                        icon: 'error',
+                                        title: 'خطا',
+                                        text: 'نام کاربری قبلا انتخاب شده‌است'
+                                    });
+                                } else {
+                                    console.error("ERROR CREATING USER ERROR TEXT: ", error.responseJSON);
+                                    Swal.fire({
+                                        icon: 'error',
+                                        title: 'خطا',
+                                        text: 'خطایی رخ داده است لطفا دوباره تلاش کنید.'
+                                    });
+                                }
+                            }
+                        });
+
                     }
                 }
+
             });
 
-        }
-    })
-</script>
-{% endblock%}
+
+
+
+        });
+
+    </script>
+
+
+</body>
+
+</html>

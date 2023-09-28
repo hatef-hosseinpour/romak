@@ -1,97 +1,189 @@
-{% extends 'main.html'%}
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
 {% load static %}
 {% block headcontent %}
-{% include 'head.html' with title="Installers App| User Profile" %}
+{% include 'head.html' with title="Installers App| Dashboard" %}
 {% endblock %}
-{% block content %}
+<!-- /header content -->
+<style>
+    p {
+        font-size: 15px;
+    }
+</style>
 
-<section class="vh-100 rtl-txt">
-    <div class="container py-5 h-100">
-        <div class="row d-flex justify-content-center align-items-center h-100">
-            <div class="col col-lg-6 mb-4 mb-lg-0">
-                <div class="card mb-3" style="border-radius: .5rem;">
-                    <div class="row g-0">
-                        <div class="col-md-4 gradient-custom text-center text-black"
-                            style="border-top-left-radius: .5rem; border-bottom-left-radius: .5rem;">
-                            <img id="profile-image" alt="Avatar" class="img-fluid my-5 rounded-circle shadow-lg" style="max-width: 100px; max-height: 100px;" />
-                            <h5 class="text-black" id="username"></h5>
-                            
-                            <p id="role"></p>
-                            <a href="" id="edit">ویرایش</a>
+<body class="nav-md">
+    <div class="container body">
+        <div class="main_container">
+            <div class="col-md-3 left_col hidden-print">
+                <div class="left_col scroll-view">
+                    {% include 'navbar.html'%}
+                </div>
+            </div>
+
+            <!-- top navigation -->
+            <div class="top_nav hidden-print">
+                <div class="nav_menu">
+                    <nav>
+                        <div class="nav toggle">
+                            <a id="menu_toggle"><i class="fa fa-bars"></i></a>
                         </div>
-                        <div class="col-md-8">
-                            <div class="card-body p-4">
-                                <h6>اطلاعات کاربری</h6>
-                                <hr class="mt-0 mb-4">
-                                <div class="row pt-1">
-                                    <div class="col-12 mb-3">
-                                        <h6>نام</h6>
-                                        <p class="text-muted" id="name"></p>
+
+                        <ul class="nav navbar-nav navbar-right">
+                            <li class="">
+                                <a href="javascript:;" class="user-profile dropdown-toggle" data-toggle="dropdown"
+                                    aria-expanded="false">
+                                    {{request.session.username}} <span class=" fa fa-angle-down"></span>
+                                </a>
+                                <ul class="dropdown-menu dropdown-usermenu pull-right">
+                            </li>
+                            <li><a href="/dashboard/"><i class="fa fa-user pull-right"></i>
+                                    پروفایل</a></li>
+                            <li><a href="/change-password/"><i class="fa fa-lock pull-right"></i>
+                                    تغییر رمزعبور</a></li>
+                            <hr>
+                            <li><a id="logout" onclick="logout()"><i class="fa fa-sign-out pull-right"></i>
+                                    خروج</a></li>
+                        </ul>
+                        </li>
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+            <!-- /top navigation -->
+            <!-- /header content -->
+
+            <!-- page content -->
+            <div class="right_col" role="main">
+                <div class="">
+                    <div class="page-title">
+                        <div class="title_left">
+                            <h3>پروفایل کاربر</h3>
+                        </div>
+
+                        <div class="title_right">
+                            <div class="col-md-5 col-sm-5 col-xs-12 form-group pull-right top_search">
+                                <div class="input-group">
+
+                                    <span class="input-group-btn">
+
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="clearfix"></div>
+
+                    <div class="row">
+                        <div class="col-md-12 col-sm-12 col-xs-12">
+                            <div class="x_panel">
+                                <div class="x_title">
+
+                                    <ul class="nav navbar-right panel_toolbox">
+                                        <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
+                                        </li>
+
+                                        <li><a class="close-link"><i class="fa fa-close"></i></a>
+                                        </li>
+                                    </ul>
+                                    <div class="clearfix"></div>
+                                </div>
+                                <div class="x_content">
+                                    <div class="col-md-6">
+                                        <h3>تصویر پروفایل</h3>
+                                      
+                                        <div class="profile-container">
+                                            <img id="profile" src="" class="thumbnail col-md-12" style="height: 300px;">
+                                            
+                                            
+                                        </div>
                                     </div>
-                                    <div class="col-12 mb-3">
-                                        <h6>شماره همراه</h6>
-                                        <p class="text-muted" id="phone-number"></p>
+                                    <div class="col-md-6">
+                                        <h3>تصویر پروفایل</h3>
+                                        <h4>شهر</h4>
+                                        <p id="username">{{request.session.username}}</p>
+                                        <h4>شهر</h4>
+                                        <p id="name">aaaa </p>
+                                        <h4>شهر</h4>
+                                        <p id="phone-number">aaa </p>
+                                        <h4>شهر</h4>
+                                        <p id="is-active">aaa </p>
+                                        <h4>شهر</h4>
+                                        <p id="role"> aaa</p>
+                                        <a class="btn btn-primary btn-block" title="ویرایش" href="/update-user/{{user_id}}"> ویرایش کاربر</a>
                                     </div>
-                                    <div class="col-12 mb-3">
-                                        <h6>ایمیل</h6>
-                                        <p class="text-muted" id="email"></p>
-                                    </div>
-                                    <div class="col-10 mb-3">
-                                        <h6>وضعیت</h6>
-                                        <p class="text-muted" id="is-active"></p>
-                                    </div>
+                                    <div class="row"></div>
+
+
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
+            <!-- /page content -->
+
+            <!-- /page content -->
+
+            <!-- footer content -->
+
+            <!-- /footer content -->
         </div>
     </div>
-</section>
+    <div id="lock_screen">
+        <table>
+            <tr>
+                <td>
+                    <div class="clock"></div>
+                    <span class="unlock">
+                        <span class="fa-stack fa-5x">
+                            <i class="fa fa-square-o fa-stack-2x fa-inverse"></i>
+                            <i id="icon_lock" class="fa fa-lock fa-stack-1x fa-inverse"></i>
+                        </span>
+                    </span>
+                </td>
+            </tr>
+        </table>
+    </div>
+    </section>
+    {% include 'scripts.html' %}
 
+    <script>
+        let user_id = "{{user_id}}"
+        $(document).ready(function () {
+            $.ajax({
+                type: "GET",
+                url: `/api/users/${user_id}/`,
+                success: function (response) {
+                    $('#name').text(response.first_name || response.last_name ? response.first_name + ' ' + response.last_name : '--');
+                    $("#email").text(response.email || '--')
+                    $("#is-active").text(response.is_active ? 'فعال' : 'غیرفعال')
+                    $("#username").text(response.username);
+                    if (response.is_superuser === true && response.is_staff === true) {
+                        $('#role').text('سرپرست');
+                    }
+                    else if (response.is_superuser === true && response.is_staff === false) {
+                        $('#role').text('مدیر');
+                    }
+                    else {
+                        $('#role').text('نصاب');
+                    }
+                }
+            });
+            $.ajax({
+                type: "GET",
+                url: `/api/users-profile/${user_id}/`,
+                success: function (response) {
+                    $("#phone-number").text(response.phone_number || '--')
+                    $('#profile').attr('src', response.profile_image)
+                    console.log(response.profile_image);
 
-<script>
-    let user_id = '{{user_id}}';
-    console.log('user_id', user_id);
-    $('#edit').attr('href', `/update-user/${user_id}`)
-    $(document).ready(function () {
-        $.ajax({
-            type: "GET",
-            url: `/api/users/${user_id}/`,
-            success: function (response) {
-                $('#name').text(response.first_name || response.last_name ? response.first_name + ' ' + response.last_name : '--');
-
-                $("#email").text(response.email ? response.email : '--')
-                $("#is-active").text(response.is_active ? 'فعال' : 'غیرفعال')
-                $("#role").text(response.is_superuser ? 'ادمین' : 'نصاب')
-                $('#username').text(response.username);
-
-
-            },
-            error: function () {
-                console.log('Failed to retrieve profile data');
-            }
+                },
+                error: function () {
+                    console.log('Failed to retrieve profile data');
+                }
+            });
         });
 
-        $.ajax({
-            type: "GET",
-            url: `/api/users-profile/${user_id}/`,
-            success: function (response) {
 
-                $("#phone-number").text(response.phone_number ? response.phone_number : '--')
-                $("#is-active").text(response.user.is_active ? 'فعال' : 'غیرفعال')
-                $('#profile-image').attr('src', response.profile_image)
-
-            },
-            error: function () {
-                console.log('Failed to retrieve profile data');
-            }
-        });
-    });
-
-
-</script>
-
-
-{% endblock content %}
+    </script>

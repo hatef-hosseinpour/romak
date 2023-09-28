@@ -3,11 +3,13 @@ from rest_framework import status, authentication, permissions, viewsets
 from rest_framework.response import Response
 from main.models import Enginroom, locationPublicInfo, EnginRoomPublicInfo, InstallationInfo, EnginRoomImage
 from api.serializers import EnginroomSerializers, LocationPublicInfoSerializers, EnginroomPublicInfoSerializers, InstallationInfoSerializers, EnginroomImagesSerializers
+from django.db.models import Q
 
 
 class EnginroomPublicInfoViewSet(viewsets.ModelViewSet):
     authentication_classes = [authentication.SessionAuthentication]
-    permission_classes = [permissions.IsAdminUser]
+    permission_classes = [permissions.IsAdminUser |
+                          permissions.IsAuthenticated]
 
     queryset = EnginRoomPublicInfo.objects.all()
     serializer_class = EnginroomPublicInfoSerializers
@@ -35,7 +37,8 @@ class EnginroomPublicInfoViewSet(viewsets.ModelViewSet):
 
 class LocationPublicInfoViewSet(viewsets.ModelViewSet):
     authentication_classes = [authentication.SessionAuthentication]
-    permission_classes = [permissions.IsAdminUser]
+    permission_classes = [permissions.IsAdminUser |
+                          permissions.IsAuthenticated]
     queryset = locationPublicInfo.objects.all()
 
     serializer_class = LocationPublicInfoSerializers
@@ -63,7 +66,8 @@ class LocationPublicInfoViewSet(viewsets.ModelViewSet):
 
 class InstallationInfoViewSet(viewsets.ModelViewSet):
     authentication_classes = [authentication.SessionAuthentication]
-    permission_classes = [permissions.IsAdminUser]
+    permission_classes = [permissions.IsAdminUser |
+                          permissions.IsAuthenticated]
 
     queryset = InstallationInfo.objects.all()
     serializer_class = InstallationInfoSerializers
@@ -92,20 +96,22 @@ class InstallationInfoViewSet(viewsets.ModelViewSet):
 class EnginroomImagesViewSet(viewsets.ModelViewSet):
     parser_classes = [MultiPartParser]
     authentication_classes = [authentication.SessionAuthentication]
-    permission_classes = [permissions.IsAdminUser]
+    permission_classes = [permissions.IsAdminUser |
+                          permissions.IsAuthenticated]
 
     queryset = EnginRoomImage.objects.all()
     serializer_class = EnginroomImagesSerializers
 
-    def get_queryset(self):
-        user = self.request.user
+    def list(self, request, *args, **kwargs):
+        enginroom_id = request.query_params.get('enginroom')
 
-        if user.is_superuser and user.is_staff:
-            return EnginRoomImage.objects.all()
-        elif user.is_staff and not user.is_superuser:
-            return EnginRoomImage.objects.filter(user__profile__owner=user)
+        if enginroom_id is not None:
+            queryset = EnginRoomImage.objects.filter(enginroom=enginroom_id)
         else:
-            return EnginRoomImage.objects.filter(user=user)
+            queryset = EnginRoomImage.objects.all()
+
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
 
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)

@@ -13,6 +13,10 @@ def dashboardFrontView(request):
     
     return render(request, 'frontend/users/dashboard.html')
 
+def editProfileFrontView(request):
+    
+    return render(request, 'frontend/users/edit-profile.html')
+
 
 def loginUserFrontView(request):
     if request.session.session_key:

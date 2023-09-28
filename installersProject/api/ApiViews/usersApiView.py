@@ -36,8 +36,8 @@ class LoginUserApiView(APIView):
 
             login(request, user)
 
-            is_admin = user.is_superuser and user.is_staff
-            is_staff = user.is_staff
+            is_admin = user.is_superuser  # Corrected attribute name
+            is_staff = user.is_staff and not is_admin  # Corrected attribute name 
             profile = user.profile
             phone_number = profile.phone_number
             csrf_token = get_token(request)

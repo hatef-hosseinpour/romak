@@ -368,7 +368,7 @@
     {% include 'scripts.html' %}
     <script>
         $('select').select2();
-        let id = '{{id}}'
+        let id = '{{id}}' //enginroom id
         let selectEnginroom = id;
         let user = $('#user').val();
         let currentTab;
@@ -398,13 +398,13 @@
                 type: "GET",
                 url: "/api/location-public-info/" + id + "/",
                 success: function (response) {
-                    $('#address').text(response.address || 'xx')
+                    $('#address').text(response.address || '')
 
-                    $('#select-province').val(response.province);
-                    $('#select-city').val(response.city)
-                    // Trigger the change event on the province select to populate the city select
-                    // $('#select-province').trigger('change');
-                    $('#select-province').trigger('change', [response.city]);
+                    // $('#select-province').val(response.province);
+                    // $('#select-city').val(response.city)
+                    // // Trigger the change event on the province select to populate the city select
+                    // $('#select-province').trigger('change', [response.city]);
+                    // // $('#select-city').trigger('change', );
 
                     $('#phone-number1').val(response.phone_number1 || '')
                     $('#phone-number2').val(response.phone_number2 || '')
@@ -413,13 +413,18 @@
                     $('#building-image-preview').attr('src', response.building_image)
                     currentbuildingImageURL = response.building_image;
                     $('#location-input').val(response.location)
-                    var loc = $('#location-input').val().split(',');
-                    var lat = parseFloat(loc[0]);
-                    var lng = parseFloat(loc[1]);
-                    map.setView([lat, lng], 13);
-                    var marker = L.marker([lat, lng]).addTo(map);
-                    $('#location-input').val(lat + ',' + lng);
+                    if (response.location) {
+                        var loc = $('#location-input').val().split(',');
+                        var lat = parseFloat(loc[0]);
+                        var lng = parseFloat(loc[1]);
+                        map.setView([lat, lng], 13);
+                        var marker = L.marker([lat, lng]).addTo(map);
+                        $('#location-input').val(lat + ',' + lng);
 
+                    }
+                    $('#select-province').val(response.province);
+                    // Trigger the change event on the province select to populate the city select
+                    $('#select-province').trigger('change', [response.city]);
 
                 },
                 error: function (error) {
@@ -432,7 +437,7 @@
                 type: "GET",
                 url: "/api/enginroom-public-info/" + id + "/",
                 success: function (response) {
-                    $('#select-usage').val(response.usage || 'انتخاب کنید');
+                    $('#select-usage').val(response.usage || '');
                     $('#select-usage').trigger('change');
                     $('#hotwater-pump').val(response.number_of_hot_water_pumps || '');
                     $('#coil-source-pump').val(response.number_of_coil_sources_pumps || '');
@@ -459,9 +464,9 @@
                 type: "GET",
                 url: "/api/installation-info/" + id + "/",
                 success: function (response) {
-                    $('#select-installed-model').val(response.installed_device_model || 'انتخاب کنید');
+                    $('#select-installed-model').val(response.installed_device_model || '');
                     $('#select-installed-model').trigger('change');
-                    $('#connection-type').val(response.connection_type || 'انتخاب کنید');
+                    $('#connection-type').val(response.connection_type || '');
                     $('#connection-type').trigger('change');
                     $('#modem-model').val(response.modem_model || '');
                     $("#has-simcard").prop("checked", response.has_simcard);
@@ -483,12 +488,12 @@
 
             $.ajax({
                 type: "GET",
-                url: `/api/enginroom-images/?enginroom=${selectEnginroom}&user=${user}`,
+                url: `/api/enginroom-images/?enginroom=${selectEnginroom}`,
                 success: function (response) {
                     for (var i = 0; i < response.length; i++) {
-                        div.append(`
+                        div.append(`<div style="background=#fff;">
                 <img id="image-${response[i].id}" class="img-fluid thumbnail" src="${response[i].images}" width="200px" height="200px">
-                <a id="btn-${response[i].id}" onclick="deleteImage(${response[i].id})" class="btn btn-default"><i class="fa fa-trash"></i> حذف </a>
+                <a id="btn-${response[i].id}" onclick="deleteImage(${response[i].id})" class="btn btn-default" style="width: 195px;"><i class="fa fa-trash"></i> حذف </a>
             `);
 
 
@@ -535,28 +540,26 @@
             });
 
             map.doubleClickZoom.disable();
+            //#endregion
 
-            // Locate button click event handler
-            $('#locate-button').click(function () {
-                if ("geolocation" in navigator) {
-                    navigator.geolocation.getCurrentPosition(function (position) {
-                        var lat = position.coords.latitude;
-                        var lng = position.coords.longitude;
+            //#region Locate  event handler
+            if ("geolocation" in navigator) {
+                navigator.geolocation.getCurrentPosition(function (position) {
+                    var lat = position.coords.latitude;
+                    var lng = position.coords.longitude;
 
-                        map.setView([lat, lng], 13);
-                        if (marker) {
-                            map.removeLayer(marker);
-                        }
-                        marker = L.marker([lat, lng]).addTo(map);
+                    map.setView([lat, lng], 13);
+                    if (marker) {
+                        map.removeLayer(marker);
+                    }
+                    marker = L.marker([lat, lng]).addTo(map);
 
-                        $('#location-input').val(lat + ',' + lng);
-                    }, function (error) {
-                        console.error("Error getting current position:", error.message);
-                    });
-                } else {
-                    console.error("Geolocation is not available.");
-                }
-            });
+                    $('#location-input').val(lat + ',' + lng);
+                });
+            } else {
+                console.error("Geolocation is not available.");
+            }
+
 
             //#endregion 
 
@@ -579,7 +582,7 @@
                 }
             });
 
-            $("#select-province").change(function () {
+            $("#select-province").change(function (event, selectedCity) {
                 var selectedProvinceId = $(this).val();
 
                 // Load city data from city.csv and filter by the selected province
@@ -600,6 +603,11 @@
                                 var option = $("<option></option>")
                                     .val(parts[0])
                                     .text(parts[3]);
+
+                                if (selectedCity === parts[0]) {
+                                    option.prop('selected', true);
+                                }
+
                                 citySelect.append(option);
                             }
                         }
@@ -685,8 +693,10 @@
             jalaliDatepicker.startWatch({ time: true });
 
 
-        });
 
+
+        });
+        //#region after multiple image displayed if click on delete button
         function deleteImage(id) {
 
             $.ajax({
@@ -700,9 +710,9 @@
 
 
                     // Show a success message using SweetAlert
-                    Swal.fire('حذف شد!', 'با موفقیت حذف شد.', 'success');
-                    $(`#image-${id}`).hide()
-                    $(`#btn-${id}`).hide()
+                    // Swal.fire('حذف شد!', 'با موفقیت حذف شد.', 'success');
+                    $(`#image-${id}`).remove();
+                    $(`#btn-${id}`).remove();
 
                 },
                 error: function (error) {
@@ -775,6 +785,8 @@
                 let phoneNumber2 = $('#phone-number1').val() || '';
                 let buildingMetrage = $('#building-metrage').val() || 0;
                 let meterSubscribtion = $('#meter-subscribtion').val() || '';
+                let province = $('#select-province').val() || '';
+                let city = $('#select-city').val() || '';
                 let buildingImageInput = $("#building-image")[0].files[0];
 
                 let locationInput = $('#location-input').val();
@@ -786,6 +798,8 @@
                             'user': user,
                             'enginroom': selectEnginroom,
                             'address': address,
+                            'province': province,
+                            'city': city,
                             'phone_number1': phoneNumber1,
                             'phone_number2': phoneNumber2,
                             'building_metrage': buildingMetrage,
@@ -821,6 +835,8 @@
                             'user': user,
                             'enginroom': selectEnginroom,
                             'address': address,
+                            'province': province,
+                            'city': city,
                             'phone_number1': phoneNumber1,
                             'phone_number2': phoneNumber2,
                             'building_metrage': buildingMetrage,
@@ -908,7 +924,7 @@
             }
             else if (currentTab == 2) {
 
-
+                let formattedInstallationDate;
 
                 let selectInstalledModel = $('#select-installed-model').val();
                 let selectConnectionType = $('#connection-type').val();
@@ -918,24 +934,8 @@
                     checkSimcard = $(this).prop("checked");
                 });
                 let modelSimcard = $("#modem-simcard").val() || '';
-                let installationDate = $("#installation-date").val();
-                let dateAndTimeComponents = installationDate.split(' ');
-                let dateComponent = dateAndTimeComponents[0];
-                let timeComponent = dateAndTimeComponents[1];
+                let installationDate = $("#installation-date").val() || '';
 
-                let dateComponents = dateComponent.split('/');
-                let year = parseInt(dateComponents[0]);
-                let month = parseInt(dateComponents[1]) - 1; // JavaScript months are 0-indexed
-                let day = parseInt(dateComponents[2]);
-
-                let timeComponents = timeComponent.split(':');
-                let hours = parseInt(timeComponents[0]);
-                let minutes = parseInt(timeComponents[1]);
-                let seconds = parseInt(timeComponents[2]);
-
-                let formattedInstallationDate = new Date(year, month, day, hours, minutes, seconds).toISOString();
-
-                console.log(formattedInstallationDate);
                 let deviceSerialImageInput = $("#device-serial-image")[0].files[0];
                 let deviceSerialImageReader = new FileReader();
                 let installationinfoData;
@@ -955,7 +955,7 @@
                             'modem_model': modemModel,
                             'has_simcard': checkSimcard,
                             'modem_simcard_number': modelSimcard,
-                            'installation_date': formattedInstallationDate,
+                            'installation_date': installationDate,
                             'device_serial_number_image': deviceSerialbase64Image,
                             'status': false
                         }
@@ -1027,8 +1027,7 @@
                 var files = $('#enginroom-images')[0].files;
                 enginroomImagesData = new FormData();
                 var imagesData = []
-                enginroomImagesData.append('enginroom', selectEnginroom);
-                enginroomImagesData.append('user', user);
+
 
                 // Create a function to handle image processing and uploading
                 for (var i = 0; i < files.length; i++) {
@@ -1042,14 +1041,18 @@
                         if (imagesData.length === files.length) {
                             // console.log(imagesData.length)
                             // // Convert the imagesData array to JSON and append it to FormData
+                            enginroomImagesData.append('enginroom', selectEnginroom);
+                            enginroomImagesData.append('user', user);
                             enginroomImagesData.append('images_data', imagesData);
 
                             for (var pair of enginroomImagesData.entries()) {
-                                console.log(pair[0] + ': ' + pair[1]);
+                                console.log(pair);
                             }
 
                             uploadImages(enginroomImagesData);
+                           
                         }
+                        
                     };
                     images_reader.readAsDataURL(files[i]);
                 }

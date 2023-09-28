@@ -23,6 +23,12 @@ class Enginroom(models.Model):
     # @param step to findout which step of installation is filled
     step = models.PositiveIntegerField(default=0, null=True, blank=True)
 
+    # @param status this field defaul to false after user fill information of installation admin can accept it and after accept of admin this field change to true
+    status = models.BooleanField(default=None, null=True)
+
+    class Meta:
+        ordering = ['-id']
+
     def __str__(self) -> str:
         return '%s' % self.enginroom_name
 
@@ -57,7 +63,7 @@ class locationPublicInfo(models.Model):
     # @param location the location of this building that chosen from map and coordination of it stored in this field
     location = models.CharField(max_length=200, null=True, blank=True)
     # @param status this field defaul to false after user fill information of installation admin can accept it and after accept of admin this field change to true
-    status = models.BooleanField(default=False, null=True)
+    # status = models.BooleanField(default=False, null=True)
 
     def __str__(self) -> str:
         return "%s" % self.enginroom
@@ -104,7 +110,7 @@ class EnginRoomPublicInfo(models.Model):
     number_of_hot_water_pumps = models.PositiveIntegerField(default=0)
 
     # @param status this field defaul to false after user fill information of installation admin can accept it and after accept of admin this field change to true
-    status = models.BooleanField(default=False, null=True)
+    # status = models.BooleanField(default=False, null=True)
 
     def __str__(self) -> str:
         return f'{self.enginroom} با کاربری {self.usage}'
@@ -142,13 +148,13 @@ class InstallationInfo(models.Model):
     modem_simcard_number = models.CharField(
         max_length=200, null=True, blank=True)
     # @param  installation_date the date and time of installation
-    installation_date = models.DateTimeField(
+    installation_date = models.CharField(max_length=1000,
         verbose_name='installed_at', null=True, blank=True)
     # @param  device_serial_number_image the user should take a picture from serial of device number
     device_serial_number_image = models.ImageField(
         null=True, blank=True, upload_to='device_serial_number_images/', default='no-image.jpg')
     # @param status this field defaul to false after user fill information of installation admin can accept it and after accept of admin this field change to true
-    status = models.BooleanField(default=False, null=True)
+    # status = models.BooleanField(default=False, null=True)
 
     def __str__(self) -> str:
         return f'{self.installed_device_model} installed at {str(self.installation_date)}'
@@ -177,7 +183,7 @@ class EnginRoomImage(models.Model):
     images = models.ImageField(
         null=True, blank=True, upload_to='enginroom_images/')
     # @param status this field defaul to false after user fill information of installation admin can accept it and after accept of admin this field change to true
-    status = models.BooleanField(default=False, null=True)
+    # status = models.BooleanField(default=False, null=True)
 
     def __str__(self):
 

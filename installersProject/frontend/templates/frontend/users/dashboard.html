@@ -5,6 +5,11 @@
 {% include 'head.html' with title="Installers App| Dashboard" %}
 {% endblock %}
 <!-- /header content -->
+<style>
+    p{
+        font-size : 15px;
+    }
+</style>
 
 <body class="nav-md">
     <div class="container body">
@@ -27,12 +32,11 @@
                             <li class="">
                                 <a href="javascript:;" class="user-profile dropdown-toggle" data-toggle="dropdown"
                                     aria-expanded="false">
-                                    {{request.session.username}} <span
-                                        class=" fa fa-angle-down"></span>
+                                    {{request.session.username}} <span class=" fa fa-angle-down"></span>
                                 </a>
                                 <ul class="dropdown-menu dropdown-usermenu pull-right">
                             </li>
-                            <li><a href="/profile/"><i class="fa fa-user pull-right"></i>
+                            <li><a href="/dashboard/"><i class="fa fa-user pull-right"></i>
                                     پروفایل</a></li>
                             <li><a href="/change-password/"><i class="fa fa-lock pull-right"></i>
                                     تغییر رمزعبور</a></li>
@@ -53,16 +57,15 @@
                 <div class="">
                     <div class="page-title">
                         <div class="title_left">
-                            <h3>صفحه ساده</h3>
+                            <h3>پروفایل کاربر</h3>
                         </div>
 
                         <div class="title_right">
                             <div class="col-md-5 col-sm-5 col-xs-12 form-group pull-right top_search">
                                 <div class="input-group">
-                                    <input type="text" class="form-control" placeholder="جست و جو برای...">
+
                                     <span class="input-group-btn">
-                                        <button class="btn btn-default" type="button"><i
-                                                class="fa fa-search"></i></button>
+
                                     </span>
                                 </div>
                             </div>
@@ -75,199 +78,167 @@
                         <div class="col-md-12 col-sm-12 col-xs-12">
                             <div class="x_panel">
                                 <div class="x_title">
-                                    <h2>صفحه ساده</h2>
+
                                     <ul class="nav navbar-right panel_toolbox">
                                         <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
                                         </li>
-                                        <li class="dropdown">
-                                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button"
-                                                aria-expanded="false"><i class="fa fa-wrench"></i></a>
-                                            <ul class="dropdown-menu" role="menu">
-                                                <li><a href="#">تنظیمات 1</a>
-                                                </li>
-                                                <li><a href="#">تنظیمات 2</a>
-                                                </li>
-                                            </ul>
-                                        </li>
+
                                         <li><a class="close-link"><i class="fa fa-close"></i></a>
                                         </li>
                                     </ul>
                                     <div class="clearfix"></div>
                                 </div>
                                 <div class="x_content">
-                                    <section style="background-color: #eee;">
-                                        <div class="container py-5">
-                                          <div class="row">
-                                            <div class="col">
-                                             
+
+                                    <div class="row">
+
+
+                                        <section style="background-color: #eee;">
+                                            <div class="container py-5">
+                                                <div class="row">
+                                                    <div class="col"style="
+                                                    margin-top: 20px;
+                                                ">
+                                                        
+                                                    </div>
+                                                </div>
+
+                                                <div class="row">
+                                                    <div class="col-lg-4">
+                                                        <div class="card mb-4">
+                                                            <div class="card-body text-center">
+                                                                <img id="profile" src=""
+                                                                    alt="avatar" class="rounded-circle img-fluid"
+                                                                    style="width: 150px;">
+                                                                <h5 class="my-3" id="username">{{request.session.username}}</h5>
+                                                                {% if request.session.is_admin %}
+                                                                <p class="text-muted mb-1" id="role">سرپرست</p>
+                                                            {% elif request.session.is_staff %}
+                                                            <p class="text-muted mb-1" id="role">مدیر</p>
+                                                            {% else %}
+                                                            <p class="text-muted mb-1" id="role">نصاب</p>
+                                                            {% endif %}
+                                                                <div class="d-flex justify-content-center mb-2">
+                                                                    <a href="/edit-profile/"
+                                                                        class="btn btn-primary btn-block">ویرایش</a>
+                                                                   
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="card col-md-12">
+                                                            <div class="card-body p-0">
+                                                                <div class="col-md-12">
+                                                                    <div class="card mb-4 mb-md-0">
+                                                                        <div class="card-body">
+                                                                            <p class="mb-4"><span
+                                                                                    class="text-primary font-italic me-1">assigment</span>
+                                                                                Project Status
+                                                                            </p>
+                                                                            <p class="mb-1" style="font-size: .77rem;">Web
+                                                                                Design</p>
+                                                                            <div class="progress rounded"
+                                                                                style="height: 5px;">
+                                                                                <div class="progress-bar" role="progressbar"
+                                                                                    style="width: 80%" aria-valuenow="80"
+                                                                                    aria-valuemin="0" aria-valuemax="100">
+                                                                                </div>
+                                                                            </div>
+                                                                            <p class="mt-4 mb-1" style="font-size: .77rem;">
+                                                                                Website Markup</p>
+                                                                            <div class="progress rounded"
+                                                                                style="height: 5px;">
+                                                                                <div class="progress-bar" role="progressbar"
+                                                                                    style="width: 72%" aria-valuenow="72"
+                                                                                    aria-valuemin="0" aria-valuemax="100">
+                                                                                </div>
+                                                                            </div>
+                                                                            <p class="mt-4 mb-1" style="font-size: .77rem;">
+                                                                                One Page</p>
+                                                                            <div class="progress rounded"
+                                                                                style="height: 5px;">
+                                                                                <div class="progress-bar" role="progressbar"
+                                                                                    style="width: 89%" aria-valuenow="89"
+                                                                                    aria-valuemin="0" aria-valuemax="100">
+                                                                                </div>
+                                                                            </div>
+                                                                            <p class="mt-4 mb-1" style="font-size: .77rem;">
+                                                                                Mobile Template</p>
+                                                                            <div class="progress rounded"
+                                                                                style="height: 5px;">
+                                                                                <div class="progress-bar" role="progressbar"
+                                                                                    style="width: 55%" aria-valuenow="55"
+                                                                                    aria-valuemin="0" aria-valuemax="100">
+                                                                                </div>
+                                                                            </div>
+                                                                            <p class="mt-4 mb-1" style="font-size: .77rem;">
+                                                                                Backend API</p>
+                                                                            <div class="progress rounded mb-2"
+                                                                                style="height: 5px;">
+                                                                                <div class="progress-bar" role="progressbar"
+                                                                                    style="width: 66%" aria-valuenow="66"
+                                                                                    aria-valuemin="0" aria-valuemax="100">
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-lg-8">
+                                                        <div class="card mb-4">
+                                                            <div class="card-body">
+                                                                <div class="row">
+                                                                    <div class="col-sm-3">
+                                                                        <p class="mb-0 font-weight-bold" >نام</p>
+                                                                    </div>
+                                                                    <div class="col-sm-9">
+                                                                        <p class="text-muted mb-0" id="name"></p>
+                                                                    </div>
+                                                                </div>
+                                                                <hr>
+                                                                <div class="row">
+                                                                    <div class="col-sm-3">
+                                                                        <p class="mb-0">ایمیل</p>
+                                                                    </div>
+                                                                    <div class="col-sm-9">
+                                                                        <p class="text-muted mb-0" id="email"> </p>
+                                                                    </div>
+                                                                </div>
+                                                                <hr>
+                                                                <div class="row">
+                                                                    <div class="col-sm-3">
+                                                                        <p class="mb-0">شماره همراه</p>
+                                                                    </div>
+                                                                    <div class="col-sm-9">
+                                                                        <p class="text-muted mb-0" id="phone-number"></p>
+                                                                    </div>
+                                                                </div>
+                                                                <hr>
+                                                                <div class="row">
+                                                                    <div class="col-sm-3">
+                                                                        <p class="mb-0">وضعیت</p>
+                                                                    </div>
+                                                                    <div class="col-sm-9">
+                                                                        <p class="text-muted mb-0" id="is-active"></p>
+                                                                    </div>
+                                                                </div>
+                                                                <hr>
+                                                              
+                                                            </div>
+                                                        </div>
+                                                      
+                                                    </div>
+                                                </div>
                                             </div>
-                                          </div>
-                                      
-                                          <div class="row">
-                                            <div class="col-lg-4">
-                                              <div class="card mb-4">
-                                                <div class="card-body text-center">
-                                                  <img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-chat/ava3.webp" alt="avatar"
-                                                    class="rounded-circle img-fluid" style="width: 150px;">
-                                                  <h5 class="my-3">John Smith</h5>
-                                                  <p class="text-muted mb-1">Full Stack Developer</p>
-                                                  <p class="text-muted mb-4">Bay Area, San Francisco, CA</p>
-                                                  <div class="d-flex justify-content-center mb-2">
-                                                    <button type="button" class="btn btn-primary">ویرایش</button>
-                                                    
-                                                  </div>
-                                                </div>
-                                              </div>
-                                              <div class="card mb-4 mb-lg-0">
-                                                <div class="card-body p-0">
-                                                  <ul class="list-group list-group-flush rounded-3">
-                                                    <li class="list-group-item d-flex justify-content-between align-items-center p-3">
-                                                      <i class="fa fa-globe fa-lg text-warning"></i>
-                                                      <p class="mb-0">https://mdbootstrap.com</p>
-                                                    </li>
-                                                    <li class="list-group-item d-flex justify-content-between align-items-center p-3">
-                                                      <i class="fa fa-github fa-lg" style="color: #333333;"></i>
-                                                      <p class="mb-0">mdbootstrap</p>
-                                                    </li>
-                                                    <li class="list-group-item d-flex justify-content-between align-items-center p-3">
-                                                      <i class="fa fa-twitter fa-lg" style="color: #55acee;"></i>
-                                                      <p class="mb-0">@mdbootstrap</p>
-                                                    </li>
-                                                    <li class="list-group-item d-flex justify-content-between align-items-center p-3">
-                                                      <i class="fa fa-instagram fa-lg" style="color: #ac2bac;"></i>
-                                                      <p class="mb-0">mdbootstrap</p>
-                                                    </li>
-                                                    <li class="list-group-item d-flex justify-content-between align-items-center p-3">
-                                                      <i class="fa fa-facebook-f fa-lg" style="color: #3b5998;"></i>
-                                                      <p class="mb-0">mdbootstrap</p>
-                                                    </li>
-                                                  </ul>
-                                                </div>
-                                              </div>
-                                            </div>
-                                            <div class="col-lg-8">
-                                              <div class="card mb-4">
-                                                <div class="card-body">
-                                                  <div class="row">
-                                                    <div class="col-sm-3">
-                                                      <p class="mb-0">Full Name</p>
-                                                    </div>
-                                                    <div class="col-sm-9">
-                                                      <p class="text-muted mb-0">Johnatan Smith</p>
-                                                    </div>
-                                                  </div>
-                                                  <hr>
-                                                  <div class="row">
-                                                    <div class="col-sm-3">
-                                                      <p class="mb-0">Email</p>
-                                                    </div>
-                                                    <div class="col-sm-9">
-                                                      <p class="text-muted mb-0">example@example.com</p>
-                                                    </div>
-                                                  </div>
-                                                  <hr>
-                                                  <div class="row">
-                                                    <div class="col-sm-3">
-                                                      <p class="mb-0">Phone</p>
-                                                    </div>
-                                                    <div class="col-sm-9">
-                                                      <p class="text-muted mb-0">(097) 234-5678</p>
-                                                    </div>
-                                                  </div>
-                                                  <hr>
-                                                  <div class="row">
-                                                    <div class="col-sm-3">
-                                                      <p class="mb-0">Mobile</p>
-                                                    </div>
-                                                    <div class="col-sm-9">
-                                                      <p class="text-muted mb-0">(098) 765-4321</p>
-                                                    </div>
-                                                  </div>
-                                                  <hr>
-                                                  <div class="row">
-                                                    <div class="col-sm-3">
-                                                      <p class="mb-0">Address</p>
-                                                    </div>
-                                                    <div class="col-sm-9">
-                                                      <p class="text-muted mb-0">Bay Area, San Francisco, CA</p>
-                                                    </div>
-                                                
-                                                  </div>
-                                                </div>
-                                              </div>
-                                              <div class="clearfix"></div>
-                                              <div class="row">
-                                                <div class="col-md-5">
-                                                  <div class="card mb-4 mb-md-0" style="background: #fff;">
-                                                    <div class="card-body">
-                                                      <p class="mb-4"><span class="text-primary font-italic me-1">assigment</span> Project Status
-                                                      </p>
-                                                      <p class="mb-1" style="font-size: .77rem;">Web Design</p>
-                                                      <div class="progress rounded" style="height: 5px;">
-                                                        <div class="progress-bar" role="progressbar" style="width: 80%" aria-valuenow="80"
-                                                          aria-valuemin="0" aria-valuemax="100"></div>
-                                                      </div>
-                                                      <p class="mt-4 mb-1" style="font-size: .77rem;">Website Markup</p>
-                                                      <div class="progress rounded" style="height: 5px;">
-                                                        <div class="progress-bar" role="progressbar" style="width: 72%" aria-valuenow="72"
-                                                          aria-valuemin="0" aria-valuemax="100"></div>
-                                                      </div>
-                                                      <p class="mt-4 mb-1" style="font-size: .77rem;">One Page</p>
-                                                      <div class="progress rounded" style="height: 5px;">
-                                                        <div class="progress-bar" role="progressbar" style="width: 89%" aria-valuenow="89"
-                                                          aria-valuemin="0" aria-valuemax="100"></div>
-                                                      </div>
-                                                      <p class="mt-4 mb-1" style="font-size: .77rem;">Mobile Template</p>
-                                                      <div class="progress rounded" style="height: 5px;">
-                                                        <div class="progress-bar" role="progressbar" style="width: 55%" aria-valuenow="55"
-                                                          aria-valuemin="0" aria-valuemax="100"></div>
-                                                      </div>
-                                                      <p class="mt-4 mb-1" style="font-size: .77rem;">Backend API</p>
-                                                      <div class="progress rounded mb-2" style="height: 5px;">
-                                                        <div class="progress-bar" role="progressbar" style="width: 66%" aria-valuenow="66"
-                                                          aria-valuemin="0" aria-valuemax="100"></div>
-                                                      </div>
-                                                    </div>
-                                                  </div>
-                                                </div>
-                                                <div class="col-md-5" style="background: #fff;">
-                                                  <div class="card mb-4 mb-md-0">
-                                                    <div class="card-body">
-                                                      <p class="mb-4"><span class="text-primary font-italic me-1">assigment</span> Project Status
-                                                      </p>
-                                                      <p class="mb-1" style="font-size: .77rem;">Web Design</p>
-                                                      <div class="progress rounded" style="height: 5px;">
-                                                        <div class="progress-bar" role="progressbar" style="width: 80%" aria-valuenow="80"
-                                                          aria-valuemin="0" aria-valuemax="100"></div>
-                                                      </div>
-                                                      <p class="mt-4 mb-1" style="font-size: .77rem;">Website Markup</p>
-                                                      <div class="progress rounded" style="height: 5px;">
-                                                        <div class="progress-bar" role="progressbar" style="width: 72%" aria-valuenow="72"
-                                                          aria-valuemin="0" aria-valuemax="100"></div>
-                                                      </div>
-                                                      <p class="mt-4 mb-1" style="font-size: .77rem;">One Page</p>
-                                                      <div class="progress rounded" style="height: 5px;">
-                                                        <div class="progress-bar" role="progressbar" style="width: 89%" aria-valuenow="89"
-                                                          aria-valuemin="0" aria-valuemax="100"></div>
-                                                      </div>
-                                                      <p class="mt-4 mb-1" style="font-size: .77rem;">Mobile Template</p>
-                                                      <div class="progress rounded" style="height: 5px;">
-                                                        <div class="progress-bar" role="progressbar" style="width: 55%" aria-valuenow="55"
-                                                          aria-valuemin="0" aria-valuemax="100"></div>
-                                                      </div>
-                                                      <p class="mt-4 mb-1" style="font-size: .77rem;">Backend API</p>
-                                                      <div class="progress rounded mb-2" style="height: 5px;">
-                                                        <div class="progress-bar" role="progressbar" style="width: 66%" aria-valuenow="66"
-                                                          aria-valuemin="0" aria-valuemax="100"></div>
-                                                      </div>
-                                                    </div>
-                                                  </div>
-                                                </div>
-                                              </div>
-                                            </div>
-                                          </div>
-                                        </div>
-                                      </section>
+                                        </section>
+
+
+                                    </div>
+
+                                    <div class="row"></div>
+
+
                                 </div>
                             </div>
                         </div>
@@ -279,13 +250,7 @@
             <!-- /page content -->
 
             <!-- footer content -->
-            <footer class="hidden-print">
-                <div class="pull-left">
-                    Gentelella - قالب پنل مدیریت بوت استرپ <a href="https://colorlib.com">Colorlib</a> | پارسی شده توسط
-                    <a href="https://morteza-karimi.ir">مرتضی کریمی</a>
-                </div>
-                <div class="clearfix"></div>
-            </footer>
+
             <!-- /footer content -->
         </div>
     </div>
@@ -304,8 +269,37 @@
             </tr>
         </table>
     </div>
+    </section>
     {% include 'scripts.html' %}
-  
-</body>
 
-</html>
+    <script>
+        let user_id = "{{request.session.user_id}}"
+        $(document).ready(function () {
+            $.ajax({
+                type: "GET",
+                url: `/api/users/${user_id}/`,
+                success: function (response) {
+                    $('#name').text(response.first_name || response.last_name ? response.first_name + ' ' + response.last_name : '--');
+                    $("#email").text(response.email || '--')
+                    $("#is-active").text(response.is_active ? 'فعال' : 'غیرفعال')
+                    $("#username").text(response.username);
+
+                }
+            });
+            $.ajax({
+                type: "GET",
+                url: `/api/users-profile/${user_id}/`,
+                success: function (response) {
+                    $("#phone-number").text(response.phone_number || '--')
+                    $('#profile').attr('src', response.profile_image)
+                    console.log(response.profile_image);
+
+                },
+                error: function () {
+                    console.log('Failed to retrieve profile data');
+                }
+            });
+        });
+
+
+    </script>

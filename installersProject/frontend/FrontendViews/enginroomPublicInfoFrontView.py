@@ -11,12 +11,12 @@ def enginroomPublicInfoListFrontView(request):
 
 def enginroomPublicInfoDetialFrontView(request, pk):
 
-    response = requests.get(
-        f'{base_url}/api/enginroom-public-info/{pk}/', cookies=request.COOKIES)
-    data = response.json()
-    id = data.get('id')
+    # response = requests.get(
+    #     f'{base_url}/api/enginroom-public-info/{pk}/', cookies=request.COOKIES)
+    # data = response.json()
+    # id = data.get('id')
 
-    context = {'enginroom_id': id}
+    context = {'enginroom_id': pk}
     return render(request, 'frontend/enginroomPublicInfo/enginroomPublicInfo-detail.html', context)
 
 

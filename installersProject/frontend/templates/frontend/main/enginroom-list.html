@@ -60,7 +60,7 @@
                             <div class="col-md-5 col-sm-5 col-xs-12 form-group pull-right top_search">
                                 <div class="input-group">
                                     {% csrf_token %}
-                                    <input type="text" class="form-control" placeholder="جست و جو برای...">
+                                    <input type="text" class="form-control" placeholder="جست و جو برای..." id="search">
                                     <span class="input-group-btn">
                                         <button class="btn btn-default" type="button"><i
                                                 class="fa fa-search"></i></button>
@@ -84,31 +84,22 @@
 
                                 </div>
 
-                                <div class="col-xs-12 col-sm-6 col-md-4 col-lg-3">
-                                    <label for="heard">نصاب:</label>
-                                    <select id="heard" class="form-control" required>
-                                        <option hidden>انتخاب کنید</option>
-                                        <option value="press">اخبار</option>
-                                        <option value="net">اینترنت</option>
-                                        <option value="mouth">دهان به دهان</option>
+                                <div class="col-md-4 col-lg-3">
+                                    <label for="installer">نصاب:</label>
+                                    <select id="installer" class="form-control">
+
                                     </select>
                                 </div>
-                                <div class="col-xs-12 col-sm-6 col-md-4 col-lg-3">
-                                    <label for="heard">سازمان:</label>
-                                    <select id="heard" class="form-control" required>
-                                        <option hidden>انتخاب کنید</option>
-                                        <option value="press">اخبار</option>
-                                        <option value="net">اینترنت</option>
-                                        <option value="mouth">دهان به دهان</option>
+                                <div class="col-md-4 col-lg-3">
+                                    <label for="organization">سازمان:</label>
+                                    <select id="organization" class="form-control">
+
                                     </select>
                                 </div>
-                                <div class="col-xs-12 col-sm-6 col-md-4 col-lg-3">
-                                    <label for="heard">وزارت‌خانه:</label>
-                                    <select id="heard" class="form-control" required>
-                                        <option hidden>انتخاب کنید</option>
-                                        <option value="press">اخبار</option>
-                                        <option value="net">اینترنت</option>
-                                        <option value="mouth">دهان به دهان</option>
+                                <div class="col-md-4 col-lg-3">
+                                    <label for="administration">وزارت‌خانه:</label>
+                                    <select id="administration" class="form-control">
+
                                     </select>
                                 </div>
                                 <div class="clearfix"></div>
@@ -118,16 +109,28 @@
 
                                 <!-- <p>با افزودن کلاس <code dir="ltr">bulk_action</code> برای جدول، جدول دارای اعمال همگانی
                                     می‌شود.</p> -->
-
+                                <div class="input-group">
+                                    <div class="form-group">
+                                        {% csrf_token %}
+                                        <label for="pageSizeSelect">تعداد موتورخانه را انتخاب کنید:</label>
+                                        <select id="pageSizeSelect" class="form-control">
+                                            <option value="2">2</option>
+                                            <option value="5">5</option>
+                                            <option value="7">7</option>
+                                            <option value="all">All</option>
+                                            <!-- Add an option to select all enginrooms -->
+                                        </select>
+                                    </div>
+                                </div>
                                 <div class="table-responsive">
-                                    <table class="table table-striped jambo_table table-bordered dataTable no-footer"
+                                    <table class="table table-striped jambo_table dataTable no-footer "
                                         id="enginroom-list">
                                         <thead>
                                             <tr class="headings">
 
                                                 <th class="column-title">نام موتورخانه</th>
-                                                <th class="column-title">سازمان</th>
-                                                <th class="column-title">وزارت خانه</th>
+                                                <th class="column-title">سازمان / خصوصی</th>
+                                                <th class="column-title">وزارت‌خانه / خصوصی</th>
                                                 <th class="column-title">نام نصاب</th>
                                                 <th class="column-title">وضعیت</th>
                                                 <th class="column-title">اطلاعات</th>
@@ -137,7 +140,7 @@
                                         </thead>
 
                                         <tbody>
-                                           
+
                                         </tbody>
                                     </table>
                                 </div>
@@ -180,27 +183,108 @@
     <script>
 
         function showDetail(id) {
-            const enginroomUrl = `/api/enginroom/${id}/`;
+            const enginroomUrl = `/enginroom-detail/${id}`;
             window.location.href = enginroomUrl;
         }
+        let admin = "{{request.session.is_admin}}" === "True";
+        let staff = "{{request.session.is_staff}}" === "True";
+        let access = admin || staff
+        function acceptEnginroom(id) {
+            const page_size = $("#pageSizeInput").val(); // Get the current page size
+            const url = `/api/enginroom/${id}/`;
+            $.ajax({
+                type: "PATCH",
+                url: url, // Specify the correct URL for your API
+                data: JSON.stringify({ status: true }), // Update status to 'true'
+                contentType: "application/json",
+                headers: {
+                    "X-CSRFToken": $("[name=csrfmiddlewaretoken]").val(),
+                },
+                success: function (response) {
 
+                    console.log(`Engineroom ${id} has been accepted.`);
+                    $(`#status-${id}`).removeClass('bg-danger').addClass('bg-success text-white');
+                },
+                error: function (error) {
+
+                    console.error(`Error accepting engineroom ${id}:`, error.responseJSON);
+                }
+            });
+
+        }
+        function rejectEnginroom(id) {
+            $.ajax({
+                type: "PATCH",
+                url: `/api/enginroom/${id}/`, // Specify the correct URL for your API
+                data: JSON.stringify({ status: false }), // Update status to 'true'
+                contentType: "application/json",
+                headers: {
+                    "X-CSRFToken": $("[name=csrfmiddlewaretoken]").val(),
+                },
+                success: function (response) {
+
+                    console.log(`Engineroom ${id} has been rejected.`);
+                    $(`#status-${id}`).removeClass('bg-success').addClass('bg-danger text-white');
+                },
+                error: function (error) {
+
+                    console.error(`Error rejecting engineroom ${id}:`, error.responseJSON);
+                }
+            });
+
+        }
+        let status;
         $(document).ready(function () {
-            $('#enginroom-list').DataTable();
+
+            $("#search").on("keyup", function () {
+                var value = $(this).val().toLowerCase();
+
+                // Make an AJAX request to filter the enginrooms based on the value
+                $.ajax({
+                    type: "GET",
+                    url: "/api/enginroom/filter_enginrooms/?value=" + value, // Replace with your actual API endpoint
+                    success: function (response) {
+                        listOfEnginroom(response)
+                      
+                    },
+                    error: function (error) {
+                        console.error('Error fetching filtered Enginroom details:', error.responseJSON);
+                    }
+                });
+                fetchEnginroomData($('#page_size').val())
+            });
+
             function listOfEnginroom(resp) {
                 const tableBody = $('#enginroom-list tbody');
                 tableBody.empty()
                 resp.forEach(function (obj) {
+                    if (obj.status == true) {
+                        status = 'تایید';
+                        $(`status-${obj.id}`).addClass('bg-success')
+                    }
+                    else if (obj.status == false) {
+                        status = 'رد';
+                    }
+                    else {
+                        status = 'در انتظار تایید';
+                    }
                     const row = `
                    
-                    <tr id="enginroom_${obj.id}" data-enginroom-id="${obj.id}">
+                    <tr id="enginroom_${obj.id}" data-enginroom-id="${obj.id}"  id="status-${obj.id}">
         
 
                     <td class="enginroom-name" onclick="showDetail(${obj.id})">${obj.enginroom_name}</td>
                     <td class=" " onclick="showDetail(${obj.id})">${obj.organization}</td>
                     <td class=" " onclick="showDetail(${obj.id})">${obj.administration}</td>
                     <td class=" " onclick="showDetail(${obj.id})">${obj.creator_username}</td>
-                    <td class="a-right a-right ">تایید</td>
-                    <td class=" "><a href="/create-installation/${obj.id}" class="btn btn-default btn-sm small"> تکمیل اطلاعات </a></td>
+                    ${access
+                            ? `<td class="a-right">
+                                <a  class="btn btn-success" onclick="acceptEnginroom(${obj.id})">تایید</a>
+                        <a class="btn btn-danger" onclick="rejectEnginroom(${obj.id})">  رد </a>
+                                </td>`
+                            : `<td class="a-right" onclick="showDetail(${obj.id})" ><p id="status">${status}</p></td>`
+                        }
+                    <td class=" "><a href="/create-installation/${obj.id}" class="btn btn-info"> تکمیل اطلاعات </a></td>
                     <td class=" last">
                         <a><i class="btn btn-sm btn-danger fa fa-trash delete-button" data-toggle="modal" data-target="#deleteConfirmationModal" data-enginroom-id="${obj.id}" data-enginroom-name="${obj.enginroom_name}"></i></i></a>
                         <a href="/update-enginroom/${obj.id}"><i class="btn btn-sm btn-warning fa fa-pencil"></i></a>
@@ -208,25 +292,136 @@
                     </tr>
                                         
 
-                    </tr>
+                    
                 `;
                     tableBody.append(row);
                 });
+
             }
-            $.ajax({
-                type: "GET",
-                url: "/api/enginroom/",
-                success: function (response) {
-                    listOfEnginroom(response)
 
-                },
-                error: function (error) {
-                    console.error('Error fetcing Enginroom details:', error.reponseJSON);
+            let selectedInstaller;
+            let selectedOrganization;
+            let selectedAdministration;
+            var totalCount;
 
+            $('#installer').change(function () {
+                selectedInstaller = $(this).val();
+                if (selectedInstaller === '') {
+                    selectedInstaller = ''; // Reset the filter
+                }
+                fetchEnginroomData($('#pageSizeSelect').val());
+            });
+
+            $('#organization').change(function () {
+                selectedOrganization = $(this).val();
+                if (selectedOrganization === '') {
+                    selectedOrganization = ''; // Reset the filter
+                }
+                fetchEnginroomData($('#pageSizeSelect').val());
+            });
+
+            $('#administration').change(function () {
+                selectedAdministration = $(this).val();
+                if (selectedAdministration === '') {
+                    selectedAdministration = ''; // Reset the filter
+                }
+                fetchEnginroomData($('#pageSizeSelect').val());
+            });
+
+
+            $('#pageSizeSelect').change(function () {
+                $("#search").val('')
+                var selectedValue = $(this).val();
+
+                // Check if "All" is selected
+                if (selectedValue === 'all') {
+                    // Use the total count of enginrooms
+                    $.ajax({
+                        type: "GET",
+                        url: "/api/enginroom/get_enginroom_count/",
+                        success: function (countResponse) {
+                            totalCount = countResponse.count;
+                            fetchEnginroomData(totalCount);
+                        },
+                        error: function (error) {
+                            console.error('Error fetching Enginroom count:', error.responseJSON);
+                        }
+                    });
+
+                }
+                else {
+                    // Use the selected count
+                    fetchEnginroomData(selectedValue);
                 }
             });
 
 
+            function fetchEnginroomData(count) {
+                $.ajax({
+                    type: "GET",
+                    url: "/api/enginroom/fetch_enginrooms_by_count/",
+                    data: {
+                        count: count || totalCount,
+                        installer: selectedInstaller,
+                        organization: selectedOrganization,
+                        administration: selectedAdministration,
+                    },
+                    success: function (response) {
+                        console.table(response)
+                        listOfEnginroom(response)
+
+
+
+                        const selectInstaller = $('#installer');
+                        const selectOrganization = $('#organization');
+                        const selectAdministration = $('#administration');
+                        selectInstaller.empty();
+                        selectOrganization.empty();
+                        selectAdministration.empty();
+                        selectInstaller.append("<option value=''>انتخاب کنید</option>");
+                        selectOrganization.append("<option value=''>انتخاب کنید</option>");
+                        selectAdministration.append("<option value=''>انتخاب کنید</option>");
+
+                        const distinctOptionsInstaller = [];
+                        const distinctOptionsOrganization = [];
+                        const distinctOptionsAdministration = [];
+
+                        response.forEach(function (option) {
+                            if (!distinctOptionsInstaller.includes(option.creator_username)) {
+                                distinctOptionsInstaller.push(option.creator_username);
+                                selectInstaller.append(`<option value="${option.creator}">${option.creator_username}</option>`);
+                            }
+                        });
+
+                        response.forEach(function (option) {
+                            if (!distinctOptionsOrganization.includes(option.organization)) {
+                                distinctOptionsOrganization.push(option.organization);
+                                selectOrganization.append(`<option value="${option.organization}">${option.organization}</option>`);
+                            }
+                        });
+
+                        response.forEach(function (option) {
+                            if (!distinctOptionsAdministration.includes(option.administration)) {
+                                distinctOptionsAdministration.push(option.administration);
+                                selectAdministration.append(`<option value="${option.administration}">${option.administration}</option>`);
+                            }
+                        });
+
+
+
+
+
+
+                    },
+                    error: function (error) {
+                        console.error('Error fetcing Enginroom details:', error.reponseJSON);
+
+                    }
+                });
+
+            }
+
+            fetchEnginroomData(2)
         });
         $('select').select2();
         let enginroomToDeleteId;
@@ -249,14 +444,14 @@
             }).then((result) => {
                 if (result.isConfirmed) {
                     // User clicked "بله," proceed with the deletion
-                   
-                    deleteEnginroom(enginroomId);
+
+                    deleteEnginroom(enginroomId, enginroomName);
                 }
             });
         });
 
         // Function to delete the Engineroom using AJAX
-        function deleteEnginroom(enginroomId) {
+        function deleteEnginroom(enginroomId, enginroomName) {
             $.ajax({
                 type: "DELETE",
                 url: `/api/enginroom/${enginroomId}/`,
@@ -279,23 +474,6 @@
             });
         }
 
-        // $.ajax({
-        //     type: "DELETE",
-        //     url: `/api/enginroom/${enginroomToDeleteId}/`,
-        //     headers: {
-        //         "X-CSRFToken": $('input[name="csrfmiddlewaretoken"]').val() // Include the CSRF token in the headers
-        //     },
-        //     success: function (response) {
-        //         // Remove the row from the table
-        //         $(`#enginroom${enginroomToDeleteId}`).remove();
-        //         // Hide the modal
-        //         $('#deleteConfirmationModal').modal('hide');
-        //     },
-        //     error: function (error) {
-        //         console.error('Error deleting Engineroom:', error.responseJSON);
-        //         // You can handle errors here, e.g., display an error message.
-        //     }
-        // });
 
 
     </script>

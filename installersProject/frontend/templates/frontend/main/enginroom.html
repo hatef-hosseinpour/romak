@@ -78,20 +78,20 @@
                                 <div class="row x_title">
 
                                     <h1> ایجاد موتورخانه </h1>
-                                    <form action="" method="POST" id="enginroom-form">
+                                    <form action="" method="POST" id="enginroom_form">
                                         {% csrf_token %}
                                         <p>نام موتورخانه</p>
-                                        <input type="text" id="enginroom-name" name="enginroom-name"
-                                            class="form-control" placeholder="نام موتورخانه را وارد کنید">
+                                        <input type="text" id="enginroom_name" name="enginroom_name"
+                                            class="form-control" placeholder="نام موتورخانه را وارد کنید" required>
                                         <p>نام سازمان</p>
                                         <input type="text" id="organization" name="organization" class="form-control"
-                                            placeholder="نام سازمان را وارد کنید">
+                                            placeholder="نام سازمان را وارد کنید" required>
                                         <p>نام نهاد</p>
                                         <input type="text" id="administration" name="administration"
-                                            class="form-control" placeholder="نام‌ نهاد را وارد کنید">
+                                            class="form-control" placeholder="نام‌ نهاد را وارد کنید" required>
                                         <input type="hidden" name="creator" id="creator"
                                             value="{{request.session.user_id}}">
-                                        <input type="submit" value="ثبت" name="" id="enginroom-submit">
+                                        <input type="submit" value="ثبت" name="" id="enginroom_submit">
                                     </form>
                                 </div>
 
@@ -134,7 +134,7 @@
     </div>
     {% include 'scripts.html' %}
 
-    
+
     <script>
         let page = "{{ page }}";
         let organ_id = "{{ organ_id }}";
@@ -143,7 +143,7 @@
         let organization;
         let administration;
         let creator;
-
+        let status;
         let info;
 
 
@@ -159,121 +159,134 @@
                     url: `/api/enginroom/${organ_id}/`,
                     success: function (response) {
 
-                        $('#enginroom-name').val(response.enginroom_name);
+                        $('#enginroom_name').val(response.enginroom_name);
                         $('#organization').val(response.organization);
                         $('#administration').val(response.administration);
+                        status = response.status;
 
                     }
                 });
-                $('#enginroom-submit').on('click', function (e) {
-                    e.preventDefault()
-                    enginroomName = $('#enginroom-name').val();
-                    organization = $('#organization').val();
-                    administration = $('#administration').val();
-                    creator = $('#creator').val();
-                    enginroomData = {
-                        'enginroom_name': enginroomName,
-                        'organization': organization,
-                        'administration': administration,
-                        'creator': creator
+            });
+            $('#enginroom_submit').on('click', function (e) {
+                e.preventDefault()
+                enginroomName = $('#enginroom_name').val();
+                organization = $('#organization').val();
+                administration = $('#administration').val();
+                creator = $('#creator').val();
+                enginroomData = {
+                    'enginroom_name': enginroomName,
+                    'organization': organization,
+                    'administration': administration,
+                    'creator': creator,
+                    'status': status
+
+                }
+                $.ajax({
+                    type: "PUT",
+                    url: `/api/enginroom/${organ_id}/`,
+                    data: JSON.stringify(enginroomData),
+                    contentType: "application/json",
+                    headers: {
+                        'X-CSRFToken': $('[name=csrfmiddlewaretoken]').val()
+                    },
+                    success: function (response) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'تایید',
+                            text: 'موتورخانه با موفقیت بروز رسانی شد.',
+                        });
+
+                        window.location.href = '/enginroom-list/'
+
+                    },
+                    error: function (error) {
+                        console.error('ERROR FROM update DATA:', error.responseJSON);
+
+
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'خطا',
+                            text: 'خطایی رخ داده است. لطفاً مجدداً تلاش کنید.',
+                        });
 
                     }
-                    $.ajax({
-                        type: "PUT",
-                        url: `/api/enginroom/${organ_id}/`,
-                        data: JSON.stringify(enginroomData),
-                        contentType: "application/json",
-                        headers: {
-                            'X-CSRFToken': $('[name=csrfmiddlewaretoken]').val()
-                        },
-                        success: function (response) {
-                            Swal.fire({
-                                icon: 'success',
-                                title: 'تایید',
-                                text: 'موتورخانه با موفقیت بروز رسانی شد.',
-                            });
-
-                            window.location.href = '/enginroom-list/'
-
-                        },
-                        error: function (error) {
-                            console.error('ERROR FROM update DATA:', error.responseJSON);
+                });
+            })
 
 
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'خطا',
-                                text: 'خطایی رخ داده است. لطفاً مجدداً تلاش کنید.',
-                            });
-
-                        }
-                    });
-                })
-
-            });
         }
         else {
+
             $(document).ready(function () {
-                $('#enginroom-submit').on('click', function (e) {
-                    e.preventDefault()
-                    enginroomName = $('#enginroom-name').val();
-                    organization = $('#organization').val();
-                    administration = $('#administration').val();
-                    creator = $('#creator').val();
-                    enginroomData = {
-                        'enginroom_name': enginroomName,
-                        'organization': organization,
-                        'administration': administration,
-                        'creator': creator
-
-                    }
-
-                    $.ajax({
-                        type: "POST",
-                        url: "/api/enginroom/",
-                        data: JSON.stringify(enginroomData),
-                        contentType: "application/json",
-                        headers: {
-                            'X-CSRFToken': $('[name=csrfmiddlewaretoken]').val()
-                        },
-                        success: function (response) {
-                            if (response.detail === 'already exists') {
-                                Swal.fire({
-                                icon: 'error',
-                                title: 'خطا',
-                                text: 'موتورخانه قبلا ثبت شده است.',
-                            });
-                            }
-                            else {
-                                Swal.fire({
-                                    icon: 'success',
-                                    title: 'تایید',
-                                    text: 'موتورخانه با موفقیت ثبت شد.',
-                                });
-
-                                window.location.href = '/enginroom-list/';
-                            }
-                        },
-                        error: function (error) {
-                            console.error('ERROR FROM CREATE DATA:', error.responseJSON);
-                            // Handle the case where enginroom_name already exists
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'خطا',
-                                text: 'موتورخانه قبلا ثبت شده است.',
-                                
-                            });
-
-
+                $('#enginroom_form').validate({
+                    rules: {
+                        enginroom_name: "required",
+                        organization: "required",
+                        administration: "required"
+                    },
+                    messages: {
+                        enginroom_name: "لطفاً نام موتورخانه را وارد کنید",
+                        organization: "لطفاً نام سازمان را وارد کنید",
+                        administration: "لطفاً نام‌ نهاد را وارد کنید"
+                    },
+                    submitHandler: function (form) {
+                        enginroomName = $('#enginroom_name').val();
+                        organization = $('#organization').val();
+                        administration = $('#administration').val();
+                        creator = $('#creator').val();
+                        enginroomData = {
+                            'enginroom_name': enginroomName,
+                            'organization': organization,
+                            'administration': administration,
+                            'creator': creator,
 
                         }
-                    });
+
+                        $.ajax({
+                            type: "POST",
+                            url: "/api/enginroom/",
+                            data: JSON.stringify(enginroomData),
+                            contentType: "application/json",
+                            headers: {
+                                'X-CSRFToken': $('[name=csrfmiddlewaretoken]').val()
+                            },
+                            success: function (response) {
+                                if (response.detail === 'already exists') {
+                                    Swal.fire({
+                                        icon: 'error',
+                                        title: 'خطا',
+                                        text: 'موتورخانه قبلا ثبت شده است.',
+                                    });
+                                }
+                                else {
+                                    Swal.fire({
+                                        icon: 'success',
+                                        title: 'تایید',
+                                        text: 'موتورخانه با موفقیت ثبت شد.',
+                                    });
+
+                                    window.location.href = '/enginroom-list/';
+                                }
+                            },
+                            error: function (error) {
+                                console.error('ERROR FROM CREATE DATA:', error.responseJSON);
+                                // Handle the case where enginroom_name already exists
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'خطا',
+                                    text: 'موتورخانه قبلا ثبت شده است.',
+
+                                });
 
 
 
-                })
-
+                            }
+                        });
+                    }
+                });
             });
+
+
 
         }
     </script>

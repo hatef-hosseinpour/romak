@@ -109,7 +109,19 @@
 
                                     <div class="x_content">
 
-
+                                        <div class="input-group">
+                                            <div class="form-group">
+                                                {% csrf_token %}
+                                                <label for="pageSizeSelect">تعداد موتورخانه را انتخاب کنید:</label>
+                                                <select id="pageSizeSelect" class="form-control">
+                                                    <option value="2">2</option>
+                                                    <option value="5">5</option>
+                                                    <option value="7">7</option>
+                                                    <option value="all">All</option>
+                                                    <!-- Add an option to select all enginrooms -->
+                                                </select>
+                                            </div>
+                                        </div>
 
                                         <div id="maps" class="jumbotron" style="height: 700px;"> </div>
                                     </div>
@@ -154,6 +166,11 @@
 
     <script>
         $('select').select2();
+
+        let totalCount;
+
+
+
         var map = L.map('maps').setView([35.6892, 51.3890], 6);
 
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -161,77 +178,31 @@
         }).addTo(map);
 
         var locationIcon = L.icon({
-            iconUrl: 'https://img.icons8.com/external-flaticons-flat-flat-icons/64/000000/external-factory-factory-flaticons-flat-flat-icons-2.png',
-            iconSize: [64, 64],
+            iconUrl: "{% static 'images/icons8-location.png' %}",
+            iconSize: [32, 32],
             iconAnchor: [16, 32],
         });
 
+        $.ajax({
+            type: "GET",
+            url: "/api/enginroom/",
 
-        // Create a custom control
-        var myLocationControl = L.control({
-            position: 'topright' // Set the position of the control (topright, topleft, bottomright, bottomleft)
-        });
+            success: function (response) {
+                response.forEach(function (engineroom) {
+                    if (engineroom.location) {
+                        latlng = engineroom.location.split(',')
+                        var marker = L.marker(latlng, {
+                            icon: locationIcon,
+                        }
+                        ).addTo(map);
+                        marker.bindPopup(`<a href="/enginroom-detail/${engineroom.id}"><h5>${engineroom.enginroom_name}</h5></a>`);
 
-        // Add content to the control (e.g., a button with your location icon)
-        myLocationControl.onAdd = function (map) {
-            var div = L.DomUtil.create('div', 'leaflet-bar leaflet-control');
-            var button = $('<button>', {
-                id: 'location-button',
-            });
-            var img = $('<img>', {
-                src: 'https://img.icons8.com/ios-filled/50/center-direction.png', // Replace with the actual path to your location icon image
-                alt: 'Location Icon',
-                width: '25px',
-                height: '25px',
-            });
-
-            button.append(img);
-            div.appendChild(button[0]);
-
-            $(div).on('click', '#location-button', function () {
-
-                if ("geolocation" in navigator) {
-                    navigator.geolocation.getCurrentPosition(function (position) {
-                        var userLocation = [position.coords.latitude, position.coords.longitude];
-                        map.setView(userLocation, 16);
-                        locationMarker.setLatLng(userLocation);
-                    }, function (error) {
-                        console.error("Error getting user location:", error);
-                    });
-                } else {
-                    alert("Geolocation is not available in your browser.");
-                }
-            });
-
-            return div;
-        };
-
-        myLocationControl.addTo(map);
-
-
-        // Example engine room data
-        var engineRooms = [
-            { name: 'خوابگاه', latlng: [35.70321924120019, 51.40270551339944], details: 'Details about ER 1' },
-            { name: 'تست', latlng: [37.46943082390814, 52.361716489683374], details: 'Details about ER 2' },
-            { name: '2تست', latlng: [37.62701460081053, 53.90992339277583], details: 'Details about ER 3' }
-            // Add more engine rooms...
-        ];
-        // Add markers for each engine room
-        engineRooms.forEach(function (room) {
-            $.ajax({
-                url: `https://nominatim.openstreetmap.org/reverse?format=json&lat=${room.latlng[0]}&lon=${room.latlng[1]}`,
-                dataType: 'json',
-                success: function (data) {
-                    var cityName = data.address.city || data.address.town || data.address.village || "Unknown City";
-
-                    var marker = L.marker(room.latlng, {
-                        icon: locationIcon,
                     }
-                    ).addTo(map);
-                    marker.bindPopup(`<a href="https://google.com"><h5>${cityName}</h5></a><br>${room.details}`);
-                }
-            });
+                })
+            }
         });
+
+
 
         // Add event listener for marker clicks
         map.on('popupopen', function (e) {

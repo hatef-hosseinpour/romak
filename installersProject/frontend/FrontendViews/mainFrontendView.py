@@ -24,3 +24,8 @@ def updateEnginroomFrontView(request, pk):
 
     context = {'organ_id': pk, 'page': page}
     return render(request, 'frontend/main/enginroom.html', context)
+
+
+def enginroomDetailsFrontView(request, pk):
+    context = {'enginroom_id': pk}
+    return render(request, 'frontend/main/enginroom-details.html', context)

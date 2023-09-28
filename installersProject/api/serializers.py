@@ -77,7 +77,7 @@ class EnginroomSerializers(serializers.ModelSerializer):
     # @param creator_username this readonly field just for representing username of User that create
     creator_username = serializers.CharField(
         source='creator.username', read_only=True)
-
+    location = serializers.CharField(source='locationpublicinfo.location', read_only=True)
     # installer_usernames = serializers.StringRelatedField(
     # source='installer', many=True, read_only=True)
 
@@ -87,7 +87,7 @@ class EnginroomSerializers(serializers.ModelSerializer):
         model = Enginroom
         # @param fields What fields of the Enginroom model do we want to serialize
         fields = ['id', 'enginroom_name', 'administration', 'organization',
-                  'creator', 'creator_username', 'step']
+                  'creator', 'creator_username', 'step', 'status', 'location']
 
 
 # @brief A class for serialize Location Public Info objects
@@ -107,7 +107,7 @@ class LocationPublicInfoSerializers(serializers.ModelSerializer):
         model = locationPublicInfo
         # @param fields What fields of the LocationPublicInfo model do we want to serialize
         fields = ['id', 'user', 'installer_username', 'enginroom', 'enginroom_name', 'address', 'phone_number1', 'phone_number2',
-                  'building_metrage', 'meter_subscription_number', 'building_image', 'location', 'status', 'province', 'city']
+                  'building_metrage', 'meter_subscription_number', 'building_image', 'location', 'province', 'city']
     def update(self, instance, validated_data):
         # Delete old profile image if new image is provided
         if 'building_image' in validated_data and instance.building_image and 'no-image.jpg' not in instance.building_image.path:
@@ -136,7 +136,7 @@ class EnginroomPublicInfoSerializers(serializers.ModelSerializer):
         model = EnginRoomPublicInfo
         # @param fields What fields of the EnginroomPublicInfo model do we want to serialize
         fields = ['id', 'usage', 'has_exchanger', 'number_of_pool_exchangers', 'number_of_jaccuzi_exchangers', 'number_of_floor_heating_exchangers', 'number_of_boilers',
-                  'number_of_circulating_pumps', 'number_of_coil_sources', 'number_of_coil_sources_pumps', 'number_of_hot_water_pumps', 'user', 'installer_username', 'enginroom', 'enginroom_name', 'installer_name', 'status']
+                  'number_of_circulating_pumps', 'number_of_coil_sources', 'number_of_coil_sources_pumps', 'number_of_hot_water_pumps', 'user', 'installer_username', 'enginroom', 'enginroom_name', 'installer_name', ]
     # @brief get first name and last name of installer and change them tom format that display in frontend
     # @return full name of installer
 
@@ -161,8 +161,14 @@ class InstallationInfoSerializers(serializers.ModelSerializer):
         model = InstallationInfo
         # @param fields What fields of the EnginroomPublicInfo model do we want to serialize
         fields = ['id', 'user', 'installer_username', 'enginroom', 'enginroom_name', 'installed_device_model', 'connection_type',
-                  'modem_model', 'has_simcard', 'modem_simcard_number', 'installation_date', 'device_serial_number_image', 'status']
+                  'modem_model', 'has_simcard', 'modem_simcard_number', 'installation_date', 'device_serial_number_image', ]
+    def update(self, instance, validated_data):
+        # Delete old profile image if new image is provided
+        if 'device_serial_number' in validated_data and instance.device_serial_number_image and 'no-image.jpg' not in instance.device_serial_number_image.path:
+            if os.path.exists(instance.device_serial_number_image.path):
+                os.remove(instance.device_serial_number_image.path)
 
+        return super().update(instance, validated_data)
 # @brief A class for serialize Enginroom Images objects
 
 
@@ -184,24 +190,24 @@ class EnginroomImagesSerializers(serializers.ModelSerializer):
         model = EnginRoomImage
         # @param fields What fields of the EnginRoomImage model do we want to serialize
         fields = ['id', 'user', 'installer_username',
-                  'enginroom', 'enginroom_name', 'images_data', 'images', 'status']
+                  'enginroom', 'enginroom_name', 'images_data', 'images', ]
 
     def create(self, validated_data):
         images_data = validated_data.pop('images_data')
-        split_data = list()
-        print('\n\n  len images_data  : \n\n', len(
-            images_data[0].split('data:image/jpeg;base64,')))
-        for i in range(1, len(images_data[0].split('data:image/jpeg;base64,'))):
-            split_data.append(images_data[0].split(
-                'data:image/jpeg;base64,')[i])
+        images_list = list()
+        split_data = images_data[0].split('data:image/jpeg;base64,')
+
+        print('\n\n  len images_data  : \n\n', len(split_data))
+
+        for i in range(1, len(split_data)):
+            images_list.append(split_data[i])
 
         enginroom_images = []
 
         print('length : ', len(images_data))
-        print('length split data : ', len(split_data))
-        print('type : ', type(images_data))
+        print('length split data : ', len(images_list))
 
-        for image_data in split_data:
+        for image_data in images_list:
             enginroom_image = EnginRoomImage.objects.create(**validated_data)
             self.save_image(enginroom_image, image_data)
             enginroom_images.append(enginroom_image)

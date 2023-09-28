@@ -26,7 +26,7 @@ SECRET_KEY = 'django-insecure-!$p0okr*b5(+d!)1-f)vu4m%f%ep63&+9y*1vwz2po6_t55u#l
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 ADMIN_URL = 'h7069hats3x829th'
 
@@ -60,8 +60,7 @@ INSTALLED_APPS = [
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework.authentication.SessionAuthentication',
-    ),
-}
+    )}
 
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
@@ -161,7 +160,8 @@ STATICFILES_DIRS = [
     BASE_DIR / 'static'
 ]
 MEDIA_ROOT = os.path.join(BASE_DIR, 'static/images')
-# DEPLOY STATIC_ROOT = os.path.join(BASE_DIR, 'static/')
+# DEPLOY 
+# STATIC_ROOT = os.path.join(BASE_DIR, 'static/')
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 # Default primary key field type
