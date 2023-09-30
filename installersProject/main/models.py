@@ -180,7 +180,7 @@ class EnginRoomImage(models.Model):
     enginroom = models.ForeignKey(
         Enginroom, on_delete=models.CASCADE, editable=True, null=True, default=None)
     # @param image in this table each enginroom can have any images
-    images = models.ImageField(
+    image = models.ImageField(
         null=True, blank=True, upload_to='enginroom_images/')
     # @param status this field defaul to false after user fill information of installation admin can accept it and after accept of admin this field change to true
     # status = models.BooleanField(default=False, null=True)
@@ -189,11 +189,11 @@ class EnginRoomImage(models.Model):
 
         return f'Image {self.id}  - Enginroom {self.enginroom.enginroom_name}'
 
-    def save(self, *args, **kwargs):
-        super().save(*args, **kwargs)
+    # def save(self, *args, **kwargs):
+    #     super().save(*args, **kwargs)
 
-        img = Image.open(self.images.path)
-        if img.height > 300 or img.width > 300:
-            output_size = (300, 300)
-            img.thumbnail(output_size)
-            img.save(self.images.path)
+    #     img = Image.open(self.image.path)
+    #     if img.height > 300 or img.width > 300:
+    #         output_size = (300, 300)
+    #         img.thumbnail(output_size)
+    #         img.save(self.image.path)

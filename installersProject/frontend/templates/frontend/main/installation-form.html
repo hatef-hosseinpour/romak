@@ -6,19 +6,39 @@
 {% endblock %}
 <!-- /header content -->
 <style>
-    /* Style the input fields */
-    input[type=file]::file-selector-button {
-        margin-right: 10px;
-        background: #34495E;
-        padding: 10px 20px;
-        border-radius: 10px;
-        color: #fff;
-        cursor: pointer;
-        transition: background .2s ease-in-out;
+    #checkbox-container {
+        margin-top: 10px;
     }
 
-    input[type=file]::file-selector-button:hover {
-        background: #34495E;
+    #enginroom-images {
+        display: none;
+    }
+
+    button {
+        padding: 5px 10px;
+        background-color: #34495E;
+        border: 1px solid #ccc;
+        color: #F9F9F9;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+
+    .file-style {
+
+        width: 400px;
+        display: block;
+        background-color: #f5f4f4;
+        margin: auto;
+        cursor: pointer;
+        text-align: center;
+        padding: 20px;
+        border-radius: 15px;
+        border: 2px dashed #cdc8c8;
+        margin-top: 50px;
+    }
+
+    .file-style:hover {
+        background-color: #EDEDED;
     }
 
     input {
@@ -31,6 +51,11 @@
     /* Mark input boxes that gets an error on validation: */
     input.invalid {
         background-color: #ffdddd;
+    }
+
+    input[type=checkbox] {
+        margin-right: 10px;
+        margin-bottom: 10px;
     }
 
     /* Hide all steps by default: */
@@ -59,6 +84,12 @@
     /* Mark the steps that are finished and valid: */
     .step.finish {
         background-color: #04AA6D;
+    }
+
+    .image-container {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
     }
 </style>
 
@@ -157,45 +188,48 @@
                                         <!-- Begin Location Public info -->
                                         <div class="tab rtl-txt ">
                                             <h3 class="text-center">اطلاعات عمومی محل نصب</h3>
-                                            <p>نام موتورخانه</p>
+                                            <label for="engineroom">نام موتورخانه</label>
                                             <strong id="enginroom"> </strong>
                                             <br>
-                                            <p>آدرس</p>
+                                            <label for="address">آدرس</label>
                                             <textarea class="form-control" id="address" name="address"
                                                 rows="5"></textarea>
-                                            <p>استان</p>
+
+
+                                            <label for="select-province">استان</label>
                                             <select class="form-select" style="width: 100%;" id="select-province"
                                                 aria-label="انتخاب کنید" name="select-province">
                                                 <option>انتخاب کنید</option>
                                             </select>
-                                            <p>شهر</p>
+                                            <label for="select-city">شهر</label>
                                             <select class="form-select" style="width: 100%;" id="select-city"
                                                 aria-label="انتخاب کنید" name="select-city">
                                                 <option>انتخاب کنید</option>
                                             </select>
-                                            <p>تلفن رابط۱</p>
+                                            <label for="phone-number1">تلفن رابط۱</label>
                                             <input type="text" class="form-control" id="phone-number1"
                                                 name="phone-number1">
-                                            <p>تلفن رابط۲</p>
+                                            <label for="phone-number2">تلفن رابط۲</label>
                                             <input type="text" class="form-control" id="phone-number2"
                                                 name="phone-number2">
-                                            <p>متراژ بنا</p>
+                                            <label for="building-metrage">متراژ بنا</label>
                                             <input type="number" class="form-control" id="building-metrage"
                                                 name="building-metrage">
-                                            <p>شماره اشتراک کنتور</p>
+                                            <label for="meter-subscribtion">شماره اشتراک کنتور</label>
                                             <input type="text" class="form-control" id="meter-subscribtion"
                                                 name="meter-subscribtion">
-                                            <p>عکس ساختمان</p>
+                                            <label for="building-image">عکس ساختمان
                                             <img style="max-width: 120px; max-height: 120px;" class="thumbnail"
                                                 with="30px" heigh="30px" id="building-image-preview">
-
+                                            </label>
                                             <input type="file" accept="image/jpeg,image/png" id="building-image"
-                                                name="building-image">
+                                                name="building-image" style="display:none;">
+                                                
                                             <input type="hidden" class="form-control" id="user" name="user"
                                                 value="{{ request.session.user_id }}">
                                             <input type="hidden" class="form-control" id="location-input"
                                                 name="location-input">
-                                            <p>موقعیت محل نصب</p>
+                                            <label for="map">موقعیت محل نصب</label>
                                             <div id="map" class="jumbotron" style="height: 300px;"
                                                 onmousedown="mapInteracted = true;">
 
@@ -208,7 +242,7 @@
                                         <!-- Begin Enginroom Public info -->
                                         <div class="tab">
                                             <h3 class="text-center">اطلاعات عمومی موتورخانه</h3>
-                                            <p>نوع کاربری</p>
+                                            <label for="select-usage">نوع کاربری</label>
                                             <select class="form-select" style="width: 100%;" id="select-usage"
                                                 aria-label="">
                                                 <option>انتخاب کنید</option>
@@ -219,33 +253,34 @@
 
                                             <br>
                                             <div class="checkbox-container">
-                                                <p class="col-md-7">آیا مبدل آب استخر/ جکوزی / گرمایش از کف دارد؟</p>
+                                                <label for="has-exchanger">آیا مبدل آب استخر/ جکوزی / گرمایش از کف
+                                                    دارد؟</label>
                                                 <br>
                                                 <input type="checkbox" id="has-exchanger" class="" name="has-exchanger">
                                             </div>
                                             <div id="exchanger" class="rtl-txt" style="display: none;">
-                                                <p>تعداد مبدل آب استخر</p>
+                                                <label for="pool">تعداد مبدل آب استخر</label>
                                                 <input type="number" min="0" class="form-control" id="pool" name="pool">
-                                                <p>تعداد مبدل جکوزی</p>
+                                                <label for="jaccuzi">تعداد مبدل جکوزی</label>
                                                 <input type="number" min="0" class="form-control" id="jaccuzi"
                                                     name="jaccuzi">
-                                                <p>تعداد مبدل گرمایش از کف</p>
+                                                <label for="floor-heating">تعداد مبدل گرمایش از کف</label>
                                                 <input type="number" min="0" class="form-control" id="floor-heating"
                                                     name="floor-heating">
                                             </div>
-                                            <p>تعداد دیگ‌ها</p>
+                                            <label for="boilers">تعداد دیگ‌ها</label>
                                             <input type="number" min="0" class="form-control" id="boilers"
                                                 name="boilers">
-                                            <p>تعداد پمپ‌های سیرکوله</p>
+                                            <label for="circulate-pump">تعداد پمپ‌های سیرکوله</label>
                                             <input type="number" min="0" class="form-control" id="circulate-pump"
                                                 name="circulate-pump">
-                                            <p>تعداد منبع کوئلی</p>
+                                            <label for="coil-source">تعداد منبع کوئلی</label>
                                             <input type="number" min="0" class="form-control" id="coil-source"
                                                 name="coil-source">
-                                            <p>تعداد پمپ‌های منبع کوئلی</p>
+                                            <label for="coil-source-pump">تعداد پمپ‌های منبع کوئلی</label>
                                             <input type="number" min="0" class="form-control" id="coil-source-pump"
                                                 name="coil-source-pump">
-                                            <p>تعداد پمپ‌های آبگرم مصرفی</p>
+                                            <label for="hotwater-pump">تعداد پمپ‌های آبگرم مصرفی</label>
                                             <input type="number" min="0" class="form-control" id="hotwater-pump"
                                                 name="hotwater-pump">
 
@@ -255,7 +290,7 @@
                                         <!-- Begin Installation info -->
                                         <div class="tab">
                                             <h3 class="text-center">اطلاعات نصب</h3>
-                                            <p>مدل دستگاه نصب‌شده</p>
+                                            <label for="select-installed-model">مدل دستگاه نصب‌شده</label>
                                             <select class="form-select" style="width: 100%;" id="select-installed-model"
                                                 aria-label="انتخاب کنید">
                                                 <option>انتخاب کنید</option>
@@ -263,7 +298,7 @@
                                                 <option value="12relays">۱۲ رله‌ای</option>
                                                 <option value="16relays">۱۶ رله‌ای</option>
                                             </select>
-                                            <p>نوع ارتباط</p>
+                                            <label for="connection-type">نوع ارتباط</label>
                                             <select class="form-select" style="width: 100%;" id="connection-type"
                                                 aria-label="انتخاب کنید">
                                                 <option>انتخاب کنید</option>
@@ -271,25 +306,26 @@
                                                 <option value="intranet">اینترانت</option>
                                                 <option value="ethernet">اترنت</option>
                                             </select>
-                                            <p>مدل مودم</p>
+                                            <label for="modem-model">مدل مودم</label>
                                             <input type="text" class="form-control" id="modem-model" name="modem-model">
-                                            <div class="checkbox-container ">
-                                                <p class="col-md-7">آیا سیم‌کارت دارد؟</p><br>
+                                            <div class="checkbox-container">
+                                                <label for="has-simcard">آیا سیم‌کارت دارد؟</label><br>
                                                 <input type="checkbox" id="has-simcard" class="" name="has-simcard">
                                             </div>
                                             <div id="simcard" class="rtl-txt" style="display: none;">
-                                                <p>شماره سیم‌کارت مودم</p>
+                                                <label for="modem-simcard">شماره سیم‌کارت مودم</label>
                                                 <input type="text" class="form-control" id="modem-simcard"
                                                     name="modem-simcard">
                                             </div>
-                                            <p>تاریخ نصب</p>
+                                            <label for="installation-date">تاریخ نصب</label>
                                             <input data-jdp type="text" class="form-control" id="installation-date"
                                                 name="installation-date" />
-                                            <p>عکس شماره سریال دستگاه</p>
+                                            <label for="device-serial-image">عکس شماره سریال دستگاه
                                             <img style="max-width: 120px; max-height: 120px;" class="thumbnail"
-                                                with="30px" heigh="30px" id="device-serial-image-preview">
+                                                with="30px" heigh="30px" id="device-serial-image-preview" >
+                                            </label>
                                             <input type="file" accept="image/jpeg,image/png" id="device-serial-image"
-                                                name="device-serial-image" />
+                                                name="device-serial-image" style="display:none;"/>
                                         </div>
                                         <!-- End Installation info -->
 
@@ -298,8 +334,14 @@
                                             <h3 class="text-center">تصاویر موتورخانه</h3>
                                             <div class="container">
                                                 <div id="image-container"></div>
+
                                             </div>
-                                            <p>بارگزاری عکس‌ها</p>
+                                            <label for="enginroom-images" class="file-style">
+                                                <img width="50" height="50"
+                                                    src="{% static 'images/icons8-upload-to-cloud-50.png' %}"
+                                                    alt="upload-to-cloud--v1" />
+                                                <p>بارگزاری عکس‌ها</p>
+                                            </label>
                                             <input type="file" accept="image/jpeg,image/png" multiple
                                                 name="enginroom-images" id="enginroom-images">
                                             <div id="base64-container"></div>
@@ -309,14 +351,12 @@
                                     </div>
                                     <div class="clearfix"></div>
                                     <div>
-                                        <div id="btn-container">
+                                        <div id="btn-container" style="
+                                        margin-top: 40px">
 
-                                            <button type="button" id="prevBtn" class="btn btn-sm btn-secondary"
-                                                onclick="nextPrev(-1)">قبلی</button>
-                                            <button type="button" id="nextBtn" class="btn btn-sm btn-secondary"
-                                                onclick="nextPrev(1)">بعدی</button>
-                                            <button type="button" class="btn btn-sm btn-default" onclick="saveStep()"
-                                                id="sub">ثبت این مرحله</button>
+                                            <button type="button" id="prevBtn" onclick="nextPrev(-1)">قبلی</button>
+                                            <button type="button" id="nextBtn" onclick="nextPrev(1)">بعدی</button>
+                                            <button type="button" onclick="saveStep()" id="sub">ثبت این مرحله</button>
 
                                         </div>
                                     </div>
@@ -491,8 +531,8 @@
                 url: `/api/enginroom-images/?enginroom=${selectEnginroom}`,
                 success: function (response) {
                     for (var i = 0; i < response.length; i++) {
-                        div.append(`<div style="background=#fff;">
-                <img id="image-${response[i].id}" class="img-fluid thumbnail" src="${response[i].images}" width="200px" height="200px">
+                        div.append(`<div style="background=#fff;" class="col-md-3 col-xl-1 col-sm-2">
+                <img id="image-${response[i].id}" class="img-fluid thumbnail" src="${response[i].image}" width="200px" height="200px">
                 <a id="btn-${response[i].id}" onclick="deleteImage(${response[i].id})" class="btn btn-default" style="width: 195px;"><i class="fa fa-trash"></i> حذف </a>
             `);
 
@@ -1031,7 +1071,7 @@
 
                 // Create a function to handle image processing and uploading
                 for (var i = 0; i < files.length; i++) {
-                    enginroomImagesData.append('images', files[i]);
+                    // enginroomImagesData.append('images', files[i]);
 
                     let images_reader = new FileReader();
                     images_reader.onload = function (event) {
@@ -1050,9 +1090,9 @@
                             }
 
                             uploadImages(enginroomImagesData);
-                           
+
                         }
-                        
+
                     };
                     images_reader.readAsDataURL(files[i]);
                 }

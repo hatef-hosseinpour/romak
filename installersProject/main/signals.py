@@ -42,5 +42,5 @@ def deleteProfileImage(sender, instance, **kwargs):
 
 @receiver(pre_delete, sender=EnginRoomImage)
 def deleteProfileImage(sender, instance, **kwargs):
-    if os.path.isfile(instance.images.path) and 'no-image.jpg' not in instance.images.path:
-        os.remove(instance.images.path)
+    if os.path.isfile(instance.image.path) and 'no-image.jpg' not in instance.image.path:
+        os.remove(instance.image.path)

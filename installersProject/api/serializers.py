@@ -65,14 +65,6 @@ class ProfileSerializers(serializers.ModelSerializer):
 # @brief A class for serialize Enginroom objects
 class EnginroomSerializers(serializers.ModelSerializer):
 
-    # def validate_enginroom_name(self, value):
-    #     # Check if there is an Enginroom with the same name in the database
-    #     existing_enginroom = Enginroom.objects.filter(enginroom_name=value).exists()
-
-    #     if existing_enginroom:
-    #         raise ValidationError(f'An Enginroom with the name "{value}" already exists.')
-
-    #     return value
 
     # @param creator_username this readonly field just for representing username of User that create
     creator_username = serializers.CharField(
@@ -190,7 +182,7 @@ class EnginroomImagesSerializers(serializers.ModelSerializer):
         model = EnginRoomImage
         # @param fields What fields of the EnginRoomImage model do we want to serialize
         fields = ['id', 'user', 'installer_username',
-                  'enginroom', 'enginroom_name', 'images_data', 'images', ]
+                  'enginroom', 'enginroom_name', 'images_data', 'image']
 
     def create(self, validated_data):
         images_data = validated_data.pop('images_data')
@@ -225,4 +217,4 @@ class EnginroomImagesSerializers(serializers.ModelSerializer):
         filename = f"{str(uuid.uuid4())}.{image_format}"
         image_file = ContentFile(decoded_data, name=filename)
 
-        enginroom_image.images.save(filename, image_file, save=True)
+        enginroom_image.image.save(filename, image_file, save=True)

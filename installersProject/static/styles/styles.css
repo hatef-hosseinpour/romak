@@ -34,11 +34,7 @@ label.error {
 }
 
 
-.checkbox-container {
-  display: flex;
-  align-items: center;
-  /* Vertically align content in the center */
-}
+
 
 #captcha-container {
   height: 50px;
@@ -67,6 +63,15 @@ label.error {
 #exchanger {
   display: none;
 }
+input[type=submit] {
+  background-color: #34495E;
+  color: #F9F9F9;
+  border-radius: 5px;
+  padding: 5px 10px;
+  margin-top: 15px
+}
+
+
 
 .map {
   width: 100%;

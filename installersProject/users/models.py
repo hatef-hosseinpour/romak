@@ -16,14 +16,7 @@ class Profile(models.Model):
     # two_factor_authentication = models.BooleanField(default=True)
     # login_attempt_count = models.IntegerField(default=0)
 
-    # @property
-    # def role(self):
-    #     if self.user.is_superuser and self.user.is_staff:
-    #         return "Superuser"
-    #     elif self.user.is_staff and not self.user.is_superuser:
-    #         return "Admin"
-    #     else:
-    #         return "Installer"
+
 
     def __str__(self) -> str:
         return self.user.username

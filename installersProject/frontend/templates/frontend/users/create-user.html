@@ -98,7 +98,7 @@
                                             {% endif%}
                                             <option value="staff">مدیر</option>
                                             <option value="installer">نصاب</option>
-                                          </select>
+                                        </select>
                                         <div class="clearfix"></div>
                                         <br>
                                         <input type="submit" value="ثبت" name="" id="user-submit">
@@ -145,6 +145,7 @@
     {% include 'scripts.html' %}
 
     <script>
+        let user_id = "{{request.session.user_id}}";
         $(document).ready(function () {
 
             $("#create-user-form").validate({
@@ -215,7 +216,7 @@
                             'is_staff': isStaff
                         };
 
-                        
+
                         $.ajax({
                             type: "POST",
                             url: "/api/users/",
@@ -225,15 +226,37 @@
                                 'X-CSRFToken': $('[name=csrfmiddlewaretoken]').val()
                             },
                             success: function (response) {
-                                Swal.fire({
-                                    icon: 'success',
-                                    title: 'موفقیت',
-                                    text: 'کاربر با موفقیت اضافه شد.',
-                                    timer: 1500,
-                                }).then(function () {
-                                    // Redirect to users-list
-                                    window.location.href = "/users-list/";
+                                const new_user = response.id;
+                                console.log('new_user', response.id);
+                                $.ajax({
+                                    type: "PATCH",
+                                    url: `/api/users-profile/${new_user}/`,
+                                    data: JSON.stringify({ owner: user_id }),
+                                    contentType: "application/json",
+                                    headers: {
+                                        'X-CSRFToken': $('[name=csrfmiddlewaretoken]').val()
+                                    },
+                                    success: function (response) {
+                                        Swal.fire({
+                                            icon: 'success',
+                                            title: 'موفقیت',
+                                            text: 'کاربر با موفقیت اضافه شد.',
+                                            timer: 1500,
+                                        }).then(function () {
+                                            // Redirect to users-list
+                                            window.location.href = "/users-list/";
+                                        });
+                                    }, 
+                                    error: function (error) {
+                                        console.error('Profile Owner error', error.responseJSON)
+                                        Swal.fire({
+                                            icon: 'error',
+                                            title: 'موفقیت',
+                                            text: 'خطایی رخ داده است',
+                                        })
+                                    }
                                 });
+
                             },
                             error: function (error) {
                                 if (error.responseJSON && error.responseJSON.username) {

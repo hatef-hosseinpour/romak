@@ -5,6 +5,37 @@
 {% include 'head.html' with title="Installers App| Enginroom List" %}
 {% endblock %}
 <!-- /header content -->
+<style>
+    .pagination {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    .pagination button{
+        border: none;
+    }
+    .page-numbers {
+        display: flex;
+        gap: 10px;
+    }
+
+    .prev-page,
+    .next-page{
+        padding: 5px 10px;
+        background-color: #34495E;
+        /* border: 1px solid #ccc; */
+        color:#F9F9F9 ;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+
+
+    .pagination .active {
+    background-color: #34495e; 
+    color: #fff;
+}
+</style>
 
 <body class="nav-md">
 
@@ -53,7 +84,7 @@
                 <div class="">
                     <div class="page-title">
                         <div class="title_left">
-                            <h3>صفحه ساده</h3>
+                            <h3></h3>
                         </div>
 
                         <div class="title_right">
@@ -77,9 +108,7 @@
                             <div class="x_title">
                                 <div class="row x_title">
                                     <div class="col-md-6">
-                                        <h3>فعالیت های شبکه
-                                            <small>عنوان نمودار زیر عنوان</small>
-                                        </h3>
+                                        <h3>لیست موتورخانه ها</h3>
                                     </div>
 
                                 </div>
@@ -110,17 +139,7 @@
                                 <!-- <p>با افزودن کلاس <code dir="ltr">bulk_action</code> برای جدول، جدول دارای اعمال همگانی
                                     می‌شود.</p> -->
                                 <div class="input-group">
-                                    <div class="form-group">
-                                        {% csrf_token %}
-                                        <label for="pageSizeSelect">تعداد موتورخانه را انتخاب کنید:</label>
-                                        <select id="pageSizeSelect" class="form-control">
-                                            <option value="2">2</option>
-                                            <option value="5">5</option>
-                                            <option value="7">7</option>
-                                            <option value="all">All</option>
-                                            <!-- Add an option to select all enginrooms -->
-                                        </select>
-                                    </div>
+
                                 </div>
                                 <div class="table-responsive">
                                     <table class="table table-striped jambo_table dataTable no-footer "
@@ -142,7 +161,16 @@
                                         <tbody>
 
                                         </tbody>
+
                                     </table>
+                                    <div class="col-md-3 col-xs-3">
+                                    <div class="pagination justify-content-center pagination-sm">
+                                        <button class="prev-page">قبلی</button>
+                                        <div class="page-numbers"></div>
+                                        <button class="next-page">بعدی</button>
+                                    </div>
+                                 
+                                </div>
                                 </div>
                             </div>
                         </div>
@@ -190,12 +218,11 @@
         let staff = "{{request.session.is_staff}}" === "True";
         let access = admin || staff
         function acceptEnginroom(id) {
-            const page_size = $("#pageSizeInput").val(); // Get the current page size
             const url = `/api/enginroom/${id}/`;
             $.ajax({
                 type: "PATCH",
-                url: url, // Specify the correct URL for your API
-                data: JSON.stringify({ status: true }), // Update status to 'true'
+                url: url,
+                data: JSON.stringify({ status: true }),
                 contentType: "application/json",
                 headers: {
                     "X-CSRFToken": $("[name=csrfmiddlewaretoken]").val(),
@@ -203,7 +230,7 @@
                 success: function (response) {
 
                     console.log(`Engineroom ${id} has been accepted.`);
-                    $(`#status-${id}`).removeClass('bg-danger').addClass('bg-success text-white');
+                    $(`#status-${id}`).addClass('bg-success text-white');
                 },
                 error: function (error) {
 
@@ -224,7 +251,7 @@
                 success: function (response) {
 
                     console.log(`Engineroom ${id} has been rejected.`);
-                    $(`#status-${id}`).removeClass('bg-success').addClass('bg-danger text-white');
+                    $(`#status-${id}`).addClass('bg-danger text-white');
                 },
                 error: function (error) {
 
@@ -236,31 +263,81 @@
         let status;
         $(document).ready(function () {
 
+            let currentPage = 1;
+            let totalPages;
+
+            function loadEnginerooms(page) {
+
+                $.ajax({
+                    type: "GET",
+                    url: `/api/enginroom/?page=${page}`,
+                    success: function (response) {
+                        listOfEnginroom(response);
+                        currentPage = page;
+                    
+                        totalPages = response.total_pages
+                        console.log('totalPages ', totalPages)
+                        updatePageNumbers();
+                    },
+                    error: function (error) {
+                        console.error('Error loading enginrooms:', error.responseJSON);
+                    }
+                });
+            }
+            loadEnginerooms(currentPage);
+            $(".prev-page").on("click", function () {
+                if (currentPage > 1) {
+                    loadEnginerooms(currentPage - 1); // Load the previous page
+                }
+                
+            });
+
+
+            $(".next-page").on("click", function () {
+                if (currentPage < totalPages) {
+                    loadEnginerooms(currentPage + 1); // Load the next page
+                }
+              
+            });
+
+            function updatePageNumbers() {
+                const pageNumbers = $(".page-numbers");
+                pageNumbers.empty();
+                for (let i = 1; i <= totalPages; i++) {
+                    const pageNumberButton = $("<button>", {
+                        class: "page-number",
+                        text: i,
+                        "data-page": i
+                    });
+                    pageNumbers.append(pageNumberButton);
+                }
+                // Highlight the current page number
+                $(`.page-number[data-page=${currentPage}]`).addClass("active");
+                // Page number click event handler
+                $(".page-number").on("click", function () {
+                    const page = $(this).data("page");
+                    $(`.page-number[data-page=${currentPage}]`).removeClass("active");
+                    $(`.page-number[data-page=${page}]`).addClass("active");
+                    loadEnginerooms(page);
+                });
+            }
+
             $("#search").on("keyup", function () {
                 var value = $(this).val().toLowerCase();
 
-                // Make an AJAX request to filter the enginrooms based on the value
-                $.ajax({
-                    type: "GET",
-                    url: "/api/enginroom/filter_enginrooms/?value=" + value, // Replace with your actual API endpoint
-                    success: function (response) {
-                        listOfEnginroom(response)
-                      
-                    },
-                    error: function (error) {
-                        console.error('Error fetching filtered Enginroom details:', error.responseJSON);
-                    }
+                $("#enginroom-list tbody tr").filter(function () {
+                    $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
                 });
-                fetchEnginroomData($('#page_size').val())
+
             });
 
             function listOfEnginroom(resp) {
                 const tableBody = $('#enginroom-list tbody');
                 tableBody.empty()
-                resp.forEach(function (obj) {
+                resp.results.forEach(function (obj) {
                     if (obj.status == true) {
                         status = 'تایید';
-                        $(`status-${obj.id}`).addClass('bg-success')
+                        $(`#status-${obj.id}`).addClass('bg-success')
                     }
                     else if (obj.status == false) {
                         status = 'رد';
@@ -299,129 +376,6 @@
 
             }
 
-            let selectedInstaller;
-            let selectedOrganization;
-            let selectedAdministration;
-            var totalCount;
-
-            $('#installer').change(function () {
-                selectedInstaller = $(this).val();
-                if (selectedInstaller === '') {
-                    selectedInstaller = ''; // Reset the filter
-                }
-                fetchEnginroomData($('#pageSizeSelect').val());
-            });
-
-            $('#organization').change(function () {
-                selectedOrganization = $(this).val();
-                if (selectedOrganization === '') {
-                    selectedOrganization = ''; // Reset the filter
-                }
-                fetchEnginroomData($('#pageSizeSelect').val());
-            });
-
-            $('#administration').change(function () {
-                selectedAdministration = $(this).val();
-                if (selectedAdministration === '') {
-                    selectedAdministration = ''; // Reset the filter
-                }
-                fetchEnginroomData($('#pageSizeSelect').val());
-            });
-
-
-            $('#pageSizeSelect').change(function () {
-                $("#search").val('')
-                var selectedValue = $(this).val();
-
-                // Check if "All" is selected
-                if (selectedValue === 'all') {
-                    // Use the total count of enginrooms
-                    $.ajax({
-                        type: "GET",
-                        url: "/api/enginroom/get_enginroom_count/",
-                        success: function (countResponse) {
-                            totalCount = countResponse.count;
-                            fetchEnginroomData(totalCount);
-                        },
-                        error: function (error) {
-                            console.error('Error fetching Enginroom count:', error.responseJSON);
-                        }
-                    });
-
-                }
-                else {
-                    // Use the selected count
-                    fetchEnginroomData(selectedValue);
-                }
-            });
-
-
-            function fetchEnginroomData(count) {
-                $.ajax({
-                    type: "GET",
-                    url: "/api/enginroom/fetch_enginrooms_by_count/",
-                    data: {
-                        count: count || totalCount,
-                        installer: selectedInstaller,
-                        organization: selectedOrganization,
-                        administration: selectedAdministration,
-                    },
-                    success: function (response) {
-                        console.table(response)
-                        listOfEnginroom(response)
-
-
-
-                        const selectInstaller = $('#installer');
-                        const selectOrganization = $('#organization');
-                        const selectAdministration = $('#administration');
-                        selectInstaller.empty();
-                        selectOrganization.empty();
-                        selectAdministration.empty();
-                        selectInstaller.append("<option value=''>انتخاب کنید</option>");
-                        selectOrganization.append("<option value=''>انتخاب کنید</option>");
-                        selectAdministration.append("<option value=''>انتخاب کنید</option>");
-
-                        const distinctOptionsInstaller = [];
-                        const distinctOptionsOrganization = [];
-                        const distinctOptionsAdministration = [];
-
-                        response.forEach(function (option) {
-                            if (!distinctOptionsInstaller.includes(option.creator_username)) {
-                                distinctOptionsInstaller.push(option.creator_username);
-                                selectInstaller.append(`<option value="${option.creator}">${option.creator_username}</option>`);
-                            }
-                        });
-
-                        response.forEach(function (option) {
-                            if (!distinctOptionsOrganization.includes(option.organization)) {
-                                distinctOptionsOrganization.push(option.organization);
-                                selectOrganization.append(`<option value="${option.organization}">${option.organization}</option>`);
-                            }
-                        });
-
-                        response.forEach(function (option) {
-                            if (!distinctOptionsAdministration.includes(option.administration)) {
-                                distinctOptionsAdministration.push(option.administration);
-                                selectAdministration.append(`<option value="${option.administration}">${option.administration}</option>`);
-                            }
-                        });
-
-
-
-
-
-
-                    },
-                    error: function (error) {
-                        console.error('Error fetcing Enginroom details:', error.reponseJSON);
-
-                    }
-                });
-
-            }
-
-            fetchEnginroomData(2)
         });
         $('select').select2();
         let enginroomToDeleteId;

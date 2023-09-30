@@ -37,7 +37,7 @@ class LoginUserApiView(APIView):
             login(request, user)
 
             is_admin = user.is_superuser  # Corrected attribute name
-            is_staff = user.is_staff and not is_admin  # Corrected attribute name 
+            is_staff = user.is_staff and not is_admin  # Corrected attribute name
             profile = user.profile
             phone_number = profile.phone_number
             csrf_token = get_token(request)
@@ -94,7 +94,7 @@ class UsersListApiView(APIView):
 
         userList = []
         for data in serializer.data:
-           
+
             user_data = {
                 'id': data['user']['id'],
                 'is_staff': data['user']['is_staff'],
@@ -126,7 +126,11 @@ class UserViewSet(viewsets.ModelViewSet):
 
         hashed_password = make_password(password)
         serializer.validated_data['password'] = hashed_password
-        serializer.save()
+        user = serializer.save()
+
+        # Return the user ID in the response
+        data = {'user_id': user.id}
+        return Response(data, status=status.HTTP_201_CREATED)
 
 
 class UserProfileViewSet(viewsets.ModelViewSet):

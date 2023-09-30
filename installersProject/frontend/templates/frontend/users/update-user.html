@@ -294,7 +294,7 @@
                   success: function (response) {
                     console.log("profile data updated", response);
 
-                    window.location.href = '/users-list/'
+                    window.location.href = "/users-list/";
                   },
                   error: function (error) {
                     console.error('ERROR PROFILE DATE :', error.responseJSON)
@@ -334,6 +334,7 @@
                     // else {
                     //   window.location.href = '/profile/'
                     // }
+                    window.location.href = "/users-list/";
                   },
                   error: function (error) {
                     console.error('ERROR PROFILE DATE :', error.responseJSON)
