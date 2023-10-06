@@ -19,7 +19,8 @@ import os
 # @brief A class for serialize Users objects
 class UserSerializers(serializers.ModelSerializer):
     # profile = ProfileSerializer()
-
+    profile_image = serializers.ImageField(
+        source='profile.profile_image', read_only=True)
     # @brief customize the behavior and characteristics of the User serializer
     class Meta:
         # @param model A User which model whose information is serialized

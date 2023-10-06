@@ -51,3 +51,9 @@ def updateUserFrontView(request, pk):
 def deleteUserFrontView(request, pk):
     context = {'user_id': pk}
     return render(request, 'frontend/users/delete-user.html', context)
+
+
+
+def resetPasswordFrontView(request, pk):
+    context = {'user_id': pk}
+    return render(request, 'frontend/users/reset_password.html', context)

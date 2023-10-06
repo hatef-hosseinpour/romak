@@ -1,4 +1,5 @@
 from rest_framework.response import Response
+from rest_framework.decorators import action
 from rest_framework.decorators import api_view
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
@@ -10,6 +11,7 @@ from api.serializers import ProfileSerializers, UserSerializers, UserListSeriali
 from django.middleware.csrf import get_token
 from api.utils import Base64ImageField
 from rest_framework import serializers
+from api.pagination import CustomPagination
 
 
 @api_view(['GET'])
@@ -79,16 +81,18 @@ class UsersListApiView(APIView):
     authentication_classes = [authentication.SessionAuthentication]
     permission_classes = [permissions.IsAdminUser |
                           permissions.IsAuthenticated]
+    pagination_class = CustomPagination
 
     def get(self, request):
         current_user = request.user
         profile = current_user.profile
         if current_user.is_superuser and current_user.is_staff:
             users = User.objects.all()
-        elif current_user.is_staff:
+        elif current_user.is_staff and not current_user.is_superuser:
             users = User.objects.filter(profile__owner=current_user)
         else:
             users = User.objects.none()
+
         users_profile = Profile.objects.filter(user__in=users)
         serializer = UserListSerializer(users_profile, many=True)
 
@@ -119,6 +123,19 @@ class UserViewSet(viewsets.ModelViewSet):
                           permissions.IsAuthenticated]
     queryset = User.objects.all()
     serializer_class = UserSerializers
+    pagination_class = CustomPagination
+
+    def get_queryset(self):
+        current_user = self.request.user
+        profile = current_user.profile
+        if current_user.is_superuser and current_user.is_staff:
+            queryset = User.objects.all()
+        elif current_user.is_staff and not current_user.is_superuser:
+            queryset = User.objects.filter(profile__owner=current_user)
+        else:
+            queryset = User.objects.none()
+        
+        return queryset
 
     def perform_create(self, serializer):
 
@@ -132,6 +149,19 @@ class UserViewSet(viewsets.ModelViewSet):
         data = {'user_id': user.id}
         return Response(data, status=status.HTTP_201_CREATED)
 
+    @action(detail=True, methods=['post'])
+    def reset_password(self, request, pk=None):
+        user = self.get_object()
+        new_password = request.data.get('new_password')
+
+        if new_password:
+            hashed_password = make_password(new_password)
+            user.password = hashed_password
+            user.save()
+
+            return Response({'message': 'success'}, status=status.HTTP_200_OK)
+        else:
+            return Response({'error': 'fail'}, status=status.HTTP_400_BAD_REQUEST)
 
 class UserProfileViewSet(viewsets.ModelViewSet):
     authentication_classes = [authentication.SessionAuthentication]

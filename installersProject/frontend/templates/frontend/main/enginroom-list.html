@@ -11,20 +11,22 @@
         justify-content: space-between;
         align-items: center;
     }
-    .pagination button{
+
+    .pagination button {
         border: none;
     }
+
     .page-numbers {
         display: flex;
         gap: 10px;
     }
 
     .prev-page,
-    .next-page{
+    .next-page {
         padding: 5px 10px;
         background-color: #34495E;
         /* border: 1px solid #ccc; */
-        color:#F9F9F9 ;
+        color: #F9F9F9;
         border-radius: 5px;
         cursor: pointer;
         transition: background-color 0.3s ease;
@@ -32,9 +34,10 @@
 
 
     .pagination .active {
-    background-color: #34495e; 
-    color: #fff;
-}
+        background-color: #34495e;
+        color: #fff;
+        border-radius: 5px;
+    }
 </style>
 
 <body class="nav-md">
@@ -164,13 +167,13 @@
 
                                     </table>
                                     <div class="col-md-3 col-xs-3">
-                                    <div class="pagination justify-content-center pagination-sm">
-                                        <button class="prev-page">قبلی</button>
-                                        <div class="page-numbers"></div>
-                                        <button class="next-page">بعدی</button>
+                                        <div class="pagination justify-content-center pagination-sm">
+                                            <button class="prev-page">قبلی</button>
+                                            <div class="page-numbers"></div>
+                                            <button class="next-page">بعدی</button>
+                                        </div>
+
                                     </div>
-                                 
-                                </div>
                                 </div>
                             </div>
                         </div>
@@ -209,7 +212,8 @@
     </div>
     {% include 'scripts.html' %}
     <script>
-
+        let currentPage = 1;
+        let totalPages;
         function showDetail(id) {
             const enginroomUrl = `/enginroom-detail/${id}`;
             window.location.href = enginroomUrl;
@@ -261,50 +265,162 @@
 
         }
         let status;
+
+        function populateFilterOptions() {
+            $.ajax({
+                type: 'GET',
+                url: '/api/enginroom/get_filter_option/',
+                success: function (response) {
+                    populateSelectOptions('#installer', response.installers);
+                    populateSelectOptions('#organization', response.organizations);
+                    populateSelectOptions('#administration', response.administrations);
+                },
+                error: function (error) {
+                    console.error('Error loading filter options:', error.responseJSON);
+                }
+            });
+            function populateSelectOptions(selector, options) {
+                const selectElement = $(selector);
+                selectElement.empty();
+
+                // Add an "All" option if needed
+                selectElement.append($('<option>', {
+                    value: '',
+                    text: 'انتخاب کنید'
+                }));
+
+                // Populate the select options
+                $.each(options, function (index, option) {
+                    selectElement.append($('<option>', {
+                        value: option,
+                        text: option
+                    }));
+                });
+            }
+
+        }
         $(document).ready(function () {
 
-            let currentPage = 1;
-            let totalPages;
+            function applyFilters() {
+                const installer = $('#installer').val();
+                const organization = $('#organization').val();
+                const administration = $('#administration').val();
 
-            function loadEnginerooms(page) {
-
+                // Make an AJAX request to retrieve the filtered results
                 $.ajax({
-                    type: "GET",
-                    url: `/api/enginroom/?page=${page}`,
+                    type: 'GET',
+                    url: '/api/enginroom/',
+                    data: {
+                        installer: installer,
+                        organization: organization,
+                        administration: administration,
+
+                    },
                     success: function (response) {
+                        // Handle the filtered results
+                        console.log(response);
                         listOfEnginroom(response);
-                        currentPage = page;
-                    
                         totalPages = response.total_pages
-                        console.log('totalPages ', totalPages)
+
+                        console.log('filter total page', response.total_pages)
                         updatePageNumbers();
+
                     },
                     error: function (error) {
-                        console.error('Error loading enginrooms:', error.responseJSON);
+                        console.error('Error loading filtered results:', error.responseJSON);
                     }
                 });
             }
+
+
+            function loadEnginerooms(page) {
+                // Make an AJAX request to retrieve the engine rooms based on the selected filters
+                const installer = $('#installer').val();
+                const organization = $('#organization').val();
+                const administration = $('#administration').val();
+
+                let url = '/api/enginroom/?page=' + page;
+
+                // Append the selected filters to the URL if any filter is selected
+                if (installer || organization || administration) {
+                    url += '&installer=' + installer;
+                    url += '&organization=' + organization;
+                    url += '&administration=' + administration;
+                }
+
+                $.ajax({
+                    type: 'GET',
+                    url: url,
+                    success: function (response) {
+                        listOfEnginroom(response);
+                        currentPage = page;
+                        totalPages = response.total_pages;
+                        updatePageNumbers();
+                    },
+                    error: function (error) {
+                        console.error('Error loading enginerooms:', error.responseJSON);
+                    }
+                });
+            }
+
+            function loadFilteredEnginerooms(page) {
+                // Make an AJAX request to retrieve the filtered engine rooms
+                const installer = $('#installer').val();
+                const organization = $('#organization').val();
+                const administration = $('#administration').val();
+
+                $.ajax({
+                    type: 'GET',
+                    url: '/api/enginroom/',
+                    data: {
+                        installer: installer,
+                        organization: organization,
+                        administration: administration
+                    },
+                    success: function (response) {
+                        listOfEnginroom(response);
+                        currentPage = page;
+                        totalPages = response.total_pages;
+                        updatePageNumbers();
+                    },
+                    error: function (error) {
+                        console.error('Error loading filtered results:', error.responseJSON);
+                    }
+                });
+            }
+
             loadEnginerooms(currentPage);
+
+
+            if(currentPage == 1){
+                $(".prev-page").hide()
+            }
+            if(currentPage == totalPages){
+                $(".next-page").hide()
+            }
+
             $(".prev-page").on("click", function () {
+                $(".next-page").show()
                 if (currentPage > 1) {
                     loadEnginerooms(currentPage - 1); // Load the previous page
                 }
-                
+
             });
 
-
             $(".next-page").on("click", function () {
+                $(".prev-page").show()
                 if (currentPage < totalPages) {
                     loadEnginerooms(currentPage + 1); // Load the next page
                 }
-              
+
+
             });
 
             function updatePageNumbers() {
                 const pageNumbers = $(".page-numbers");
                 pageNumbers.empty();
                 for (let i = 1; i <= totalPages; i++) {
-                    const pageNumberButton = $("<button>", {
+                    let pageNumberButton = $("<button>", {
                         class: "page-number",
                         text: i,
                         "data-page": i
@@ -321,6 +437,32 @@
                     loadEnginerooms(page);
                 });
             }
+
+            populateFilterOptions();
+
+            $('#installer').on('change', function () {
+                if ($('#installer').val() || $('#organization').val() || $('#administration').val()) {
+                    loadFilteredEnginerooms(currentPage);
+                } else {
+                    loadEnginerooms(currentPage);
+                }
+            });
+
+            $('#organization').on('change', function () {
+                if ($('#installer').val() || $('#organization').val() || $('#administration').val()) {
+                    loadFilteredEnginerooms(currentPage);
+                } else {
+                    loadEnginerooms(currentPage);
+                }
+            });
+
+            $('#administration').on('change', function () {
+                if ($('#installer').val() || $('#organization').val() || $('#administration').val()) {
+                    loadFilteredEnginerooms(currentPage);
+                } else {
+                    loadEnginerooms(currentPage);
+                }
+            });
 
             $("#search").on("keyup", function () {
                 var value = $(this).val().toLowerCase();

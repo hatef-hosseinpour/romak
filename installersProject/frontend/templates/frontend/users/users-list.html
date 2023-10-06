@@ -87,21 +87,27 @@
                                 <div class="col-xs-12 col-sm-6 col-md-4 col-lg-3">
                                     <label for="installer">نقش کاربری:</label>
                                     <select id="installer" class="form-control">
-                                        <option hidden>انتخاب کنید</option>
+                                        <option value="">انتخاب کنید</option>
+                                        <option value="admin">سرپرست</option>
+                                        <option value="staff">مدیر</option>
+                                        <option value="installer">نصاب</option>
+                                        
 
                                     </select>
                                 </div>
                                 <div class="col-xs-12 col-sm-6 col-md-4 col-lg-3">
                                     <label for="organization">وضعیت:</label>
                                     <select id="organization" class="form-control">
-                                        <option hidden>انتخاب کنید</option>
+                                        <option value="">انتخاب کنید</option>
+                                        <option value="true">فعال</option>
+                                        <option value="false">غیرفعال</option>
 
                                     </select>
                                 </div>
                                 <div class="col-xs-12 col-sm-6 col-md-4 col-lg-3">
                                     <!-- <label for="administration">وزارت‌خانه:</label>
                                     <select id="administration" class="form-control">
-                                        <option hidden>انتخاب کنید</option> -->
+                                        <option value="">انتخاب کنید</option> -->
 
                                     </select>
                                 </div>
@@ -218,9 +224,9 @@
             }
             $.ajax({
                 type: "GET",
-                url: "/api/users-list/",
+                url: "/api/users/",
                 success: function (response) {
-                    listOfUsers(response)
+                    listOfUsers(response.results)
                 },
                 error: function (error) {
                     console.error('Error fetching user details:', error.responseJSON);

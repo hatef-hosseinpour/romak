@@ -65,28 +65,51 @@ class EnginroomViewSet(viewsets.ModelViewSet):
         return Response({'count': count})
 
 
+    # @action(detail=False, methods=['GET'])
+    # def filter_enginrooms(self, request):
+    #     value = request.query_params.get('value', None)
+    #     user = self.request.user
+
+    #     if user.is_superuser and user.is_staff:
+    #         queryset = Enginroom.objects.all()
+    #     elif user.is_staff and not user.is_superuser:
+    #         queryset = Enginroom.objects.filter(
+    #         Q(creator=user) | Q(creator__profile__owner=user))
+    #     else:
+    #         queryset = Enginroom.objects.filter(creator=user)
+
+    #     if value:
+    #         # Use Q objects to filter each field for the specified value
+    #         query = Q()
+    #         query |= Q(enginroom_name__icontains=value)
+    #         query |= Q(organization__icontains=value)
+    #         query |= Q(administration__icontains=value)
+    #         # Add more fields as needed
+
+    #         queryset = queryset.filter(query)
+
+    #     serializer = self.get_serializer(queryset, many=True)
+    #     return Response(serializer.data)
+
     @action(detail=False, methods=['GET'])
-    def filter_enginrooms(self, request):
-        value = request.query_params.get('value', None)
-        user = self.request.user
+    def get_filter_option(self, request):
+        user = request.user
+        filter_option = {}
 
         if user.is_superuser and user.is_staff:
             queryset = Enginroom.objects.all()
         elif user.is_staff and not user.is_superuser:
             queryset = Enginroom.objects.filter(
-            Q(creator=user) | Q(creator__profile__owner=user))
+                Q(creator=user) | Q(creator__profile__owner=user))
         else:
             queryset = Enginroom.objects.filter(creator=user)
 
-        if value:
-            # Use Q objects to filter each field for the specified value
-            query = Q()
-            query |= Q(enginroom_name__icontains=value)
-            query |= Q(organization__icontains=value)
-            query |= Q(administration__icontains=value)
-            # Add more fields as needed
 
-            queryset = queryset.filter(query)
+        installers = queryset.values_list('creator__username', flat=True)
+        organizations = queryset.values_list('organization', flat=True)
+        administrations = queryset.values_list('administration', flat=True)
+        filter_option['installers'] = list(set(installers))
+        filter_option['organizations'] = list(set(organizations))
+        filter_option['administrations'] = list(set(administrations))
 
-        serializer = self.get_serializer(queryset, many=True)
-        return Response(serializer.data)
+        return Response(filter_option)

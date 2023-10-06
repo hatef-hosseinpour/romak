@@ -24,6 +24,9 @@ urlpatterns = [
          name='front-delete-user'),
 
 
+     path('reset_password/<int:pk>', view=resetPasswordFrontView, name='front-reset-password'),
+
+
 
 
     # enginroom URLs
