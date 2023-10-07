@@ -6,6 +6,21 @@
 {% endblock %}
 <!-- /header content -->
 <style>
+  
+
+    .pip {
+        display: inline-block;
+        margin: 10px 10px 0 0;
+    }
+
+    .remove{
+        margin: 10px 12px 0 0;
+    }
+
+
+
+
+
     #checkbox-container {
         margin-top: 10px;
     }
@@ -94,12 +109,6 @@
     .step.finish {
         background-color: #04AA6D;
     }
-
-    .image-container {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-    }
 </style>
 
 <body class="nav-md">
@@ -129,7 +138,7 @@
                             </li>
                             <li><a href="/profile/"><i class="fa fa-user pull-right"></i>
                                     پروفایل</a></li>
-                            <li><a href="/change-password/"><i class="fa fa-lock pull-right"></i>
+                            <li><a href="/reset_password/{{request.session.user_id}}"><i class="fa fa-lock pull-right"></i>
                                     تغییر رمزعبور</a></li>
                             <hr>
                             <li><a id="logout" onclick="logout()"><i class="fa fa-sign-out pull-right"></i>
@@ -202,14 +211,14 @@
                                                     <select class="form-select" style="width: 100%;"
                                                         id="select-province" aria-label="انتخاب کنید"
                                                         name="select-province">
-                                                        <option>انتخاب کنید</option>
+                                                        <option value="">انتخاب کنید</option>
                                                     </select>
                                                 </div>
                                                 <div class="col-md-6" style=" padding-right: 0">
                                                     <label for="select-city">شهر</label>
                                                     <select class="form-select" style="width: 100%;" id="select-city"
                                                         aria-label="انتخاب کنید" name="select-city">
-                                                        <option>انتخاب کنید</option>
+                                                        <option value="">انتخاب کنید</option>
                                                     </select>
                                                 </div>
                                             </div>
@@ -277,7 +286,7 @@
                                             <label for="select-usage">نوع کاربری</label>
                                             <select class="form-select" style="width: 100%;" id="select-usage"
                                                 aria-label="">
-                                                <option>انتخاب کنید</option>
+                                                <option value="">انتخاب کنید</option>
                                                 <option value="heating">گرمایشی</option>
                                                 <option value="sanitary">آبگرم بهداشتی</option>
                                                 <option value="both">هردو (گرمایشی و آبگرم بهداشتی)</option>
@@ -293,6 +302,7 @@
                                             <div id="exchanger" class="rtl-txt" style="display: none;">
                                                 <label for="pool">تعداد مبدل آب استخر</label>
                                                 <input type="number" min="0" class="form-control" id="pool" name="pool">
+                                                <!-- <input type="text" inputmode="numeric" pattern="[0-9]+" class="form-control" id="pool" name="pool"> -->
                                                 <label for="jaccuzi">تعداد مبدل جکوزی</label>
                                                 <input type="number" min="0" class="form-control" id="jaccuzi"
                                                     name="jaccuzi">
@@ -325,7 +335,7 @@
                                             <label for="select-installed-model">مدل دستگاه نصب‌شده</label>
                                             <select class="form-select" style="width: 100%;" id="select-installed-model"
                                                 aria-label="انتخاب کنید">
-                                                <option>انتخاب کنید</option>
+                                                <option value="">انتخاب کنید</option>
                                                 <option value="8relays">۸ رله‌ای</option>
                                                 <option value="12relays">۱۲ رله‌ای</option>
                                                 <option value="16relays">۱۶ رله‌ای</option>
@@ -333,11 +343,14 @@
                                             <label for="connection-type">نوع ارتباط</label>
                                             <select class="form-select" style="width: 100%;" id="connection-type"
                                                 aria-label="انتخاب کنید">
-                                                <option>انتخاب کنید</option>
+                                                <option value="">انتخاب کنید</option>
                                                 <option value="internet">اینترنت</option>
                                                 <option value="intranet">اینترانت</option>
                                                 <option value="ethernet">اترنت</option>
                                             </select>
+                                            <label for="installation-date">تاریخ نصب</label>
+                                            <input data-jdp type="text" class="form-control" id="installation-date"
+                                                name="installation-date" />
                                             <label for="modem-model">مدل مودم</label>
                                             <input type="text" class="form-control" id="modem-model" name="modem-model">
                                             <div class="checkbox-container">
@@ -349,9 +362,7 @@
                                                 <input type="text" class="form-control" id="modem-simcard"
                                                     name="modem-simcard">
                                             </div>
-                                            <label for="installation-date">تاریخ نصب</label>
-                                            <input data-jdp type="text" class="form-control" id="installation-date"
-                                                name="installation-date" />
+
                                             <label for="device-serial-image">عکس شماره سریال دستگاه
                                                 <img style="max-width: 120px; max-height: 120px;" class="thumbnail"
                                                     with="30px" heigh="30px" id="device-serial-image-preview">
@@ -368,7 +379,9 @@
                                         <div class="tab">
                                             <h3 class="text-center">تصاویر موتورخانه</h3>
                                             <div class="container">
-                                                <div id="image-container"></div>
+                                                <div id="image-container" class="col-md-12 col-sm-12 col-xs-2"
+                                                    style="display: inline-block; justify-content: space-between; align-items: center;">
+                                                </div>
 
                                             </div>
                                             <label for="enginroom-images" class="file-style">
@@ -378,9 +391,9 @@
                                                 <p>بارگزاری عکس‌ها</p>
                                             </label>
                                             <input type="file" accept="image/jpeg,image/png" multiple
-                                                name="enginroom-images" id="enginroom-images">
+                                                name="enginroom-images" id="enginroom-images" name="enginroom-images[]">
 
-                                            <div id="base64-container"></div>
+                                            <div id="new_images_container"></div>
                                         </div>
 
                                         <!--End Images of enginroom-->
@@ -450,26 +463,18 @@
         let currentTab;
         let currentbuildingImageURL;
         let currendeviceSerialImageURL;
+        let imagesData = [];
 
-        $(document).ready(function () {
+        // Create the map
+        var map = L.map('map').setView([35.6892, 51.3890], 13);
 
+        // Add a tile layer to the map
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors',
+            maxZoom: 18,
+        }).addTo(map);
 
-            //#region Get Enginroom to find enginroom name and step
-            $.ajax({
-                type: "GET",
-                url: "/api/enginroom/" + id + "/",
-                success: function (response) {
-                    $('#enginroom').text(response.enginroom_name)
-                    currentTab = parseInt(response.step);
-                    showTab(currentTab);
-                    console.log(currentTab);
-                },
-                error: function (error) {
-                    console.error('Error fetcing Enginroom details:', error.reponseJSON);
-
-                }
-            });
-            //#endregion
+        function locationPublicInfo() {
             //#region GET location, enginroom and installation info with enginroom images(later)
             $.ajax({
                 type: "GET",
@@ -491,17 +496,6 @@
                     currentbuildingImageURL = response.building_image;
                     $('#location-input').val(response.location)
 
-
-
-
-                    // Create the map
-                    var map = L.map('map').setView([35.6892, 51.3890], 13);
-
-                    // Add a tile layer to the map
-                    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                        attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors',
-                        maxZoom: 18,
-                    }).addTo(map);
 
                     // Initialize the marker and location input
                     var marker;
@@ -538,7 +532,9 @@
 
                 }
             });
+        }
 
+        function engineroomPublicInfo() {
             $.ajax({
                 type: "GET",
                 url: "/api/enginroom-public-info/" + id + "/",
@@ -565,7 +561,9 @@
 
                 }
             });
+        }
 
+        function installationInfo() {
             $.ajax({
                 type: "GET",
                 url: "/api/installation-info/" + id + "/",
@@ -590,24 +588,105 @@
                 }
             });
 
+        }
+
+        function engineroomImages() {
             let div = $('#image-container')
 
             $.ajax({
                 type: "GET",
                 url: `/api/enginroom-images/?enginroom=${selectEnginroom}`,
                 success: function (response) {
+                    div.empty()
                     for (var i = 0; i < response.length; i++) {
-                        div.append(`<div style="background=#fff;" class="col-md-3 col-xl-1 col-sm-2">
-                <img id="image-${response[i].id}" class="img-fluid thumbnail" src="${response[i].image}" width="200px" height="200px">
-                <a id="btn-${response[i].id}" onclick="deleteImage(${response[i].id})" class="btn btn-default" style="width: 195px;"><i class="fa fa-trash"></i> حذف </a>
-            `);
+                        div.append(`<div style="background=#fff;" class="col-xl-3 col-sm-3">
+                             <img id="image-${response[i].id}" class="img-fluid thumbnail" src="${response[i].image}" width="200px" height="200px">
+                            <a id="btn-${response[i].id}" onclick="deleteImage(${response[i].id})" class="btn btn-default " style="width: 195px;"><i class="fa fa-trash" style="color: #dd0808;"></i> حذف </a>
+                        `);
 
 
                     }
                 }
             });
 
+        }
 
+
+
+        $(document).ready(function () {
+
+
+
+            // var filess = $('#enginroom-images')[0].files;
+            let new_images_container = $('#new_images_container')
+
+            $("#enginroom-images").on("change", function (e) {
+                var filess = e.target.files,
+                    filesLength = filess.length;
+
+                for (var i = 0; i < filesLength; i++) {
+                    var f = filess[i]
+                    var fileReader = new FileReader();
+
+                    fileReader.onload = (function (e) {
+                        var file = e.target;
+                        var imageThumb = `<img class="pip img-fluid thumbnail" src="${e.target.result}" title="${file.name}" width="200px" height="200px">`;
+                        var removeButton = `<br/><span class="remove btn btn-default" style="width: 195px;"><i class="fa fa-xing" style="color: #dd0808;"></i>برداشتن</span>`;
+
+                        var container = $(`<span class="pip"> ${imageThumb} ${removeButton} </span>`);
+
+                        // Append the container to the new_images_container
+                        container.appendTo('#new_images_container');
+
+                        // Store the image data in the imagesData array
+                        imagesData.push(e.target.result);
+
+                        // Add a click event handler to the "Remove" button
+                        container.find(".remove").click(function () {
+                            var imageIndex = $(this).parent().index(); // Get the index of the container in the parent
+                            if (imageIndex !== -1) {
+                                imagesData.splice(imageIndex, 1); // Remove the image data from the array
+                            }
+                            $(this).parent(".pip").remove(); // Remove the container from the DOM
+                        });
+                    });
+
+                    fileReader.readAsDataURL(f);
+                }
+
+                console.log(imagesData); // Log the updated imagesData array
+            });
+
+
+
+
+
+
+
+
+            //#region Get Enginroom to find enginroom name and step
+            $.ajax({
+                type: "GET",
+                url: "/api/enginroom/" + id + "/",
+                success: function (response) {
+                    $('#enginroom').text(response.enginroom_name)
+                    currentTab = parseInt(response.step);
+                    showTab(currentTab);
+                    console.log(currentTab);
+                },
+                error: function (error) {
+                    console.error('Error fetcing Enginroom details:', error.reponseJSON);
+
+                }
+            });
+            //#endregion
+            locationPublicInfo();
+
+            engineroomPublicInfo();
+
+            installationInfo();
+
+            engineroomImages();
             //////api/enginroom-images/?enginroom=53&user=1///////////////
             //#endregion
 
@@ -755,13 +834,7 @@
                 },
                 success: function (response) {
 
-
-
-                    // Show a success message using SweetAlert
-                    // Swal.fire('حذف شد!', 'با موفقیت حذف شد.', 'success');
-                    $(`#image-${id}`).remove();
-                    $(`#btn-${id}`).remove();
-
+                    engineroomImages()
                 },
                 error: function (error) {
                     console.error('Error deleting Engineroom:', error.responseJSON);
@@ -866,10 +939,24 @@
                                 "X-CSRFToken": $("[name=csrfmiddlewaretoken]").val(),
                             },
                             success: function (response) {
-                                updateStep(currentTab)
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'موفقیت',
+                                    text: 'اطلاعات عمومی محل نصب با موفقیت ثبت شد.'
+
+                                }).then(function () {
+                                    locationPublicInfo();
+                                    updateStep(currentTab);
+                                });
+
                             },
                             error: function (error) {
-                                console.error('ERROR IN POST DATA TO LOCATION PUBLIC INFO', error.responseJSON);
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'خطا',
+                                    text: 'خطایی رخ داده است لطفا دوباره تلاش کنید'
+                                })
+                                console.error('ERROR IN UPDATE DATA TO LOCATION PUBLIC INFO', error.responseJSON);
                             }
                         });
 
@@ -906,10 +993,24 @@
                                 "X-CSRFToken": $("[name=csrfmiddlewaretoken]").val(),
                             },
                             success: function (response) {
-                                updateStep(currentTab)
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'موفقیت',
+                                    text: 'اطلاعات عمومی محل نصب با موفقیت ثبت شد.'
+
+                                }).then(function () {
+                                    locationPublicInfo();
+                                    updateStep(currentTab);
+                                });
+
                             },
                             error: function (error) {
-                                console.error('ERROR IN POST DATA TO LOCATION PUBLIC INFO', error.responseJSON);
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'خطا',
+                                    text: 'خطایی رخ داده است لطفا دوباره تلاش کنید'
+                                })
+                                console.error('ERROR IN Update DATA TO LOCATION PUBLIC INFO', error.responseJSON);
                             }
                         });
 
@@ -962,10 +1063,24 @@
                         "X-CSRFToken": $("[name=csrfmiddlewaretoken]").val(),
                     },
                     success: function (response) {
-                        updateStep(currentTab)
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'موفقیت',
+                            text: 'اطلاعات عمومی موتورخانه با موفقیت ثبت شد.'
+
+                        }).then(function () {
+                            engineroomPublicInfo();
+                            updateStep(currentTab);
+                        });
+
                     },
                     error: function (error) {
-                        console.error('ERROR IN POST DATA TO ENGINROOM PUBLIC INFO', error.responseJSON);
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'خطا',
+                            text: 'خطایی رخ داده است لطفا دوباره تلاش کنید'
+                        })
+                        console.error('ERROR IN Update DATA TO ENGINROOM PUBLIC INFO', error.responseJSON);
                     }
                 });
 
@@ -1017,11 +1132,24 @@
                                 "X-CSRFToken": $("[name=csrfmiddlewaretoken]").val(),
                             },
                             success: function (response) {
-                                updateStep(currentTab)
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'موفقیت',
+                                    text: 'اطلاعات عمومی محل نصب با موفقیت ثبت شد.'
+
+                                }).then(function () {
+                                    installationInfo()
+                                    updateStep(currentTab);
+                                });
 
                             },
                             error: function (error) {
-                                console.error('ERROR IN POST DATA TO INSTALLATION INFO', error.responseJSON);
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'خطا',
+                                    text: 'خطایی رخ داده است لطفا دوباره تلاش کنید'
+                                })
+                                console.error('ERROR IN Update DATA TO INSTALLATION INFO', error.responseJSON);
                             }
                         });
                         console.log('installation info', installationinfoData)
@@ -1057,11 +1185,24 @@
                                 "X-CSRFToken": $("[name=csrfmiddlewaretoken]").val(),
                             },
                             success: function (response) {
-                                updateStep(currentTab)
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'موفقیت',
+                                    text: 'اطلاعات عمومی محل نصب با موفقیت ثبت شد.'
+
+                                }).then(function () {
+                                    installationInfo()
+                                    updateStep(currentTab);
+                                });
 
                             },
                             error: function (error) {
-                                console.error('ERROR IN POST DATA TO INSTALLATION INFO', error.responseJSON);
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'خطا',
+                                    text: 'خطایی رخ داده است لطفا دوباره تلاش کنید'
+                                })
+                                console.error('ERROR IN Update DATA TO INSTALLATION INFO', error.responseJSON);
                             }
                         });
                         console.log('installation info', installationinfoData)
@@ -1072,38 +1213,39 @@
 
             }
             else if (currentTab == 3) {
+
                 var files = $('#enginroom-images')[0].files;
-                enginroomImagesData = new FormData();
-                var imagesData = []
+                let c = $('#new_images_container')
 
 
-                // Create a function to handle image processing and uploading
-                for (var i = 0; i < files.length; i++) {
-                    // enginroomImagesData.append('images', files[i]);
+                let enginroomImagesData = new FormData();
 
-                    let images_reader = new FileReader();
-                    images_reader.onload = function (event) {
-                        var image_data = event.target.result
-                        imagesData.push(image_data);
-                        // console.log(imagesData)
-                        if (imagesData.length === files.length) {
-                            // console.log(imagesData.length)
-                            // // Convert the imagesData array to JSON and append it to FormData
+
+
+                // for (var i = 0; i < files.length; i++) {
+
+                //     let images_reader = new FileReader();
+                //     images_reader.onload = function (event) {
+                //         var image_data = event.target.result
+                //         imagesData.push(image_data);
+
+
+                //         if (imagesData.length === files.length) {
+
                             enginroomImagesData.append('enginroom', selectEnginroom);
                             enginroomImagesData.append('user', user);
                             enginroomImagesData.append('images_data', imagesData);
 
-                            for (var pair of enginroomImagesData.entries()) {
-                                console.log(pair);
-                            }
-
                             uploadImages(enginroomImagesData);
 
-                        }
+                //         }
 
-                    };
-                    images_reader.readAsDataURL(files[i]);
-                }
+                //     };
+                //     images_reader.readAsDataURL(files[i]);
+                // }
+
+                console.log('images length', imagesData.length)
+                console.log(' imagesData', imagesData);
 
 
             }
@@ -1125,10 +1267,29 @@
                     "X-CSRFToken": $("[name=csrfmiddlewaretoken]").val(),
                 },
                 success: function (response) {
-                    console.log('Images uploaded successfully', response);
-                    updateStep(currentTab)
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'موفقیت',
+                        text: 'تصاویر موتورخانه با موفقیت ثبت شد.'
+
+                    }).then(function () {
+                        console.log('Images uploaded successfully', response);
+                        $('#new_images_container').empty()
+                        engineroomImages()
+                        updateStep(currentTab);
+
+                       
+
+
+                    });
+
                 },
                 error: function (error) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'خطا',
+                        text: 'خطایی رخ داده است لطفا دوباره تلاش کنید'
+                    })
                     console.error('Error uploading images', error.responseJSON);
                 }
             });

@@ -26,6 +26,8 @@ class Enginroom(models.Model):
     # @param status this field defaul to false after user fill information of installation admin can accept it and after accept of admin this field change to true
     status = models.BooleanField(default=None, null=True)
 
+    rejection_note = models.TextField(null=True, blank=True)
+
     class Meta:
         ordering = ['-id']
 
@@ -148,6 +150,9 @@ class InstallationInfo(models.Model):
     modem_simcard_number = models.CharField(
         max_length=200, null=True, blank=True)
     # @param  installation_date the date and time of installation
+    # @param  modem_serial_number_image the user should take a picture from serial of modem number
+    modem_simcard_serial_number_image = models.ImageField(
+        null=True, blank=True, upload_to='modem_simcard_serial_number_images/', default='no-image.jpg')
     installation_date = models.CharField(max_length=1000,
         verbose_name='installed_at', null=True, blank=True)
     # @param  device_serial_number_image the user should take a picture from serial of device number
