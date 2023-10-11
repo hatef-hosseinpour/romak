@@ -55,6 +55,8 @@ class ProfileSerializers(serializers.ModelSerializer):
         fields = '__all__'
 
     def update(self, instance, validated_data):
+
+        
         # Delete old profile image if new image is provided
         if 'profile_image' in validated_data and instance.profile_image and 'default_user.jpg' not in instance.profile_image.path:
             if os.path.exists(instance.profile_image.path):
@@ -80,7 +82,7 @@ class EnginroomSerializers(serializers.ModelSerializer):
         model = Enginroom
         # @param fields What fields of the Enginroom model do we want to serialize
         fields = ['id', 'enginroom_name', 'administration', 'organization',
-                  'creator', 'creator_username', 'step', 'status', 'location']
+                  'creator', 'creator_username', 'step', 'status', 'location', 'rejection_note']
 
 
 # @brief A class for serialize Location Public Info objects
@@ -140,6 +142,7 @@ class EnginroomPublicInfoSerializers(serializers.ModelSerializer):
 # @brief A class for serialize Installation Info objects
 class InstallationInfoSerializers(serializers.ModelSerializer):
     device_serial_number_image = Base64ImageField(required=False)
+    modem_simcard_serial_number_image = Base64ImageField(required=False)
     # @param installer_username  this readonly field just to display the name of the installer where record public information of engin room
     installer_username = serializers.CharField(
         source='user.username', read_only=True)
@@ -153,13 +156,16 @@ class InstallationInfoSerializers(serializers.ModelSerializer):
         # @param model A InstallationInfo model which model whose information is serialized
         model = InstallationInfo
         # @param fields What fields of the EnginroomPublicInfo model do we want to serialize
-        fields = ['id', 'user', 'installer_username', 'enginroom', 'enginroom_name', 'installed_device_model', 'connection_type',
-                  'modem_model', 'has_simcard', 'modem_simcard_number', 'installation_date', 'device_serial_number_image', ]
+        fields = ['id', 'user', 'installer_username', 'enginroom', 'enginroom_name', 'installed_device_model', 'connection_type', 'modem_model', 'has_simcard', 'modem_simcard_number', 'installation_date', 'device_serial_number_image', 'modem_simcard_serial_number_image']
     def update(self, instance, validated_data):
         # Delete old profile image if new image is provided
-        if 'device_serial_number' in validated_data and instance.device_serial_number_image and 'no-image.jpg' not in instance.device_serial_number_image.path:
+        if 'device_serial_number_image' in validated_data and instance.device_serial_number_image and 'no-image.jpg' not in instance.device_serial_number_image.path:
             if os.path.exists(instance.device_serial_number_image.path):
                 os.remove(instance.device_serial_number_image.path)
+
+        if 'modem_simcard_serial_number_image' in validated_data and instance.modem_simcard_serial_number_image and 'no-image.jpg' not in instance.modem_simcard_serial_number_image.path:
+            if os.path.exists(instance.modem_simcard_serial_number_image.path):
+                os.remove(instance.modem_simcard_serial_number_image.path)
 
         return super().update(instance, validated_data)
 # @brief A class for serialize Enginroom Images objects

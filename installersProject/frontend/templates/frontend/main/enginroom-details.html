@@ -11,7 +11,9 @@
     }
 
     .slide img {
-        width: 100%;
+        width:60%;
+        height:60%;
+        margin-right: 25%;
     }
 
     .height {
@@ -28,6 +30,9 @@
     .next {
         right: 0;
     }
+    .previous{
+        left: 0;
+    }
 
     /* Next and previous icon design */
     .previous,
@@ -37,6 +42,7 @@
         top: 50%;
         padding: 10px;
         margin-top: -25px;
+        
     }
 
     /* caption decorate */
@@ -120,7 +126,8 @@
                             </li>
                             <li><a href="/profile/"><i class="fa fa-user pull-right"></i>
                                     پروفایل</a></li>
-                            <li><a href="/reset_password/{{request.session.user_id}}"><i class="fa fa-lock pull-right"></i>
+                            <li><a href="/reset_password/{{request.session.user_id}}"><i
+                                        class="fa fa-lock pull-right"></i>
                                     تغییر رمزعبور</a></li>
                             <hr>
                             <li><a id="logout" onclick="logout()"><i class="fa fa-sign-out pull-right"></i>
@@ -156,8 +163,8 @@
 
                     <div class="clearfix"></div>
 
-                    <div class="row">
-                        <div class="col-md-12 col-sm-12 col-xs-12">
+                    <div class="row" class="col-md-12 col-sm-12 col-xs-12">
+                        <div >
                             <div class="x_panel">
                                 <div class="x_title">
                                     <h2>اطلاعات موتورخانه</h2>
@@ -185,11 +192,15 @@
                                         <h4>وضعیت</h4>
                                         <p id="status"> </p>
                                     </div>
+                                    <div>
+                                        <h4>علت رد شدن</h4>
+                                        <p id="reject"> </p>
+                                    </div>
                                 </div>
                             </div>
                             <div class="x_panel">
                                 <div class="x_title">
-                                    <h2>اطلاعات عمومی محل نصب</h2>
+                                    <h2>اطلاعات محل نصب</h2>
                                     <ul class="nav navbar-right panel_toolbox">
                                         <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
                                         </li>
@@ -254,7 +265,7 @@
                             </div>
                             <div class="x_panel">
                                 <div class="x_title">
-                                    <h2>اطلاعات عمومی موتورخانه</h2>
+                                    <h2>اطلاعات موتورخانه</h2>
                                     <ul class="nav navbar-right panel_toolbox">
                                         <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
                                         </li>
@@ -361,7 +372,7 @@
                             </div>
                             <div class="x_panel">
                                 <div class="x_title">
-                                    <h2>عکس های موتورخانه</h2>
+                                    <h2>تصاویر موتورخانه</h2>
                                     <ul class="nav navbar-right panel_toolbox">
                                         <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
                                         </li>
@@ -370,15 +381,15 @@
                                     </ul>
                                     <div class="clearfix"></div>
                                 </div>
-                                <div class="x_content" id="enginroom-images">
+                                <div class="x_content" id="enginroom-images" class="col-sm-12 col-xs-12">
                                     <!-- Image container of the image slider -->
 
                                     <!-- Next and Previous icon to change images -->
                                     <a class="previous" onclick="moveSlides(-1)">
-                                        <i class="fa fa-chevron-circle-left"></i>
+                                        <i class="fa fa-chevron-circle-left fa-lg"></i>
                                     </a>
                                     <a class="next" onclick="moveSlides(1)">
-                                        <i class="fa fa-chevron-circle-right"></i>
+                                        <i class="fa fa-chevron-circle-right fa-lg"></i>
                                     </a>
                                 </div>
                                 <br>
@@ -424,8 +435,9 @@
     {% include 'scripts.html' %}
     <script>
 
-        let slideIndex;
+        let slideIndex = 1;
         let enginroomId = "{{enginroom_id}}";
+       
         displaySlide(slideIndex);
 
         function moveSlides(n) {
@@ -457,7 +469,7 @@
             totaldots.eq(slideIndex - 1).addClass("active");
         }
         $(document).ready(function () {
-            slideIndex = 1;
+            
             $.ajax({
                 type: "GET",
                 url: "/api/enginroom/" + enginroomId + "/",
@@ -474,6 +486,9 @@
                     } else {
                         $('#status').text('در انتظار تایید');
                     }
+                    // if (response.rejection_note) { $('#reject').show() }
+                    // else { $('#reject').hide() }
+                    $('#reject').text(response.rejection_note ? response.rejection_note : 'پیامی موجود نیست')
 
                 }
             });
@@ -520,7 +535,7 @@
                                 if (response.province === parts[0]) {
                                     $('#province').text(parts[1])
                                 }
-                                else{
+                                else {
                                     $('#province').text('---')
                                 }
 
@@ -541,7 +556,7 @@
                                 if (response.city === parts[0]) {
                                     $('#city').text(parts[3])
                                 }
-                                else{
+                                else {
                                     $('#city').text('---')
                                 }
 
@@ -626,10 +641,10 @@
                     for (var i = 0; i < response.length; i++) {
                         enginroomImages.append(` <div class="slide">
                                         <div class="slideNumber">${slideIndex + i}</div>
-                                        <img src="${response[i].image}" style="height: 400px">
+                                        <img src="${response[i].image}" style="height: 400px; width=400px">
                                     </div>
             `);
-
+            displaySlide(slideIndex);
                         activeSlide.append(`<span class="footerdot" onclick="activeSlide(${slideIndex + i})">
                                     </span>`);
                     }

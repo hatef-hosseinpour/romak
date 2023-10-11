@@ -2,11 +2,46 @@
 <html lang="fa" dir="rtl">
 {% load static %}
 {% block headcontent %}
-{% include 'head.html' with title="Installers App| Dashboard" %}
+{% include 'head.html' with title="Installers App| Enginroom List" %}
 {% endblock %}
 <!-- /header content -->
+<style>
+    .pagination {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .pagination button {
+        border: none;
+    }
+
+    .page-numbers {
+        display: flex;
+        gap: 10px;
+    }
+
+    .prev-page,
+    .next-page {
+        padding: 5px 10px;
+        background-color: #34495E;
+        /* border: 1px solid #ccc; */
+        color: #F9F9F9;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+
+
+    .pagination .active {
+        background-color: #34495e;
+        color: #fff;
+        border-radius: 5px;
+    }
+</style>
 
 <body class="nav-md">
+
     <div class="container body">
         <div class="main_container">
             <div class="col-md-3 left_col hidden-print">
@@ -27,14 +62,14 @@
                             <li class="">
                                 <a href="javascript:;" class="user-profile dropdown-toggle" data-toggle="dropdown"
                                     aria-expanded="false">
-                                    <img id="user-profile" alt="">{{request.session.username}}<span
-                                        class=" fa fa-angle-down"></span>
+                                    {{request.session.username}} <span class=" fa fa-angle-down"></span>
                                 </a>
                                 <ul class="dropdown-menu dropdown-usermenu pull-right">
                             </li>
                             <li><a href="/profile/"><i class="fa fa-user pull-right"></i>
                                     پروفایل</a></li>
-                            <li><a href="/reset_password/{{request.session.user_id}}"><i class="fa fa-lock pull-right"></i>
+                            <li><a href="/reset_password/{{request.session.user_id}}"><i
+                                        class="fa fa-lock pull-right"></i>
                                     تغییر رمزعبور</a></li>
                             <hr>
                             <li><a id="logout" onclick="logout()"><i class="fa fa-sign-out pull-right"></i>
@@ -53,13 +88,14 @@
                 <div class="">
                     <div class="page-title">
                         <div class="title_left">
-                            <h3>صفحه ساده</h3>
+                            <h3></h3>
                         </div>
 
                         <div class="title_right">
                             <div class="col-md-5 col-sm-5 col-xs-12 form-group pull-right top_search">
                                 <div class="input-group">
-                                    <input type="text" class="form-control" placeholder="جست و جو برای...">
+                                    {% csrf_token %}
+                                    <input type="text" class="form-control" placeholder="جست و جو برای..." id="search">
                                     <span class="input-group-btn">
                                         <button class="btn btn-default" type="button"><i
                                                 class="fa fa-search"></i></button>
@@ -71,65 +107,64 @@
 
                     <div class="clearfix"></div>
 
-                    <div class="row">
-                        <div class="col-md-12 col-sm-12 col-xs-12">
-                            <div class="x_panel">
-                                <div class="x_title">
-                                    <h2>صفحه ساده</h2>
+                    <div class="col-md-12 col-sm-12 col-xs-12">
+                        <div class="x_panel">
+                            <div class="x_title">
+                                <div class="row x_title">
+                                    <div class="col-md-6 col-sm-12 col-xs-12">
+                                        <h3>لیست موتورخانه ها</h3>
+                                    </div>
 
-                                    <div class="clearfix"></div>
+                                    <div class="col-md-6 col-sm-12 col-xs-12">
+                                        <h3>تعداد کل موتورخانه ها: <strong id="total_engineroom"></strong></h3>
+
+                                    </div>
+
                                 </div>
-                                <div class="col-md-12 col-sm-12 col-xs-12">
 
-                                    <div class="x_title">
+                                <div class="col-md-4 col-lg-3">
+                                    <label for="installer">نصاب:</label>
+                                    <select id="installer" class="form-control">
 
-                                        <div class="col-md-3">
+                                    </select>
+                                </div>
+                                <div class="col-md-4 col-lg-3">
+                                    <label for="organization">سازمان:</label>
+                                    <select id="organization" class="form-control">
 
+                                    </select>
+                                </div>
+                                <div class="col-md-4 col-lg-3">
+                                    <label for="administration">وزارت‌خانه:</label>
+                                    <select id="administration" class="form-control">
+
+                                    </select>
+                                </div>
+                                <div class="clearfix"></div>
+                            </div>
+
+                            <div class="x_content">
+
+                                <!-- <p>با افزودن کلاس <code dir="ltr">bulk_action</code> برای جدول، جدول دارای اعمال همگانی
+                                    می‌شود.</p> -->
+                                <div class="input-group">
+
+                                </div>
+                                <div class="table-responsive">
+                                    <div id="maps" class="jumbotron" style="height: 700px;"> </div>
+                                    <div class="col-md-3 col-xs-3">
+                                        <div class="pagination justify-content-center pagination-sm">
+                                            <button class="prev-page">قبلی</button>
+                                            <div class="page-numbers"></div>
+                                            <button class="next-page">بعدی</button>
                                         </div>
-                                        <div class="col-md-3">
-                                            <label for="heard">شنیده ایم با <span class="required">*</span>:</label>
-                                            <select id="heard" class="form-control" required>
-                                                <option hidden></option>
-                                                <option value="press">اخبار</option>
-                                                <option value="net">اینترنت</option>
-                                                <option value="mouth">دهان به دهان</option>
-                                            </select>
-                                        </div>
-                                        <div class="col-md-3">
-                                            <label for="heard">شنیده ایم با <span class="required">*</span>:</label>
-                                            <select id="heard" class="form-control" required>
-                                                <option hidden></option>
-                                                <option value="press">اخبار</option>
-                                                <option value="net">اینترنت</option>
-                                                <option value="mouth">دهان به دهان</option>
-                                            </select>
-                                        </div>
-                                        <div class="clearfix"></div>
+
                                     </div>
-
-                                    <div class="x_content">
-
-                                        <div class="input-group">
-                                            <div class="form-group">
-                                                {% csrf_token %}
-                                                <label for="pageSizeSelect">تعداد موتورخانه را انتخاب کنید:</label>
-                                                <select id="pageSizeSelect" class="form-control">
-                                                    <option value="2">2</option>
-                                                    <option value="5">5</option>
-                                                    <option value="7">7</option>
-                                                    <option value="all">All</option>
-                                                    <!-- Add an option to select all enginrooms -->
-                                                </select>
-                                            </div>
-                                        </div>
-
-                                        <div id="maps" class="jumbotron" style="height: 700px;"> </div>
-                                    </div>
-
                                 </div>
                             </div>
                         </div>
                     </div>
+
                 </div>
             </div>
             <!-- /page content -->
@@ -139,6 +174,7 @@
             <!-- footer content -->
             <footer class="hidden-print">
                 <div class="pull-left">
+
                 </div>
                 <div class="clearfix"></div>
             </footer>
@@ -161,16 +197,14 @@
         </table>
     </div>
     {% include 'scripts.html' %}
-
-
-
     <script>
-        $('select').select2();
+        let currentPage = 1;
+        let totalPages;
 
-        let totalCount;
-
-
-
+        let admin = "{{request.session.is_admin}}" === "True";
+        let staff = "{{request.session.is_staff}}" === "True";
+        let access = admin || staff
+        let status;
         var map = L.map('maps').setView([35.6892, 51.3890], 6);
 
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -183,12 +217,223 @@
             iconAnchor: [16, 32],
         });
 
-        $.ajax({
-            type: "GET",
-            url: "/api/enginroom/",
 
-            success: function (response) {
-                response.forEach(function (engineroom) {
+
+
+
+        function populateFilterOptions() {
+            $.ajax({
+                type: 'GET',
+                url: '/api/enginroom/get_filter_option/',
+                success: function (response) {
+                    populateSelectOptions('#installer', response.installers);
+                    populateSelectOptions('#organization', response.organizations);
+                    populateSelectOptions('#administration', response.administrations);
+                },
+                error: function (error) {
+                    console.error('Error loading filter options:', error.responseJSON);
+                }
+            });
+            function populateSelectOptions(selector, options) {
+                const selectElement = $(selector);
+                selectElement.empty();
+
+                // Add an "All" option if needed
+                selectElement.append($('<option>', {
+                    value: '',
+                    text: 'انتخاب کنید'
+                }));
+
+                // Populate the select options
+                $.each(options, function (index, option) {
+                    selectElement.append($('<option>', {
+                        value: option,
+                        text: option
+                    }));
+                });
+            }
+
+        }
+        $(document).ready(function () {
+
+            function applyFilters() {
+                const installer = $('#installer').val();
+                const organization = $('#organization').val();
+                const administration = $('#administration').val();
+
+                // Make an AJAX request to retrieve the filtered results
+                $.ajax({
+                    type: 'GET',
+                    url: '/api/enginroom/',
+                    data: {
+                        installer: installer,
+                        organization: organization,
+                        administration: administration,
+
+                    },
+                    success: function (response) {
+                        // Handle the filtered results
+                        console.log(response);
+                        listOfEnginroom(response);
+                        totalPages = response.total_pages
+
+                        console.log('filter total page', response.total_pages)
+                        updatePageNumbers();
+
+                    },
+                    error: function (error) {
+                        console.error('Error loading filtered results:', error.responseJSON);
+                    }
+                });
+            }
+
+
+            function loadEnginerooms(page) {
+                // Make an AJAX request to retrieve the engine rooms based on the selected filters
+                const installer = $('#installer').val();
+                const organization = $('#organization').val();
+                const administration = $('#administration').val();
+
+                let url = '/api/enginroom/?page=' + page;
+
+                // Append the selected filters to the URL if any filter is selected
+                if (installer || organization || administration) {
+                    url += '&installer=' + installer;
+                    url += '&organization=' + organization;
+                    url += '&administration=' + administration;
+                }
+
+                $.ajax({
+                    type: 'GET',
+                    url: url,
+                    success: function (response) {
+                        listOfEnginroom(response);
+                        currentPage = page;
+                        totalPages = response.total_pages;
+                        $('#total_engineroom').text(response.count)
+                        updatePageNumbers();
+                    },
+                    error: function (error) {
+                        console.error('Error loading enginerooms:', error.responseJSON);
+                    }
+                });
+            }
+
+            function loadFilteredEnginerooms(page) {
+                // Make an AJAX request to retrieve the filtered engine rooms
+                const installer = $('#installer').val();
+                const organization = $('#organization').val();
+                const administration = $('#administration').val();
+
+                $.ajax({
+                    type: 'GET',
+                    url: '/api/enginroom/',
+                    data: {
+                        installer: installer,
+                        organization: organization,
+                        administration: administration
+                    },
+                    success: function (response) {
+                        listOfEnginroom(response);
+                        currentPage = page;
+                        totalPages = response.total_pages;
+                        updatePageNumbers();
+                    },
+                    error: function (error) {
+                        console.error('Error loading filtered results:', error.responseJSON);
+                    }
+                });
+            }
+
+            loadEnginerooms(currentPage);
+
+
+            if (currentPage == 1) {
+                $(".prev-page").hide()
+            }
+            if (currentPage == totalPages) {
+                $(".next-page").hide()
+            }
+
+            $(".prev-page").on("click", function () {
+                $(".next-page").show()
+                if (currentPage > 1) {
+                    loadEnginerooms(currentPage - 1); // Load the previous page
+                }
+
+            });
+
+            $(".next-page").on("click", function () {
+                $(".prev-page").show()
+                if (currentPage < totalPages) {
+                    loadEnginerooms(currentPage + 1); // Load the next page
+                }
+
+
+            });
+
+            function updatePageNumbers() {
+                const pageNumbers = $(".page-numbers");
+                pageNumbers.empty();
+                for (let i = 1; i <= totalPages; i++) {
+                    let pageNumberButton = $("<button>", {
+                        class: "page-number",
+                        text: i,
+                        "data-page": i
+                    });
+                    pageNumbers.append(pageNumberButton);
+                }
+                // Highlight the current page number
+                $(`.page-number[data-page=${currentPage}]`).addClass("active");
+                map.removeLayer(marker)
+                // Page number click event handler
+                $(".page-number").on("click", function () {
+                    const page = $(this).data("page");
+                    $(`.page-number[data-page=${currentPage}]`).removeClass("active");
+                    $(`.page-number[data-page=${page}]`).addClass("active");
+                    loadEnginerooms(page);
+                });
+            }
+
+            populateFilterOptions();
+
+            $('#installer').on('change', function () {
+                if ($('#installer').val() || $('#organization').val() || $('#administration').val()) {
+                    loadFilteredEnginerooms(currentPage);
+                } else {
+                    loadEnginerooms(currentPage);
+                }
+            });
+
+            $('#organization').on('change', function () {
+                if ($('#installer').val() || $('#organization').val() || $('#administration').val()) {
+                    loadFilteredEnginerooms(currentPage);
+                } else {
+                    loadEnginerooms(currentPage);
+                }
+            });
+
+            $('#administration').on('change', function () {
+                if ($('#installer').val() || $('#organization').val() || $('#administration').val()) {
+                    loadFilteredEnginerooms(currentPage);
+                } else {
+                    loadEnginerooms(currentPage);
+                }
+            });
+
+            $("#search").on("keyup", function () {
+                var value = $(this).val().toLowerCase();
+
+                $("#enginroom-list tbody tr").filter(function () {
+                    $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+                });
+
+            });
+
+            function listOfEnginroom(resp) {
+
+
+                resp.results.forEach(function (engineroom) {
                     if (engineroom.location) {
                         latlng = engineroom.location.split(',')
                         var marker = L.marker(latlng, {
@@ -199,17 +444,25 @@
 
                     }
                 })
+
+                map.on('popupopen', function (e) {
+                    var marker = e.popup._source;
+
+                });
             }
+
         });
+        $('select').select2();
 
 
 
-        // Add event listener for marker clicks
-        map.on('popupopen', function (e) {
-            var marker = e.popup._source;
-            // Handle marker click, show details to admin user
-        });
+
+
+
+
+
     </script>
+
 </body>
 
 </html>

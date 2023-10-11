@@ -11,7 +11,7 @@ from api.serializers import ProfileSerializers, UserSerializers, UserListSeriali
 from django.middleware.csrf import get_token
 from api.utils import Base64ImageField
 from rest_framework import serializers
-from api.pagination import CustomPagination
+from api.pagination import CustomUserPagination
 
 
 @api_view(['GET'])
@@ -81,7 +81,7 @@ class UsersListApiView(APIView):
     authentication_classes = [authentication.SessionAuthentication]
     permission_classes = [permissions.IsAdminUser |
                           permissions.IsAuthenticated]
-    pagination_class = CustomPagination
+    
 
     def get(self, request):
         current_user = request.user
@@ -121,17 +121,17 @@ class UserViewSet(viewsets.ModelViewSet):
     authentication_classes = [authentication.SessionAuthentication]
     permission_classes = [permissions.IsAdminUser |
                           permissions.IsAuthenticated]
-    queryset = User.objects.all()
+    # queryset = User.objects.all()
     serializer_class = UserSerializers
-    pagination_class = CustomPagination
+    pagination_class = CustomUserPagination
 
     def get_queryset(self):
         current_user = self.request.user
         profile = current_user.profile
         if current_user.is_superuser and current_user.is_staff:
-            queryset = User.objects.all()
+            queryset = User.objects.all().order_by('id')
         elif current_user.is_staff and not current_user.is_superuser:
-            queryset = User.objects.filter(profile__owner=current_user)
+            queryset = User.objects.filter(profile__owner=current_user).order_by('id')
         else:
             queryset = User.objects.none()
         
@@ -169,3 +169,4 @@ class UserProfileViewSet(viewsets.ModelViewSet):
                           permissions.IsAuthenticated]
     queryset = Profile.objects.all()
     serializer_class = ProfileSerializers
+    # pagination_class = CustomUserPagination

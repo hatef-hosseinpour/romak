@@ -35,12 +35,15 @@ def createInstallationInfo(sender, instance, created, **kwargs):
         instance.installationinfo.save()
 
 @receiver(pre_delete, sender=InstallationInfo)
-def deleteProfileImage(sender, instance, **kwargs):
+def deleteSerialNumber(sender, instance, **kwargs):
     if os.path.isfile(instance.device_serial_number_image.path) and 'no-image.jpg' not in instance.device_serial_number_image.path:
         os.remove(instance.device_serial_number_image.path)
 
+    if os.path.isfile(instance.modem_simcard_serial_number_image.path) and 'no-image.jpg' not in instance.modem_simcard_serial_number_image.path:
+        os.remove(instance.modem_simcard_serial_number_image.path)
+
 
 @receiver(pre_delete, sender=EnginRoomImage)
-def deleteProfileImage(sender, instance, **kwargs):
+def deleteEngineroomImages(sender, instance, **kwargs):
     if os.path.isfile(instance.image.path) and 'no-image.jpg' not in instance.image.path:
         os.remove(instance.image.path)

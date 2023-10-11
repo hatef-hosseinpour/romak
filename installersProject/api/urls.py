@@ -5,7 +5,7 @@ from .ApiViews.mainApiView import *
 from rest_framework import routers
 
 router = routers.DefaultRouter()
-router.register(r'users', UserViewSet)
+router.register(r'users', UserViewSet ,basename='users')
 router.register(r'users-profile', UserProfileViewSet)
 router.register(r'enginroom', EnginroomViewSet, basename='enginroom')
 router.register(r'location-public-info', LocationPublicInfoViewSet)
@@ -22,5 +22,5 @@ urlpatterns = [
          name='logout-user'),
     path('profile/', view=UserProfileApiView.as_view(), name='user-profile'),
 
-    path('users-list/', view=UsersListApiView.as_view(), name='users-list'),
+#     path('users-list/', view=UsersListApiView.as_view(), name='users-list'),
 ]

@@ -68,7 +68,8 @@
                             </li>
                             <li><a href="/profile/"><i class="fa fa-user pull-right"></i>
                                     پروفایل</a></li>
-                            <li><a href="/reset_password/{{request.session.user_id}}"><i class="fa fa-lock pull-right"></i>
+                            <li><a href="/reset_password/{{request.session.user_id}}"><i
+                                        class="fa fa-lock pull-right"></i>
                                     تغییر رمزعبور</a></li>
                             <hr>
                             <li><a id="logout" onclick="logout()"><i class="fa fa-sign-out pull-right"></i>
@@ -116,7 +117,7 @@
 
                                     <div class="col-md-6 col-sm-12 col-xs-12">
                                         <h3>تعداد کل موتورخانه ها: <strong id="total_engineroom"></strong></h3>
-                                        
+
                                     </div>
 
                                 </div>
@@ -226,6 +227,33 @@
         let admin = "{{request.session.is_admin}}" === "True";
         let staff = "{{request.session.is_staff}}" === "True";
         let access = admin || staff
+
+        $(document).on('click', '.comment-button', function () {
+            const enginroomId = $(this).data('enginroom-id');
+            const enginroomName = $(this).data('enginroom-name');
+
+            // Make an AJAX request to fetch the rejection note
+            $.ajax({
+                type: 'GET', 
+                url: `/api/enginroom/${enginroomId}/`,
+                success: function (response) {
+                    const rejectionNote = response.rejection_note;
+
+                    Swal.fire({
+                        icon: 'info',
+                        title: `رد موتورخانه ${enginroomName}`,
+                        html: `<span style="font-size: 20px;">${rejectionNote ? rejectionNote : 'پیامی نیست'}</span>`,
+                        
+                    })
+                },
+                error: function (error) {
+                    console.error(`Error fetching rejection note:`, error.responseJSON);
+                }
+            });
+        });
+
+
+
         function acceptEnginroom(id) {
             const url = `/api/enginroom/${id}/`;
             $.ajax({
@@ -239,7 +267,8 @@
                 success: function (response) {
 
                     console.log(`Engineroom ${id} has been accepted.`);
-                    $(`#status-${id}`).addClass('bg-success text-white');
+                    $(`#enginroom_${id}`).css({ "background-color": "#d8f3dc" });
+
                 },
                 error: function (error) {
 
@@ -248,7 +277,7 @@
             });
 
         }
-        function rejectEnginroom(id) {
+        function rejectEnginroom(id, enginroom_name) {
             $.ajax({
                 type: "PATCH",
                 url: `/api/enginroom/${id}/`, // Specify the correct URL for your API
@@ -260,7 +289,47 @@
                 success: function (response) {
 
                     console.log(`Engineroom ${id} has been rejected.`);
-                    $(`#status-${id}`).addClass('bg-danger text-white');
+                    
+                    $(`#enginroom_${id}`).css({ "background-color": "#fae0e4" });
+                    Swal.fire({
+
+                        icon: 'info',
+                        title: ' رد موتورخانه ' + enginroom_name,
+
+                        html: '<textarea class="form-control" id="sweetTextarea" rows="4" cols="50"></textarea>',
+                        showCancelButton: true,
+                        confirmButtonColor: '#3085d6',
+                        cancelButtonColor: '#d33',
+                        confirmButtonText: 'تایید',
+                        cancelButtonText: 'بستن',
+                        preConfirm: () => {
+                            const text = Swal.getPopup().querySelector('#sweetTextarea').value;
+                            if (text) {
+                                $.ajax({
+                                    type: "PATCH",
+                                    url: `/api/enginroom/${id}/`,
+                                    data: JSON.stringify({ rejection_note: text }),
+                                    contentType: "application/json",
+                                    headers: {
+                                        "X-CSRFToken": $("[name=csrfmiddlewaretoken]").val()
+                                    },
+                                    success(response) {
+
+
+
+
+                                    }
+                                });
+                            }
+                            return text;
+                        }
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+
+
+
+                        }
+                    });
                 },
                 error: function (error) {
 
@@ -270,6 +339,8 @@
 
         }
         let status;
+        let trColor;
+        let lastTdContent = '';
 
         function populateFilterOptions() {
             $.ajax({
@@ -326,7 +397,7 @@
                         console.log(response);
                         listOfEnginroom(response);
                         totalPages = response.total_pages
-                        
+
                         console.log('filter total page', response.total_pages)
                         updatePageNumbers();
 
@@ -398,10 +469,10 @@
             loadEnginerooms(currentPage);
 
 
-            if(currentPage == 1){
+            if (currentPage == 1) {
                 $(".prev-page").hide()
             }
-            if(currentPage == totalPages){
+            if (currentPage == totalPages) {
                 $(".next-page").hide()
             }
 
@@ -483,19 +554,30 @@
                 const tableBody = $('#enginroom-list tbody');
                 tableBody.empty()
                 resp.results.forEach(function (obj) {
-                    if (obj.status == true) {
+
+
+
+                    if (obj.status === true) {
                         status = 'تایید';
-                        $(`#status-${obj.id}`).addClass('bg-success')
-                    }
-                    else if (obj.status == false) {
+                        trColor = '#d8f3dc';
+                        lastTdContent = '';
+                    } else if (obj.status === false) {
                         status = 'رد';
-                    }
-                    else {
+                        trColor = '#fae0e4';
+                        lastTdContent = `
+                        <a><i id="comment-button-${obj.id}" class="btn btn-sm btn-primary fa fa-comment comment-button" data-enginroom-id="${obj.id}" data-enginroom-name="${obj.enginroom_name}"></i></a>
+                            `;
+                    } else {
                         status = 'در انتظار تایید';
+                        lastTdContent = `
+                            <a class="btn btn-sm btn-danger fa fa-trash delete-button" data-toggle="modal" data-target="#deleteConfirmationModal" data-enginroom-id="${obj.id}" data-enginroom-name="${obj.enginroom_name}"></a>
+                        <a href="/update-enginroom/${obj.id}"><i class="btn btn-sm btn-warning fa fa-pencil"></i></a>
+                    `;
                     }
+                    const hideLastTd = obj.status === null;
                     const row = `
                    
-                    <tr id="enginroom_${obj.id}" data-enginroom-id="${obj.id}"  id="status-${obj.id}">
+                    <tr id="enginroom_${obj.id}" data-enginroom-id="${obj.id}"  id="status-${obj.id}" style="background-color: ${trColor};">
         
 
                     <td class="enginroom-name" onclick="showDetail(${obj.id})">${obj.enginroom_name}</td>
@@ -505,15 +587,13 @@
                     ${access
                             ? `<td class="a-right">
                                 <a  class="btn btn-success" onclick="acceptEnginroom(${obj.id})">تایید</a>
-                        <a class="btn btn-danger" onclick="rejectEnginroom(${obj.id})">  رد </a>
+                        <a class="btn btn-danger " onclick="rejectEnginroom(${obj.id}, '${obj.enginroom_name}')">  رد </a>
                                 </td>`
                             : `<td class="a-right" onclick="showDetail(${obj.id})" ><p id="status">${status}</p></td>`
                         }
                     <td class=" "><a href="/create-installation/${obj.id}" class="btn btn-info"> تکمیل اطلاعات </a></td>
-                    <td class=" last">
-                        <a><i class="btn btn-sm btn-danger fa fa-trash delete-button" data-toggle="modal" data-target="#deleteConfirmationModal" data-enginroom-id="${obj.id}" data-enginroom-name="${obj.enginroom_name}"></i></i></a>
-                        <a href="/update-enginroom/${obj.id}"><i class="btn btn-sm btn-warning fa fa-pencil"></i></a>
-                    </td>
+                    
+                    <td class="last">${lastTdContent}</td>
                     </tr>
                                         
 
@@ -535,9 +615,11 @@
 
             // Display a SweetAlert confirmation dialog
             Swal.fire({
-                title: 'آیا مطمئن هستید؟',
-                text: `آیا می‌خواهید "${enginroomName}" را حذف کنید؟`,
+
+                title: 'حذف موتورخانه',
+                html: `<span style="font-size: 20px;">آیا می‌خواهید موتورخانه ${enginroomName} را حذف کنید؟</span>`,
                 icon: 'warning',
+                iconHtml: '؟',
                 showCancelButton: true,
                 confirmButtonColor: '#3085d6',
                 cancelButtonColor: '#d33',
@@ -575,7 +657,6 @@
                 }
             });
         }
-
 
 
     </script>

@@ -274,17 +274,17 @@
 
             if (!img) {
               // If no new image uploaded, fetch the current image and convert to base64
-              getBase64FromImageUrl(currentProfileImageURL, function (base64Image) {
+              // getBase64FromImageUrl(currentProfileImageURL, function (base64Image) {
 
-                let profileImage = base64Image;
+                // let profileImage = base64Image;
                 let profileData = {
                   'phone_number': phone_number,
-                  'profile_image': profileImage,
+                  // 'profile_image': profileImage,
                   'user': user_id
                 };
 
                 $.ajax({
-                  type: "PUT",
+                  type: "PATCH",
                   url: `/api/users-profile/${user_id}/`,
                   data: JSON.stringify(profileData),
                   contentType: "application/json",
@@ -301,7 +301,7 @@
                   }
                 });
 
-              });
+              // });
             } else {
               // If new image uploaded, convert it to base64
               let reader = new FileReader();

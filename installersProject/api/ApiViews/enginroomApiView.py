@@ -7,7 +7,7 @@ from django.db.models import Q
 from rest_framework.decorators import action
 from rest_framework import status
 from rest_framework.response import Response
-from api.pagination import CustomPagination
+from api.pagination import CustomEngineroomPagination
 
 
 class EnginroomViewSet(viewsets.ModelViewSet):
@@ -16,7 +16,7 @@ class EnginroomViewSet(viewsets.ModelViewSet):
                           permissions.IsAuthenticated]
     serializer_class = EnginroomSerializers
 
-    pagination_class = CustomPagination
+    pagination_class = CustomEngineroomPagination
 
     def get_queryset(self):
         user = self.request.user
@@ -113,3 +113,14 @@ class EnginroomViewSet(viewsets.ModelViewSet):
         filter_option['administrations'] = list(set(administrations))
 
         return Response(filter_option)
+    
+    @action(detail=False, methods=['GET'])
+    def get_enginerooms_by_user(self, request):
+        user = request.user
+
+        engineroom_list = Enginroom.objects.filter(creator=user)
+
+        serializer = EnginroomSerializers(engineroom_list, many=True)
+
+        return Response(serializer.data)
+

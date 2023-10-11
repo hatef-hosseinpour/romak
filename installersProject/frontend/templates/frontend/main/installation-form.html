@@ -6,14 +6,12 @@
 {% endblock %}
 <!-- /header content -->
 <style>
-  
-
     .pip {
         display: inline-block;
         margin: 10px 10px 0 0;
     }
 
-    .remove{
+    .remove {
         margin: 10px 12px 0 0;
     }
 
@@ -138,7 +136,8 @@
                             </li>
                             <li><a href="/profile/"><i class="fa fa-user pull-right"></i>
                                     پروفایل</a></li>
-                            <li><a href="/reset_password/{{request.session.user_id}}"><i class="fa fa-lock pull-right"></i>
+                            <li><a href="/reset_password/{{request.session.user_id}}"><i
+                                        class="fa fa-lock pull-right"></i>
                                     تغییر رمزعبور</a></li>
                             <hr>
                             <li><a id="logout" onclick="logout()"><i class="fa fa-sign-out pull-right"></i>
@@ -358,9 +357,28 @@
                                                 <input type="checkbox" id="has-simcard" class="" name="has-simcard">
                                             </div>
                                             <div id="simcard" class="rtl-txt" style="display: none;">
-                                                <label for="modem-simcard">شماره سیم‌کارت مودم</label>
-                                                <input type="text" class="form-control" id="modem-simcard"
-                                                    name="modem-simcard">
+                                                <div>
+                                                    <div class="col-md-6 col-sm-12 col-xs-12">
+                                                        <label for="modem-simcard">شماره سیم‌کارت مودم</label>
+                                                        <input type="text" class="form-control" id="modem-simcard"
+                                                            name="modem-simcard">
+
+
+                                                    </div>
+                                                    <div class="col-md-6 col-sm-12 col-xs-12">
+                                                        <label for="simcard-serial-image">عکس شماره سریال سیم‌کارت
+                                                            <img style="max-width: 120px; max-height: 120px;"
+                                                                class="thumbnail" with="30px" heigh="30px"
+                                                                id="simcard-serial-image-preview">
+                                                            <p>بارگزاری عکس‌ <img width="50" height="50"
+                                                                    src="{% static 'images/icons8-upload-to-cloud-50.png' %}"
+                                                                    alt="upload-to-cloud--v1" /></p>
+                                                        </label>
+                                                        <input type="file" accept="image/jpeg,image/png"
+                                                            id="simcard-serial-image" name="simcard-serial-image"
+                                                            style="display:none;" />
+                                                    </div>
+                                                </div>
                                             </div>
 
                                             <label for="device-serial-image">عکس شماره سریال دستگاه
@@ -380,7 +398,7 @@
                                             <h3 class="text-center">تصاویر موتورخانه</h3>
                                             <div class="container">
                                                 <div id="image-container" class="col-md-12 col-sm-12 col-xs-2"
-                                                    style="display: inline-block; justify-content: space-between; align-items: center;">
+                                                    style="display: inline-block; align-items: center;">
                                                 </div>
 
                                             </div>
@@ -580,6 +598,7 @@
                     $('#modem-simcard').val(response.modem_simcard_number || '');
                     $('#installation-date').val(response.installation_date || '');
                     $('#device-serial-image-preview').attr('src', response.device_serial_number_image)
+                    $('#simcard-serial-image-preview').attr('src', response.modem_simcard_serial_number_image)
                     currendeviceSerialImageURL = response.device_serial_number_image;
                 },
                 error: function (error) {
@@ -601,7 +620,7 @@
                     for (var i = 0; i < response.length; i++) {
                         div.append(`<div style="background=#fff;" class="col-xl-3 col-sm-3">
                              <img id="image-${response[i].id}" class="img-fluid thumbnail" src="${response[i].image}" width="200px" height="200px">
-                            <a id="btn-${response[i].id}" onclick="deleteImage(${response[i].id})" class="btn btn-default " style="width: 195px;"><i class="fa fa-trash" style="color: #dd0808;"></i> حذف </a>
+                            <a id="btn-${response[i].id}" onclick="deleteImage(${response[i].id})" class="btn btn-default " style="width: 195px;"><i class="fa fa-trash" style="color: #dd0808;"></i> حذف </a></div>
                         `);
 
 
@@ -631,7 +650,7 @@
                     fileReader.onload = (function (e) {
                         var file = e.target;
                         var imageThumb = `<img class="pip img-fluid thumbnail" src="${e.target.result}" title="${file.name}" width="200px" height="200px">`;
-                        var removeButton = `<br/><span class="remove btn btn-default" style="width: 195px;"><i class="fa fa-xing" style="color: #dd0808;"></i>برداشتن</span>`;
+                        var removeButton = `<br/><span class="remove btn btn-default" style="width: 195px;"><i class="fa fa-minus-circle" style="color: #dd0808;"></i>برداشتن</span>`;
 
                         var container = $(`<span class="pip"> ${imageThumb} ${removeButton} </span>`);
 
@@ -763,6 +782,28 @@
                 }
             }
             //#endregion
+
+
+            //#region display the selected  simcard serial image
+            $("#simcard-serial-image").change(function () {
+                readSimcardSerialURL(this);
+            });
+
+
+            function readSimcardSerialURL(input) {
+                if (input.files && input.files[0]) {
+                    var reader = new FileReader();
+
+                    reader.onload = function (e) {
+                        // Update the src attribute of the img tag
+                        $("#simcard-serial-image-preview").attr("src", e.target.result)
+                    };
+
+                    reader.readAsDataURL(input.files[0]); // Read the selected file
+                }
+            }
+            //#endregion
+
 
             //#region display the selected image
             $("#building-image").change(function () {
@@ -913,8 +954,6 @@
                 let locationInput = $('#location-input').val();
                 if (!buildingImageInput) {
                     // If no new image uploaded, fetch the current image and convert to base64
-                    getBase64FromImageUrl(currentbuildingImageURL, function (buildingbase64Image) {
-
                         locationInfoData = {
                             'user': user,
                             'enginroom': selectEnginroom,
@@ -925,13 +964,12 @@
                             'phone_number2': phoneNumber2,
                             'building_metrage': buildingMetrage,
                             'meter_subscription_number': meterSubscribtion,
-                            'building_image': buildingbase64Image,
                             'location': locationInput,
-                            'status': false
+
                         }
 
                         $.ajax({
-                            type: "PUT",
+                            type: "PATCH",
                             url: "/api/location-public-info/" + id + "/",
                             data: JSON.stringify(locationInfoData),
                             contentType: "application/json",
@@ -960,7 +998,7 @@
                             }
                         });
 
-                    });
+                  
                 } else {
                     // If new image uploaded, convert it to base64
                     let reader = new FileReader();
@@ -978,7 +1016,7 @@
                             'meter_subscription_number': meterSubscribtion,
                             'building_image': buildingImage,
                             'location': locationInput,
-                            'status': false
+
                         }
 
                         console.log('Data to be sent:', locationInfoData);
@@ -1050,7 +1088,7 @@
                     'number_of_hot_water_pumps': numberOfHotWaterPumps || 0,
                     'user': user,
                     'enginroom': selectEnginroom,
-                    'status': false
+
 
                 }
                 console.log(enginroomInfoData);
@@ -1100,117 +1138,226 @@
                 let installationDate = $("#installation-date").val() || '';
 
                 let deviceSerialImageInput = $("#device-serial-image")[0].files[0];
-                let deviceSerialImageReader = new FileReader();
+                let simcardSerialImageInput = $("#simcard-serial-image")[0].files[0];
+                let deviceSerialImageReader;
                 let installationinfoData;
+                let deviceSerialImage;
+                let simcardSerialImage;
+                let readerDevice = new FileReader();
+                let readerSimcard = new FileReader();
 
 
+                if (simcardSerialImageInput && deviceSerialImageInput) {
 
+                    readerDevice.onloadend = function () {
+                        let deviceSerialImage = readerDevice.result;
 
-                if (!deviceSerialImageInput) {
-                    // If no new image uploaded, fetch the current image and convert to base64
-                    getBase64FromImageUrl(currendeviceSerialImageURL, function (deviceSerialbase64Image) {
+                        readerSimcard.onloadend = function () {
+                            let simcardSerialImage = readerSimcard.result;
 
-                        installationinfoData = {
-                            'user': user,
-                            'enginroom': selectEnginroom,
-                            'installed_device_model': selectInstalledModel,
-                            'connection_type': selectConnectionType,
-                            'modem_model': modemModel,
-                            'has_simcard': checkSimcard,
-                            'modem_simcard_number': modelSimcard,
-                            'installation_date': installationDate,
-                            'device_serial_number_image': deviceSerialbase64Image,
-                            'status': false
-                        }
+                            // Create the installationinfoData object with both images
+                            installationinfoData = {
+                                'user': user,
+                                'enginroom': selectEnginroom,
+                                'installed_device_model': selectInstalledModel,
+                                'connection_type': selectConnectionType,
+                                'modem_model': modemModel,
+                                'has_simcard': checkSimcard,
+                                'modem_simcard_number': modelSimcard,
+                                'installation_date': installationDate,
+                                'device_serial_number_image': deviceSerialImage,
+                                'modem_simcard_serial_number_image': simcardSerialImage,
+                            };
 
-                        $.ajax({
-                            type: "PUT",
-                            url: "/api/installation-info/" + id + "/",
-                            data: JSON.stringify(installationinfoData),
-                            contentType: "application/json",
-                            headers: {
-                                "X-CSRFToken": $("[name=csrfmiddlewaretoken]").val(),
-                            },
-                            success: function (response) {
-                                Swal.fire({
-                                    icon: 'success',
-                                    title: 'موفقیت',
-                                    text: 'اطلاعات عمومی محل نصب با موفقیت ثبت شد.'
+                            // Now you can send the JSON object or perform any other desired action
+                            $.ajax({
+                                type: "PUT",
+                                url: "/api/installation-info/" + id + "/",
+                                data: JSON.stringify(installationinfoData),
+                                contentType: "application/json",
+                                headers: {
+                                    "X-CSRFToken": $("[name=csrfmiddlewaretoken]").val(),
+                                },
+                                success: function (response) {
+                                    Swal.fire({
+                                        icon: 'success',
+                                        title: 'موفقیت',
+                                        text: 'اطلاعات عمومی محل نصب با موفقیت ثبت شد.'
 
-                                }).then(function () {
-                                    installationInfo()
-                                    updateStep(currentTab);
-                                });
+                                    }).then(function () {
+                                        installationInfo()
+                                        updateStep(currentTab);
+                                    });
 
-                            },
-                            error: function (error) {
-                                Swal.fire({
-                                    icon: 'error',
-                                    title: 'خطا',
-                                    text: 'خطایی رخ داده است لطفا دوباره تلاش کنید'
-                                })
-                                console.error('ERROR IN Update DATA TO INSTALLATION INFO', error.responseJSON);
-                            }
-                        });
-                        console.log('installation info', installationinfoData)
+                                },
+                                error: function (error) {
+                                    Swal.fire({
+                                        icon: 'error',
+                                        title: 'خطا',
+                                        text: 'خطایی رخ داده است لطفا دوباره تلاش کنید'
+                                    })
+                                    console.error('ERROR IN Update DATA TO INSTALLATION INFO', error.responseJSON);
+                                }
+                            });
+                            console.table('Data to be sent:', installationinfoData);
+                        };
 
-                    });
-                } else {
-                    // If new image uploaded, convert it to base64
-                    let reader = new FileReader();
-                    reader.onloadend = function () {
-                        let deviceSerialImage = reader.result;
-                        installationinfoData = {
-                            'user': user,
-                            'enginroom': selectEnginroom,
-                            'installed_device_model': selectInstalledModel,
-                            'connection_type': selectConnectionType,
-                            'modem_model': modemModel,
-                            'has_simcard': checkSimcard,
-                            'modem_simcard_number': modelSimcard,
-                            'installation_date': formattedInstallationDate,
-                            'device_serial_number_image': deviceSerialImage,
-                            'status': false
-                        }
-
-                        console.log('Data to be sent:', installationinfoData);
-
-
-                        $.ajax({
-                            type: "PUT",
-                            url: "/api/installation-info/" + id + "/",
-                            data: JSON.stringify(installationinfoData),
-                            contentType: "application/json",
-                            headers: {
-                                "X-CSRFToken": $("[name=csrfmiddlewaretoken]").val(),
-                            },
-                            success: function (response) {
-                                Swal.fire({
-                                    icon: 'success',
-                                    title: 'موفقیت',
-                                    text: 'اطلاعات عمومی محل نصب با موفقیت ثبت شد.'
-
-                                }).then(function () {
-                                    installationInfo()
-                                    updateStep(currentTab);
-                                });
-
-                            },
-                            error: function (error) {
-                                Swal.fire({
-                                    icon: 'error',
-                                    title: 'خطا',
-                                    text: 'خطایی رخ داده است لطفا دوباره تلاش کنید'
-                                })
-                                console.error('ERROR IN Update DATA TO INSTALLATION INFO', error.responseJSON);
-                            }
-                        });
-                        console.log('installation info', installationinfoData)
-
+                        readerSimcard.readAsDataURL(simcardSerialImageInput);
                     };
-                    reader.readAsDataURL(deviceSerialImageInput);
-                }
 
+                    readerDevice.readAsDataURL(deviceSerialImageInput);
+
+
+                }
+                else if (!simcardSerialImageInput && !deviceSerialImageInput) {
+                    installationinfoData = {
+                        'user': user,
+                        'enginroom': selectEnginroom,
+                        'installed_device_model': selectInstalledModel,
+                        'connection_type': selectConnectionType,
+                        'modem_model': modemModel,
+                        'has_simcard': checkSimcard,
+                        'modem_simcard_number': modelSimcard,
+                        'installation_date': installationDate,
+                    };
+                    $.ajax({
+                        type: "PATCH",
+                        url: "/api/installation-info/" + id + "/",
+                        data: JSON.stringify(installationinfoData),
+                        contentType: "application/json",
+                        headers: {
+                            "X-CSRFToken": $("[name=csrfmiddlewaretoken]").val(),
+                        },
+                        success: function (response) {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'موفقیت',
+                                text: 'اطلاعات عمومی محل نصب با موفقیت ثبت شد.'
+
+                            }).then(function () {
+                                installationInfo()
+                                updateStep(currentTab);
+                            });
+
+                        },
+                        error: function (error) {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'خطا',
+                                text: 'خطایی رخ داده است لطفا دوباره تلاش کنید'
+                            })
+                            console.error('ERROR IN Update DATA TO INSTALLATION INFO', error.responseJSON);
+                        }
+                    });
+                }
+                else {
+                    if (simcardSerialImageInput) {
+                        readerSimcard.onloadend = function () {
+                            let simcardSerialImage = readerSimcard.result;
+
+                            // Create the installationinfoData object with both images
+                            installationinfoData = {
+                                'user': user,
+                                'enginroom': selectEnginroom,
+                                'installed_device_model': selectInstalledModel,
+                                'connection_type': selectConnectionType,
+                                'modem_model': modemModel,
+                                'has_simcard': checkSimcard,
+                                'modem_simcard_number': modelSimcard,
+                                'installation_date': installationDate,
+                                'modem_simcard_serial_number_image': simcardSerialImage,
+                            };
+
+                            // Now you can send the JSON object or perform any other desired action
+                            $.ajax({
+                                type: "PATCH",
+                                url: "/api/installation-info/" + id + "/",
+                                data: JSON.stringify(installationinfoData),
+                                contentType: "application/json",
+                                headers: {
+                                    "X-CSRFToken": $("[name=csrfmiddlewaretoken]").val(),
+                                },
+                                success: function (response) {
+                                    Swal.fire({
+                                        icon: 'success',
+                                        title: 'موفقیت',
+                                        text: 'اطلاعات عمومی محل نصب با موفقیت ثبت شد.'
+
+                                    }).then(function () {
+                                        installationInfo()
+                                        updateStep(currentTab);
+                                    });
+
+                                },
+                                error: function (error) {
+                                    Swal.fire({
+                                        icon: 'error',
+                                        title: 'خطا',
+                                        text: 'خطایی رخ داده است لطفا دوباره تلاش کنید'
+                                    })
+                                    console.error('ERROR IN Update DATA TO INSTALLATION INFO', error.responseJSON);
+                                }
+                            });
+                            console.table('Data to be sent:', installationinfoData);
+                        };
+
+                        readerSimcard.readAsDataURL(simcardSerialImageInput);
+                    }
+
+                    if (deviceSerialImageInput) {
+                        readerDevice.onloadend = function () {
+                            let deviceSerialImage = readerDevice.result;
+
+                            // Create the installationinfoData object with both images
+                            installationinfoData = {
+                                'user': user,
+                                'enginroom': selectEnginroom,
+                                'installed_device_model': selectInstalledModel,
+                                'connection_type': selectConnectionType,
+                                'modem_model': modemModel,
+                                'has_simcard': checkSimcard,
+                                'modem_simcard_number': modelSimcard,
+                                'installation_date': installationDate,
+                                'device_serial_number_image': deviceSerialImage,
+                                'modem_simcard_serial_number_image': simcardSerialImage,
+                            };
+
+                            // Now you can send the JSON object or perform any other desired action
+                            $.ajax({
+                                type: "PUT",
+                                url: "/api/installation-info/" + id + "/",
+                                data: JSON.stringify(installationinfoData),
+                                contentType: "application/json",
+                                headers: {
+                                    "X-CSRFToken": $("[name=csrfmiddlewaretoken]").val(),
+                                },
+                                success: function (response) {
+                                    Swal.fire({
+                                        icon: 'success',
+                                        title: 'موفقیت',
+                                        text: 'اطلاعات عمومی محل نصب با موفقیت ثبت شد.'
+
+                                    }).then(function () {
+                                        installationInfo()
+                                        updateStep(currentTab);
+                                    });
+
+                                },
+                                error: function (error) {
+                                    Swal.fire({
+                                        icon: 'error',
+                                        title: 'خطا',
+                                        text: 'خطایی رخ داده است لطفا دوباره تلاش کنید'
+                                    })
+                                    console.error('ERROR IN Update DATA TO INSTALLATION INFO', error.responseJSON);
+                                }
+                            });
+                            console.table('Data to be sent:', installationinfoData);
+                        };
+
+                        readerDevice.readAsDataURL(deviceSerialImageInput);
+                    }
+                }
             }
             else if (currentTab == 3) {
 
@@ -1232,11 +1379,11 @@
 
                 //         if (imagesData.length === files.length) {
 
-                            enginroomImagesData.append('enginroom', selectEnginroom);
-                            enginroomImagesData.append('user', user);
-                            enginroomImagesData.append('images_data', imagesData);
+                enginroomImagesData.append('enginroom', selectEnginroom);
+                enginroomImagesData.append('user', user);
+                enginroomImagesData.append('images_data', imagesData);
 
-                            uploadImages(enginroomImagesData);
+                uploadImages(enginroomImagesData);
 
                 //         }
 
@@ -1277,8 +1424,9 @@
                         $('#new_images_container').empty()
                         engineroomImages()
                         updateStep(currentTab);
+                        imagesData = []
 
-                       
+
 
 
                     });

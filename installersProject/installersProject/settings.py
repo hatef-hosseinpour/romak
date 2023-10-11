@@ -61,7 +61,7 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework.authentication.SessionAuthentication',
     ),
-    'DEFAULT_PAGINATION_CLASS': 'api.pagination.CustomPagination',
+    'DEFAULT_PAGINATION_CLASS': 'api.pagination.CustomUserPagination',
     'PAGE_SIZE': 10,
     'PAGE_SIZE_QUERY_PARAM': 'page_size',
     'MAX_PAGE_SIZE': 100,
