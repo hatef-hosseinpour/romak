@@ -9,7 +9,7 @@ class ProfileAdmin(admin.ModelAdmin):
     search_fields = ['user__username']
 
     def profile_picture(self, obj):
-        return format_html(f'<img src="/images/{obj.profile_image} "width="85" height="85""/>')
+        return format_html(f'<img src="/media/{obj.profile_image} "width="85" height="85""/>')
 
 
 admin.site.register(Profile, ProfileAdmin)

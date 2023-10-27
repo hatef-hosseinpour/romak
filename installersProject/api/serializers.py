@@ -73,6 +73,12 @@ class EnginroomSerializers(serializers.ModelSerializer):
     creator_username = serializers.CharField(
         source='creator.username', read_only=True)
     location = serializers.CharField(source='locationpublicinfo.location', read_only=True)
+    province = serializers.CharField(source='locationpublicinfo.province', read_only=True)
+    city = serializers.CharField(source='locationpublicinfo.city', read_only=True)
+    phone_number1 = serializers.CharField(source='locationpublicinfo.phone_number1', read_only=True)
+    phone_number2 = serializers.CharField(source='locationpublicinfo.phone_number2', read_only=True)
+
+    
     # installer_usernames = serializers.StringRelatedField(
     # source='installer', many=True, read_only=True)
 
@@ -82,7 +88,7 @@ class EnginroomSerializers(serializers.ModelSerializer):
         model = Enginroom
         # @param fields What fields of the Enginroom model do we want to serialize
         fields = ['id', 'enginroom_name', 'administration', 'organization',
-                  'creator', 'creator_username', 'step', 'status', 'location', 'rejection_note']
+                  'creator', 'creator_username', 'step', 'status', 'location', 'province', 'city', 'rejection_note','phone_number1','phone_number2']
 
 
 # @brief A class for serialize Location Public Info objects

@@ -134,7 +134,7 @@
                                 </a>
                                 <ul class="dropdown-menu dropdown-usermenu pull-right">
                             </li>
-                            <li><a href="/profile/"><i class="fa fa-user pull-right"></i>
+                            <li><a href="/dashboard/"><i class="fa fa-user pull-right"></i>
                                     پروفایل</a></li>
                             <li><a href="/reset_password/{{request.session.user_id}}"><i
                                         class="fa fa-lock pull-right"></i>
@@ -356,40 +356,44 @@
                                                 <label for="has-simcard">آیا سیم‌کارت دارد؟</label><br>
                                                 <input type="checkbox" id="has-simcard" class="" name="has-simcard">
                                             </div>
-                                            <div id="simcard" class="rtl-txt" style="display: none;">
-                                                <div>
+                                            <div>
+                                                <div id="simcard" class="rtl-txt" style="display: none;">
                                                     <div class="col-md-6 col-sm-12 col-xs-12">
                                                         <label for="modem-simcard">شماره سیم‌کارت مودم</label>
                                                         <input type="text" class="form-control" id="modem-simcard"
                                                             name="modem-simcard">
-
-
-                                                    </div>
-                                                    <div class="col-md-6 col-sm-12 col-xs-12">
                                                         <label for="simcard-serial-image">عکس شماره سریال سیم‌کارت
-                                                            <img style="max-width: 120px; max-height: 120px;"
-                                                                class="thumbnail" with="30px" heigh="30px"
+                                                            <img style="width: 300px; height: 300px;" class="thumbnail"
+                                                                with="30px" heigh="30px"
                                                                 id="simcard-serial-image-preview">
-                                                            <p>بارگزاری عکس‌ <img width="50" height="50"
+                                                            <p style="margin-right: 100px;">بارگزاری عکس‌ <img
+                                                                    width="50" height="50"
                                                                     src="{% static 'images/icons8-upload-to-cloud-50.png' %}"
                                                                     alt="upload-to-cloud--v1" /></p>
                                                         </label>
                                                         <input type="file" accept="image/jpeg,image/png"
                                                             id="simcard-serial-image" name="simcard-serial-image"
                                                             style="display:none;" />
+
                                                     </div>
                                                 </div>
+                                                <div class="col-md-6 col-sm-12 col-xs-12">
+                                                    <label for="device-serial-image">عکس شماره سریال دستگاه
+                                                        <img style="width: 300px; height: 300px;" class="thumbnail"
+                                                            with="30px" heigh="30px" id="device-serial-image-preview">
+                                                        <p style="margin-right: 100px;">بارگزاری عکس‌ <img width="50"
+                                                                height="50"
+                                                                src="{% static 'images/icons8-upload-to-cloud-50.png' %}"
+                                                                alt="upload-to-cloud--v1" /></p>
+                                                    </label>
+                                                    <input type="file" accept="image/jpeg,image/png"
+                                                        id="device-serial-image" name="device-serial-image"
+                                                        style="display:none;" />
+                                                </div>
+
                                             </div>
 
-                                            <label for="device-serial-image">عکس شماره سریال دستگاه
-                                                <img style="max-width: 120px; max-height: 120px;" class="thumbnail"
-                                                    with="30px" heigh="30px" id="device-serial-image-preview">
-                                                <p>بارگزاری عکس‌ <img width="50" height="50"
-                                                        src="{% static 'images/icons8-upload-to-cloud-50.png' %}"
-                                                        alt="upload-to-cloud--v1" /></p>
-                                            </label>
-                                            <input type="file" accept="image/jpeg,image/png" id="device-serial-image"
-                                                name="device-serial-image" style="display:none;" />
+
                                         </div>
                                         <!-- End Installation info -->
 
@@ -491,6 +495,23 @@
             attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors',
             maxZoom: 18,
         }).addTo(map);
+        function getUserLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(function (position) {
+                    var userLat = position.coords.latitude;
+                    var userLng = position.coords.longitude;
+
+
+                    var userMarker = L.marker([userLat, userLng]).addTo(map);
+
+
+                    map.setView([userLat, userLng], 13);
+                });
+            } else {
+                alert("Geolocation is not supported by your browser.");
+            }
+        }
+
 
         function locationPublicInfo() {
             //#region GET location, enginroom and installation info with enginroom images(later)
@@ -634,7 +655,7 @@
 
         $(document).ready(function () {
 
-
+            getUserLocation()
 
             // var filess = $('#enginroom-images')[0].files;
             let new_images_container = $('#new_images_container')
@@ -944,7 +965,7 @@
             if (currentTab == 0) {
                 let address = $('#address').val() || '';
                 let phoneNumber1 = $('#phone-number1').val() || '';
-                let phoneNumber2 = $('#phone-number1').val() || '';
+                let phoneNumber2 = $('#phone-number2').val() || '';
                 let buildingMetrage = $('#building-metrage').val() || 0;
                 let meterSubscribtion = $('#meter-subscribtion').val() || '';
                 let province = $('#select-province').val() || '';
@@ -954,51 +975,51 @@
                 let locationInput = $('#location-input').val();
                 if (!buildingImageInput) {
                     // If no new image uploaded, fetch the current image and convert to base64
-                        locationInfoData = {
-                            'user': user,
-                            'enginroom': selectEnginroom,
-                            'address': address,
-                            'province': province,
-                            'city': city,
-                            'phone_number1': phoneNumber1,
-                            'phone_number2': phoneNumber2,
-                            'building_metrage': buildingMetrage,
-                            'meter_subscription_number': meterSubscribtion,
-                            'location': locationInput,
+                    locationInfoData = {
+                        'user': user,
+                        'enginroom': selectEnginroom,
+                        'address': address,
+                        'province': province,
+                        'city': city,
+                        'phone_number1': phoneNumber1,
+                        'phone_number2': phoneNumber2,
+                        'building_metrage': buildingMetrage,
+                        'meter_subscription_number': meterSubscribtion,
+                        'location': locationInput,
 
+                    }
+
+                    $.ajax({
+                        type: "PATCH",
+                        url: "/api/location-public-info/" + id + "/",
+                        data: JSON.stringify(locationInfoData),
+                        contentType: "application/json",
+                        headers: {
+                            "X-CSRFToken": $("[name=csrfmiddlewaretoken]").val(),
+                        },
+                        success: function (response) {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'موفقیت',
+                                text: 'اطلاعات عمومی محل نصب با موفقیت ثبت شد.'
+
+                            }).then(function () {
+                                locationPublicInfo();
+                                updateStep(currentTab);
+                            });
+
+                        },
+                        error: function (error) {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'خطا',
+                                text: 'خطایی رخ داده است لطفا دوباره تلاش کنید'
+                            })
+                            console.error('ERROR IN UPDATE DATA TO LOCATION PUBLIC INFO', error.responseJSON);
                         }
+                    });
 
-                        $.ajax({
-                            type: "PATCH",
-                            url: "/api/location-public-info/" + id + "/",
-                            data: JSON.stringify(locationInfoData),
-                            contentType: "application/json",
-                            headers: {
-                                "X-CSRFToken": $("[name=csrfmiddlewaretoken]").val(),
-                            },
-                            success: function (response) {
-                                Swal.fire({
-                                    icon: 'success',
-                                    title: 'موفقیت',
-                                    text: 'اطلاعات عمومی محل نصب با موفقیت ثبت شد.'
 
-                                }).then(function () {
-                                    locationPublicInfo();
-                                    updateStep(currentTab);
-                                });
-
-                            },
-                            error: function (error) {
-                                Swal.fire({
-                                    icon: 'error',
-                                    title: 'خطا',
-                                    text: 'خطایی رخ داده است لطفا دوباره تلاش کنید'
-                                })
-                                console.error('ERROR IN UPDATE DATA TO LOCATION PUBLIC INFO', error.responseJSON);
-                            }
-                        });
-
-                  
                 } else {
                     // If new image uploaded, convert it to base64
                     let reader = new FileReader();

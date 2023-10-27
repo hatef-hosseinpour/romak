@@ -24,6 +24,8 @@ class CustomEngineroomPagination(PageNumberPagination):
         installer = request.GET.get('installer')
         organization = request.GET.get('organization')
         administration = request.GET.get('administration')
+        province =  request.GET.get('province')
+        city =  request.GET.get('city')
 
         if installer:
             queryset = queryset.filter(creator__username=installer)
@@ -31,6 +33,10 @@ class CustomEngineroomPagination(PageNumberPagination):
             queryset = queryset.filter(organization=organization)
         if administration:
             queryset = queryset.filter(administration=administration)
+        if province:
+            queryset = queryset.filter(locationpublicinfo__province=province)
+        if city:
+            queryset = queryset.filter(locationpublicinfo__city=city)
 
 
 

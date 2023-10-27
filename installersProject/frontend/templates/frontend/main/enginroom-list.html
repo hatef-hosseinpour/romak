@@ -38,6 +38,11 @@
         color: #fff;
         border-radius: 5px;
     }
+    .phone-number{
+        text-decoration: underline;
+        
+      
+    }
 </style>
 
 <body class="nav-md">
@@ -66,7 +71,7 @@
                                 </a>
                                 <ul class="dropdown-menu dropdown-usermenu pull-right">
                             </li>
-                            <li><a href="/profile/"><i class="fa fa-user pull-right"></i>
+                            <li><a href="/dashboard/"><i class="fa fa-user pull-right"></i>
                                     پروفایل</a></li>
                             <li><a href="/reset_password/{{request.session.user_id}}"><i
                                         class="fa fa-lock pull-right"></i>
@@ -121,25 +126,40 @@
                                     </div>
 
                                 </div>
+                                <div class="row">
+                                    <div class="col-md-2 col-lg-2">
+                                        <label for="installer">نصاب:</label>
+                                        <select id="installer" class="form-select" style="width: 100%;">
+                                            <!-- Add your options here -->
+                                        </select>
+                                    </div>
+                                    <div class="col-md-2 col-lg-2 col-sm-12 col-xs-12">
+                                        <label for="organization">سازمان:</label>
+                                        <select id="organization" class="form-select" style="width: 100%;">
+                                            <!-- Add your options here -->
+                                        </select>
+                                    </div>
+                                    <div class="col-md-2 col-lg-2 col-sm-12 col-xs-12">
+                                        <label for="administration">وزارت‌خانه:</label>
+                                        <select id="administration" class="form-select" style="width: 100%;">
+                                            <!-- Add your options here -->
+                                        </select>
+                                    </div>
 
-                                <div class="col-md-4 col-lg-3">
-                                    <label for="installer">نصاب:</label>
-                                    <select id="installer" class="form-control">
-
-                                    </select>
+                                    <div class="col-md-2 col-lg-2 col-sm-12 col-xs-12">
+                                        <label for="province">استان:</label>
+                                        <select id="province" class="form-select" style="width: 100%;">
+                                            <!-- Add your options here -->
+                                        </select>
+                                    </div>
+                                    <div class="col-md-2 col-lg-2 col-sm-12 col-xs-12">
+                                        <label for="city">شهر:</label>
+                                        <select id="city" class="form-select" style="width: 100%;">
+                                            <!-- Add your options here -->
+                                        </select>
+                                    </div>
                                 </div>
-                                <div class="col-md-4 col-lg-3">
-                                    <label for="organization">سازمان:</label>
-                                    <select id="organization" class="form-control">
 
-                                    </select>
-                                </div>
-                                <div class="col-md-4 col-lg-3">
-                                    <label for="administration">وزارت‌خانه:</label>
-                                    <select id="administration" class="form-control">
-
-                                    </select>
-                                </div>
                                 <div class="clearfix"></div>
                             </div>
 
@@ -162,7 +182,9 @@
                                                 <th class="column-title">نام نصاب</th>
                                                 <th class="column-title">وضعیت</th>
                                                 <th class="column-title">اطلاعات</th>
-                                                <th class="column-title no-link last"><span class="nobr">عمل</span>
+                                                <th class="column-title">تلفن رابط</th>
+                                                <th class="column-title">نقشه</th>
+                                                <th class="column-title no-link last"><span class="nobr"></span>
                                                 </th>
                                             </tr>
                                         </thead>
@@ -172,7 +194,10 @@
                                         </tbody>
 
                                     </table>
+
                                     <div class="col-md-3 col-xs-3">
+                                        <a class="btn btn-success" style="left:3%;" href="/create-enginroom/">افزودن
+                                            موتورخانه <i class="fa fa-plus-circle"></i></a>
                                         <div class="pagination justify-content-center pagination-sm">
                                             <button class="prev-page">قبلی</button>
                                             <div class="page-numbers"></div>
@@ -220,6 +245,13 @@
     <script>
         let currentPage = 1;
         let totalPages;
+        function openMaps(latitude, longitude) {
+            // Construct the Google Maps URL with the specified latitude and longitude
+            const googleMapsUrl = `https://www.google.com/maps?q=${latitude},${longitude}`;
+
+            // Open the URL in a new window or tab
+            window.open(googleMapsUrl, '_blank');
+        }
         function showDetail(id) {
             const enginroomUrl = `/enginroom-detail/${id}`;
             window.location.href = enginroomUrl;
@@ -234,7 +266,7 @@
 
             // Make an AJAX request to fetch the rejection note
             $.ajax({
-                type: 'GET', 
+                type: 'GET',
                 url: `/api/enginroom/${enginroomId}/`,
                 success: function (response) {
                     const rejectionNote = response.rejection_note;
@@ -243,7 +275,7 @@
                         icon: 'info',
                         title: `رد موتورخانه ${enginroomName}`,
                         html: `<span style="font-size: 20px;">${rejectionNote ? rejectionNote : 'پیامی نیست'}</span>`,
-                        
+
                     })
                 },
                 error: function (error) {
@@ -259,7 +291,7 @@
             $.ajax({
                 type: "PATCH",
                 url: url,
-                data: JSON.stringify({ status: true }),
+                data: JSON.stringify({ status: true, rejection_note: "" }),
                 contentType: "application/json",
                 headers: {
                     "X-CSRFToken": $("[name=csrfmiddlewaretoken]").val(),
@@ -268,6 +300,8 @@
 
                     console.log(`Engineroom ${id} has been accepted.`);
                     $(`#enginroom_${id}`).css({ "background-color": "#d8f3dc" });
+                    $(`#last_${id}`).empty();
+                    $(`#last_${id}`).html('');
 
                 },
                 error: function (error) {
@@ -289,7 +323,7 @@
                 success: function (response) {
 
                     console.log(`Engineroom ${id} has been rejected.`);
-                    
+
                     $(`#enginroom_${id}`).css({ "background-color": "#fae0e4" });
                     Swal.fire({
 
@@ -315,7 +349,10 @@
                                     },
                                     success(response) {
 
-
+                                        $(`#last_${id}`).empty()
+                                        $(`#last_${id}`).html(`
+                        <a><i id="comment-button-${id}" class="btn btn-sm btn-primary fa fa-comment comment-button" data-enginroom-id="${id}" data-enginroom-name="${enginroom_name}"></i></a>
+                            `)
 
 
                                     }
@@ -350,37 +387,116 @@
                     populateSelectOptions('#installer', response.installers);
                     populateSelectOptions('#organization', response.organizations);
                     populateSelectOptions('#administration', response.administrations);
+                    populateSelectProvinceOptionsWithCsv('#province', response.province);
+                    populateSelectCityOptionsWithCsv('#city', response.city);
                 },
                 error: function (error) {
                     console.error('Error loading filter options:', error.responseJSON);
                 }
             });
-            function populateSelectOptions(selector, options) {
-                const selectElement = $(selector);
-                selectElement.empty();
+        }
+        function populateSelectOptions(selector, options) {
+            const selectElement = $(selector);
+            selectElement.empty();
 
-                // Add an "All" option if needed
+            // Add an "All" option if needed
+            selectElement.append($('<option>', {
+                value: '',
+                text: 'انتخاب کنید'
+            }));
+
+
+            $.each(options, function (index, option) {
                 selectElement.append($('<option>', {
-                    value: '',
-                    text: 'انتخاب کنید'
+                    value: option,
+                    text: option
                 }));
 
-                // Populate the select options
-                $.each(options, function (index, option) {
-                    selectElement.append($('<option>', {
-                        value: option,
-                        text: option
-                    }));
-                });
-            }
-
+            });
         }
+        function populateSelectProvinceOptionsWithCsv(selector, options) {
+            const selectElement = $(selector);
+            selectElement.empty();
+
+            // Add an "All" option if needed
+            selectElement.append($('<option>', {
+                value: '',
+                text: 'انتخاب کنید'
+            }));
+
+
+
+            $.each(options, function (index, option) {
+                $.ajax({
+                    type: "GET",
+                    url: "../static/iran-cities/province.csv",
+                    dataType: "text",
+                    success: function (data) {
+                        var provinceOptions = data.split("\n");
+                        var provinceSelect = $("#select-province");
+
+                        for (var i = 0; i < provinceOptions.length; i++) {
+                            var parts = provinceOptions[i].split(",");//.val(parts[0]) .text(parts[1]);
+                            if (parts[0] === option) {
+                                selectElement.append($('<option>', {
+                                    value: option,
+                                    text: parts[1]
+                                }));
+                            }
+
+                        }
+                    }
+                });
+
+
+            });
+        }
+        function populateSelectCityOptionsWithCsv(selector, options) {
+            const selectElement = $(selector);
+            selectElement.empty();
+
+            // Add an "All" option if needed
+            selectElement.append($('<option>', {
+                value: '',
+                text: 'انتخاب کنید'
+            }));
+
+
+
+            $.each(options, function (index, option) {
+                $.ajax({
+                    type: "GET",
+                    url: "../static/iran-cities/city.csv",
+                    dataType: "text",
+                    success: function (data) {
+                        var provinceOptions = data.split("\n");
+                        var provinceSelect = $("#select-province");
+
+                        for (var i = 0; i < provinceOptions.length; i++) {
+                            var parts = provinceOptions[i].split(",");//.val(parts[0]) .text(parts[1]);
+                            if (parts[0] === option) {
+                                selectElement.append($('<option>', {
+                                    value: option,
+                                    text: parts[3]
+                                }));
+                            }
+
+                        }
+                    }
+                });
+
+
+            });
+        }
+
         $(document).ready(function () {
 
             function applyFilters() {
                 const installer = $('#installer').val();
                 const organization = $('#organization').val();
                 const administration = $('#administration').val();
+                const province = $('#province').val();
+                const city = $('#city').val();
 
                 // Make an AJAX request to retrieve the filtered results
                 $.ajax({
@@ -390,6 +506,8 @@
                         installer: installer,
                         organization: organization,
                         administration: administration,
+                        province: province,
+                        city: city
 
                     },
                     success: function (response) {
@@ -414,14 +532,18 @@
                 const installer = $('#installer').val();
                 const organization = $('#organization').val();
                 const administration = $('#administration').val();
+                const province = $('#province').val();
+                const city = $('#city').val();
 
                 let url = '/api/enginroom/?page=' + page;
 
                 // Append the selected filters to the URL if any filter is selected
-                if (installer || organization || administration) {
+                if (installer || organization || administration || province || city) {
                     url += '&installer=' + installer;
                     url += '&organization=' + organization;
                     url += '&administration=' + administration;
+                    url += '&province=' + province;
+                    url += '&city=' + city;
                 }
 
                 $.ajax({
@@ -445,6 +567,8 @@
                 const installer = $('#installer').val();
                 const organization = $('#organization').val();
                 const administration = $('#administration').val();
+                const province = $('#province').val();
+                const city = $('#city').val();
 
                 $.ajax({
                     type: 'GET',
@@ -452,7 +576,9 @@
                     data: {
                         installer: installer,
                         organization: organization,
-                        administration: administration
+                        administration: administration,
+                        province: province,
+                        city: city
                     },
                     success: function (response) {
                         listOfEnginroom(response);
@@ -518,7 +644,7 @@
             populateFilterOptions();
 
             $('#installer').on('change', function () {
-                if ($('#installer').val() || $('#organization').val() || $('#administration').val()) {
+                if ($('#installer').val() || $('#organization').val() || $('#administration').val() || $('#province').val() || $('#city').val()) {
                     loadFilteredEnginerooms(currentPage);
                 } else {
                     loadEnginerooms(currentPage);
@@ -526,7 +652,7 @@
             });
 
             $('#organization').on('change', function () {
-                if ($('#installer').val() || $('#organization').val() || $('#administration').val()) {
+                if ($('#installer').val() || $('#organization').val() || $('#administration').val() || $('#province').val() || $('#city').val()) {
                     loadFilteredEnginerooms(currentPage);
                 } else {
                     loadEnginerooms(currentPage);
@@ -534,7 +660,23 @@
             });
 
             $('#administration').on('change', function () {
-                if ($('#installer').val() || $('#organization').val() || $('#administration').val()) {
+                if ($('#installer').val() || $('#organization').val() || $('#administration').val() || $('#province').val() || $('#city').val()) {
+                    loadFilteredEnginerooms(currentPage);
+                } else {
+                    loadEnginerooms(currentPage);
+                }
+            });
+
+            $('#province').on('change', function () {
+                if ($('#installer').val() || $('#organization').val() || $('#administration').val() || $('#province').val() || $('#city').val()) {
+                    loadFilteredEnginerooms(currentPage);
+                } else {
+                    loadEnginerooms(currentPage);
+                }
+            });
+
+            $('#city').on('change', function () {
+                if ($('#installer').val() || $('#organization').val() || $('#administration').val() || $('#province').val() || $('#city').val()) {
                     loadFilteredEnginerooms(currentPage);
                 } else {
                     loadEnginerooms(currentPage);
@@ -575,6 +717,13 @@
                     `;
                     }
                     const hideLastTd = obj.status === null;
+                    let phone_number1 = obj.phone_number1 ? obj.phone_number1 : '';
+                    let phone_number2 = obj.phone_number2 ? obj.phone_number2 : '';
+                    let latitude;
+                    let longitude;
+                    if (obj.location) { latitude, longitude = obj.location.split(','); }
+
+
                     const row = `
                    
                     <tr id="enginroom_${obj.id}" data-enginroom-id="${obj.id}"  id="status-${obj.id}" style="background-color: ${trColor};">
@@ -593,7 +742,13 @@
                         }
                     <td class=" "><a href="/create-installation/${obj.id}" class="btn btn-info"> تکمیل اطلاعات </a></td>
                     
-                    <td class="last">${lastTdContent}</td>
+                   
+                    <td>
+                 <a class="phone-number" href="tel:${phone_number1}">${phone_number1}</a><br>
+                 <a class="phone-number" href="tel:${phone_number2}">${phone_number2}</a>
+                  </td>
+                    <td><a onclick="openMaps(${latitude}, ${longitude})"><i class="fa fa-map-marker"></i></a></td>
+                    <td class="last" id=last_${obj.id}>${lastTdContent}</td>
                     </tr>
                                         
 
@@ -607,7 +762,14 @@
         });
         $('select').select2();
         let enginroomToDeleteId;
-
+        // $('.phone-number').on('click', function (event) {
+        //     event.preventDefault();
+        //     const phoneNumber = $(this).attr('href').substr(4); // Extract the phone number from the href attribute
+        //     const phoneNumberInput = $('<input type="tel">').val(phoneNumber); // Create a hidden input field with the phone number
+        //     $('body').append(phoneNumberInput); // Append the input field to the body
+        //     phoneNumberInput.focus().select(); // Focus and select the input field to trigger the mobile keypad
+        //     phoneNumberInput.remove(); // Remove the input field once it loses focus
+        // });
         // When the trash button is clicked
         $(document).on('click', '.delete-button', function () {
             const enginroomId = $(this).data('enginroom-id');

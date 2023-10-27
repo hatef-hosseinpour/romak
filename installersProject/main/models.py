@@ -61,7 +61,7 @@ class locationPublicInfo(models.Model):
         max_length=200, null=True, blank=True)
     # @param building_image the image of the building that device installed
     building_image = models.ImageField(
-        null=True, blank=True, upload_to='building_images/', default='no-image.jpg', max_length=200)
+        null=True, blank=True, upload_to='building_images/', default='building_images/no-image.jpg', max_length=200)
     # @param location the location of this building that chosen from map and coordination of it stored in this field
     location = models.CharField(max_length=200, null=True, blank=True)
     # @param status this field defaul to false after user fill information of installation admin can accept it and after accept of admin this field change to true
@@ -152,12 +152,12 @@ class InstallationInfo(models.Model):
     # @param  installation_date the date and time of installation
     # @param  modem_serial_number_image the user should take a picture from serial of modem number
     modem_simcard_serial_number_image = models.ImageField(
-        null=True, blank=True, upload_to='modem_simcard_serial_number_images/', default='no-image.jpg')
+        null=True, blank=True, upload_to='modem_simcard_serial_number_images/', default='modem_simcard_serial_number_images/no-image.jpg')
     installation_date = models.CharField(max_length=1000,
         verbose_name='installed_at', null=True, blank=True)
     # @param  device_serial_number_image the user should take a picture from serial of device number
     device_serial_number_image = models.ImageField(
-        null=True, blank=True, upload_to='device_serial_number_images/', default='no-image.jpg')
+        null=True, blank=True, upload_to='device_serial_number_images/', default='device_serial_number_images/no-image.jpg')
     # @param status this field defaul to false after user fill information of installation admin can accept it and after accept of admin this field change to true
     # status = models.BooleanField(default=False, null=True)
 

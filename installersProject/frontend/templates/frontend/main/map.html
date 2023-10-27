@@ -66,7 +66,7 @@
                                 </a>
                                 <ul class="dropdown-menu dropdown-usermenu pull-right">
                             </li>
-                            <li><a href="/profile/"><i class="fa fa-user pull-right"></i>
+                            <li><a href="/dashboard/"><i class="fa fa-user pull-right"></i>
                                     پروفایل</a></li>
                             <li><a href="/reset_password/{{request.session.user_id}}"><i
                                         class="fa fa-lock pull-right"></i>
@@ -122,22 +122,35 @@
 
                                 </div>
 
-                                <div class="col-md-4 col-lg-3">
+                                <div class="col-md-3 col-lg-2 col-sm-12 col-xs-12">
                                     <label for="installer">نصاب:</label>
                                     <select id="installer" class="form-control">
-
+                                        <!-- Add your options here -->
                                     </select>
                                 </div>
-                                <div class="col-md-4 col-lg-3">
+                                <div class="col-md-3 col-lg-2 col-sm-12 col-xs-12">
                                     <label for="organization">سازمان:</label>
                                     <select id="organization" class="form-control">
-
+                                        <!-- Add your options here -->
                                     </select>
                                 </div>
-                                <div class="col-md-4 col-lg-3">
+                                <div class="col-md-3 col-lg-2 col-sm-12 col-xs-12">
                                     <label for="administration">وزارت‌خانه:</label>
                                     <select id="administration" class="form-control">
+                                        <!-- Add your options here -->
+                                    </select>
+                                </div>
 
+                                <div class="col-md-3 col-lg-2 col-sm-12 col-xs-12">
+                                    <label for="province">استان:</label>
+                                    <select id="province" class="form-control">
+                                        <!-- Add your options here -->
+                                    </select>
+                                </div>
+                                <div class="col-md-3 col-lg-2 col-sm-12 col-xs-12">
+                                    <label for="city">شهر:</label>
+                                    <select id="city" class="form-control">
+                                        <!-- Add your options here -->
                                     </select>
                                 </div>
                                 <div class="clearfix"></div>
@@ -152,14 +165,7 @@
                                 </div>
                                 <div class="table-responsive">
                                     <div id="maps" class="jumbotron" style="height: 700px;"> </div>
-                                    <div class="col-md-3 col-xs-3">
-                                        <div class="pagination justify-content-center pagination-sm">
-                                            <button class="prev-page">قبلی</button>
-                                            <div class="page-numbers"></div>
-                                            <button class="next-page">بعدی</button>
-                                        </div>
 
-                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -198,14 +204,15 @@
     </div>
     {% include 'scripts.html' %}
     <script>
-        let currentPage = 1;
-        let totalPages;
+
+
 
         let admin = "{{request.session.is_admin}}" === "True";
         let staff = "{{request.session.is_staff}}" === "True";
         let access = admin || staff
         let status;
         var map = L.map('maps').setView([35.6892, 51.3890], 6);
+        let markers = L.layerGroup();
 
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             attribution: '© OpenStreetMap contributors <br> Romak system'
@@ -216,9 +223,33 @@
             iconSize: [32, 32],
             iconAnchor: [16, 32],
         });
+        function getUserLocation() {
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(function (position) {
+            var userLat = position.coords.latitude;
+            var userLng = position.coords.longitude;
 
+            // Create a marker at the user's location
+            var userMarker = L.marker([userLat, userLng]).addTo(map);
 
+            // Set the view to the user's location
+            map.setView([userLat, userLng], 13);
+        });
+    } else {
+        alert("Geolocation is not supported by your browser.");
+    }
+}
 
+        $.ajax({
+                type: 'GET',
+                url: '/api/enginroom/get_enginroom_count/',
+                success: function (response) {
+                  $('#total_engineroom').text(response.count)
+                },
+                error: function (error) {
+                    console.error('Error Engineroom Count:', error.responseJSON);
+                }
+            });
 
 
         function populateFilterOptions() {
@@ -229,56 +260,141 @@
                     populateSelectOptions('#installer', response.installers);
                     populateSelectOptions('#organization', response.organizations);
                     populateSelectOptions('#administration', response.administrations);
+                    populateSelectProvinceOptionsWithCsv('#province', response.province);
+                    populateSelectCityOptionsWithCsv('#city', response.city);
                 },
                 error: function (error) {
                     console.error('Error loading filter options:', error.responseJSON);
                 }
             });
-            function populateSelectOptions(selector, options) {
-                const selectElement = $(selector);
-                selectElement.empty();
+        }
+        function populateSelectOptions(selector, options) {
+            const selectElement = $(selector);
+            selectElement.empty();
 
-                // Add an "All" option if needed
+            // Add an "All" option if needed
+            selectElement.append($('<option>', {
+                value: '',
+                text: 'انتخاب کنید'
+            }));
+
+
+            $.each(options, function (index, option) {
                 selectElement.append($('<option>', {
-                    value: '',
-                    text: 'انتخاب کنید'
+                    value: option,
+                    text: option
                 }));
 
-                // Populate the select options
-                $.each(options, function (index, option) {
-                    selectElement.append($('<option>', {
-                        value: option,
-                        text: option
-                    }));
-                });
-            }
-
+            });
         }
+        function populateSelectProvinceOptionsWithCsv(selector, options) {
+            const selectElement = $(selector);
+            selectElement.empty();
+
+            // Add an "All" option if needed
+            selectElement.append($('<option>', {
+                value: '',
+                text: 'انتخاب کنید'
+            }));
+
+
+
+            $.each(options, function (index, option) {
+                $.ajax({
+                    type: "GET",
+                    url: "../static/iran-cities/province.csv",
+                    dataType: "text",
+                    success: function (data) {
+                        var provinceOptions = data.split("\n");
+                        var provinceSelect = $("#select-province");
+
+                        for (var i = 0; i < provinceOptions.length; i++) {
+                            var parts = provinceOptions[i].split(",");//.val(parts[0]) .text(parts[1]);
+                            if (parts[0] === option) {
+                                selectElement.append($('<option>', {
+                                    value: option,
+                                    text: parts[1]
+                                }));
+                            }
+
+                        }
+                    }
+                });
+
+
+            });
+        }
+        function populateSelectCityOptionsWithCsv(selector, options) {
+            const selectElement = $(selector);
+            selectElement.empty();
+
+            // Add an "All" option if needed
+            selectElement.append($('<option>', {
+                value: '',
+                text: 'انتخاب کنید'
+            }));
+
+
+
+            $.each(options, function (index, option) {
+                $.ajax({
+                    type: "GET",
+                    url: "../static/iran-cities/city.csv",
+                    dataType: "text",
+                    success: function (data) {
+                        var provinceOptions = data.split("\n");
+                        var provinceSelect = $("#select-province");
+
+                        for (var i = 0; i < provinceOptions.length; i++) {
+                            var parts = provinceOptions[i].split(",");//.val(parts[0]) .text(parts[1]);
+                            if (parts[0] === option) {
+                                selectElement.append($('<option>', {
+                                    value: option,
+                                    text: parts[3]
+                                }));
+                            }
+
+                        }
+                    }
+                });
+
+
+            });
+        }
+
+
+
         $(document).ready(function () {
 
+
+
             function applyFilters() {
+                markers.clearLayers()
                 const installer = $('#installer').val();
                 const organization = $('#organization').val();
                 const administration = $('#administration').val();
+                const province = $('#province').val();
+                const city = $('#city').val();
 
                 // Make an AJAX request to retrieve the filtered results
                 $.ajax({
                     type: 'GET',
-                    url: '/api/enginroom/',
+                    url: '/api/enginroom/get_locations/',
                     data: {
                         installer: installer,
                         organization: organization,
                         administration: administration,
+                        province: province,
+                        city: city
 
                     },
                     success: function (response) {
                         // Handle the filtered results
                         console.log(response);
                         listOfEnginroom(response);
-                        totalPages = response.total_pages
 
-                        console.log('filter total page', response.total_pages)
-                        updatePageNumbers();
+
+
 
                     },
                     error: function (error) {
@@ -288,19 +404,24 @@
             }
 
 
-            function loadEnginerooms(page) {
+            function loadEnginerooms() {
+                markers.clearLayers()
                 // Make an AJAX request to retrieve the engine rooms based on the selected filters
                 const installer = $('#installer').val();
                 const organization = $('#organization').val();
                 const administration = $('#administration').val();
+                const province = $('#province').val();
+                const city = $('#city').val();
 
-                let url = '/api/enginroom/?page=' + page;
+                let url = '/api/enginroom/get_locations/';
 
                 // Append the selected filters to the URL if any filter is selected
-                if (installer || organization || administration) {
+                if (installer || organization || administration || province || city) {
                     url += '&installer=' + installer;
                     url += '&organization=' + organization;
                     url += '&administration=' + administration;
+                    url += '&province=' + province;
+                    url += '&city=' + city;
                 }
 
                 $.ajax({
@@ -308,10 +429,6 @@
                     url: url,
                     success: function (response) {
                         listOfEnginroom(response);
-                        currentPage = page;
-                        totalPages = response.total_pages;
-                        $('#total_engineroom').text(response.count)
-                        updatePageNumbers();
                     },
                     error: function (error) {
                         console.error('Error loading enginerooms:', error.responseJSON);
@@ -319,25 +436,29 @@
                 });
             }
 
-            function loadFilteredEnginerooms(page) {
+            function loadFilteredEnginerooms() {
+                markers.clearLayers()
                 // Make an AJAX request to retrieve the filtered engine rooms
                 const installer = $('#installer').val();
                 const organization = $('#organization').val();
                 const administration = $('#administration').val();
+                const province = $('#province').val();
+                const city = $('#city').val();
 
                 $.ajax({
                     type: 'GET',
-                    url: '/api/enginroom/',
+                    url: '/api/enginroom/get_locations/',
                     data: {
                         installer: installer,
                         organization: organization,
-                        administration: administration
+                        administration: administration,
+                        province: province,
+                        city: city
                     },
                     success: function (response) {
                         listOfEnginroom(response);
-                        currentPage = page;
-                        totalPages = response.total_pages;
-                        updatePageNumbers();
+
+
                     },
                     error: function (error) {
                         console.error('Error loading filtered results:', error.responseJSON);
@@ -345,102 +466,65 @@
                 });
             }
 
-            loadEnginerooms(currentPage);
-
-
-            if (currentPage == 1) {
-                $(".prev-page").hide()
-            }
-            if (currentPage == totalPages) {
-                $(".next-page").hide()
-            }
-
-            $(".prev-page").on("click", function () {
-                $(".next-page").show()
-                if (currentPage > 1) {
-                    loadEnginerooms(currentPage - 1); // Load the previous page
-                }
-
-            });
-
-            $(".next-page").on("click", function () {
-                $(".prev-page").show()
-                if (currentPage < totalPages) {
-                    loadEnginerooms(currentPage + 1); // Load the next page
-                }
-
-
-            });
-
-            function updatePageNumbers() {
-                const pageNumbers = $(".page-numbers");
-                pageNumbers.empty();
-                for (let i = 1; i <= totalPages; i++) {
-                    let pageNumberButton = $("<button>", {
-                        class: "page-number",
-                        text: i,
-                        "data-page": i
-                    });
-                    pageNumbers.append(pageNumberButton);
-                }
-                // Highlight the current page number
-                $(`.page-number[data-page=${currentPage}]`).addClass("active");
-                map.removeLayer(marker)
-                // Page number click event handler
-                $(".page-number").on("click", function () {
-                    const page = $(this).data("page");
-                    $(`.page-number[data-page=${currentPage}]`).removeClass("active");
-                    $(`.page-number[data-page=${page}]`).addClass("active");
-                    loadEnginerooms(page);
-                });
-            }
 
             populateFilterOptions();
-
+            loadEnginerooms();
             $('#installer').on('change', function () {
-                if ($('#installer').val() || $('#organization').val() || $('#administration').val()) {
-                    loadFilteredEnginerooms(currentPage);
+                if ($('#installer').val() || $('#organization').val() || $('#administration').val() || $('#province').val() || $('#city').val()) {
+                    loadFilteredEnginerooms();
                 } else {
-                    loadEnginerooms(currentPage);
+                    loadEnginerooms();
                 }
             });
 
             $('#organization').on('change', function () {
-                if ($('#installer').val() || $('#organization').val() || $('#administration').val()) {
-                    loadFilteredEnginerooms(currentPage);
+                if ($('#installer').val() || $('#organization').val() || $('#administration').val() || $('#province').val() || $('#city').val()) {
+                    loadFilteredEnginerooms();
                 } else {
-                    loadEnginerooms(currentPage);
+                    loadEnginerooms();
                 }
             });
 
             $('#administration').on('change', function () {
-                if ($('#installer').val() || $('#organization').val() || $('#administration').val()) {
-                    loadFilteredEnginerooms(currentPage);
+                if ($('#installer').val() || $('#organization').val() || $('#administration').val() || $('#province').val() || $('#city').val()) {
+                    loadFilteredEnginerooms();
                 } else {
-                    loadEnginerooms(currentPage);
+                    loadEnginerooms();
                 }
             });
 
-            $("#search").on("keyup", function () {
-                var value = $(this).val().toLowerCase();
-
-                $("#enginroom-list tbody tr").filter(function () {
-                    $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
-                });
-
+            $('#province').on('change', function () {
+                if ($('#installer').val() || $('#organization').val() || $('#administration').val() || $('#province').val() || $('#city').val()) {
+                    loadFilteredEnginerooms();
+                } else {
+                    loadEnginerooms();
+                }
             });
+
+            $('#city').on('change', function () {
+                if ($('#installer').val() || $('#organization').val() || $('#administration').val() || $('#province').val() || $('#city').val()) {
+                    loadFilteredEnginerooms();
+                } else {
+                    loadEnginerooms();
+                }
+            });
+
 
             function listOfEnginroom(resp) {
 
-
-                resp.results.forEach(function (engineroom) {
+                map.eachLayer(function (layer) {
+                    if (layer instanceof L.Marker) {
+                        map.removeLayer(layer);
+                    }
+                });
+                resp.forEach(function (engineroom) {
                     if (engineroom.location) {
                         latlng = engineroom.location.split(',')
                         var marker = L.marker(latlng, {
                             icon: locationIcon,
                         }
                         ).addTo(map);
-                        marker.bindPopup(`<a href="/enginroom-detail/${engineroom.id}"><h5>${engineroom.enginroom_name}</h5></a>`);
+                        marker.bindPopup(`<a class='rtl-txt' href="/enginroom-detail/${engineroom.id}"><h5>${engineroom.enginroom_name}</h5></a>`);
 
                     }
                 })

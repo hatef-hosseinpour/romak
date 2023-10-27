@@ -24,7 +24,7 @@ class LocationPublicInfoAdmin(admin.ModelAdmin):
     search_fields = ['user__username', 'enginroom__name']
 
     def building_picture(self, obj):
-        return format_html(f'<img src="/images/{obj.building_image} "width="85" height="85""/>')
+        return format_html(f'<img src="/media/{obj.building_image} "width="85" height="85""/>')
 
 
 class InstallationInfoAdmin(admin.ModelAdmin):

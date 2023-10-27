@@ -30,7 +30,7 @@ label.error {
   font-size: 20px;
   font-weight:bold ;
   color: #fff;
-  text-shadow: -1px -1px 0 black, 1px -1px 0 black, -1px 1px 0 black, 1px 1px 0 black;
+  text-shadow: -1px -1px 0 rgb(90, 90, 90), 1px -1px 0 rgb(85, 85, 85), -1px 1px 0 rgb(85, 85, 85), 1px 1px 0 rgb(85, 85, 85);
   transform: skew(-40deg);
 }
 

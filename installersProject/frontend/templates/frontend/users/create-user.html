@@ -32,7 +32,7 @@
                                 </a>
                                 <ul class="dropdown-menu dropdown-usermenu pull-right">
                             </li>
-                            <li><a href="/profile/"><i class="fa fa-user pull-right"></i>
+                            <li><a href="/dashboard/"><i class="fa fa-user pull-right"></i>
                                     پروفایل</a></li>
                             <li><a href="/reset_password/{{request.session.user_id}}"><i class="fa fa-lock pull-right"></i>
                                     تغییر رمزعبور</a></li>
@@ -58,14 +58,14 @@
 
                         <div class="title_right">
                             <div class="col-md-5 col-sm-5 col-xs-12 form-group pull-right top_search">
-                                <div class="input-group">
+                                <!-- <div class="input-group">
                                     {% csrf_token %}
                                     <input type="text" class="form-control" placeholder="جست و جو برای...">
                                     <span class="input-group-btn">
                                         <button class="btn btn-default" type="button"><i
                                                 class="fa fa-search"></i></button>
                                     </span>
-                                </div>
+                                </div> -->
                             </div>
                         </div>
                     </div>

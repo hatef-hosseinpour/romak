@@ -1,5 +1,6 @@
 from rest_framework.response import Response
 from rest_framework.decorators import action
+from django.db.models import Q
 from rest_framework.decorators import api_view
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
@@ -131,9 +132,9 @@ class UserViewSet(viewsets.ModelViewSet):
         if current_user.is_superuser and current_user.is_staff:
             queryset = User.objects.all().order_by('id')
         elif current_user.is_staff and not current_user.is_superuser:
-            queryset = User.objects.filter(profile__owner=current_user).order_by('id')
+            queryset = User.objects.filter(Q(profile__owner=current_user) | Q(profile__user = current_user)).order_by('id')
         else:
-            queryset = User.objects.none()
+            queryset = User.objects.filter(profile__user = current_user)
         
         return queryset
 
