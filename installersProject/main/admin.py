@@ -43,7 +43,7 @@ class EnginRoomImageAdmin(admin.ModelAdmin):
     search_fields = ['user__username', 'enginroom__name']
 
     def enginroom_picture(self, obj):
-        return format_html(f'<img src="/images/{obj.image} "width="85" height="85""/>')
+        return format_html(f'<img src="/enginroom_images/{obj.image} "width="85" height="85""/>')
 
 
 admin.site.register(Enginroom, EnginroomAdmin)

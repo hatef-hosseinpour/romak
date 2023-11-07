@@ -6,6 +6,11 @@
 {% endblock %}
 <!-- /header content -->
 <style>
+    #map {
+        height: 400px;
+        /* Adjust the height as per your requirements */
+    }
+
     .pip {
         display: inline-block;
         margin: 10px 10px 0 0;
@@ -159,17 +164,19 @@
                     <div class="page-title">
                         <div class="title_left">
                             <h3>اطلاعات نصب موتورخانه</h3>
+
+                            <h3 id="enginroom"> </h3>
                         </div>
 
                         <div class="title_right">
                             <div class="col-md-5 col-sm-5 col-xs-12 form-group pull-right top_search">
-                                <div class="input-group">
+                                <!-- <div class="input-group">
                                     <input type="text" class="form-control" placeholder="جست و جو برای...">
                                     <span class="input-group-btn">
                                         <button class="btn btn-default" type="button"><i
                                                 class="fa fa-search"></i></button>
                                     </span>
-                                </div>
+                                </div> -->
                             </div>
                         </div>
                     </div>
@@ -196,8 +203,7 @@
                                         <!-- Begin Location Public info -->
                                         <div class="tab rtl-txt ">
                                             <h3 class="text-center">اطلاعات عمومی محل نصب</h3>
-                                            <label for="engineroom">نام موتورخانه</label>
-                                            <strong id="enginroom"> </strong>
+
                                             <br>
                                             <label for="address">آدرس</label>
                                             <textarea class="form-control" id="address" name="address"
@@ -253,8 +259,9 @@
                                             <div>
                                                 <div class="col-md-6 col-sm-12 col-xs-12">
                                                     <label for="building-image" style="width: 100%;">عکس ساختمان
-                                                        <img style="width: 100%;height: 250px;" class="thumbnail "
-                                                            with="100%" heigh="30px" id="building-image-preview">
+                                                        <img style="width: 100%;height: 250px;margin-top: 13px;"
+                                                            class="thumbnail " with="100%" heigh="30px"
+                                                            id="building-image-preview">
 
                                                         <p class="text-center">بارگزاری عکس‌ <img width="50" height="50"
                                                                 src="{% static 'images/icons8-upload-to-cloud-50.png' %}"
@@ -264,9 +271,14 @@
                                                         name="building-image" style="display:none;">
                                                 </div>
                                                 <div class="col-md-6 col-sm-12 col-xs-12">
+
                                                     <input type="hidden" class="form-control" id="location-input"
                                                         name="location-input">
-                                                    <label for="map">موقعیت محل نصب</label>
+                                                    <label for="map">موقعیت محل نصب</label> <button
+                                                        onclick="getUserLocation()">موقعیت من <img
+                                                            src="{% static 'images/my-location-50.png'%}"
+                                                            style="width: 25px; height: 25px;" alt="center-direction" />
+                                                    </button>
                                                     <div id="map" class="jumbotron" style="height: 300px;">
                                                     </div>
                                                 </div>
@@ -430,6 +442,7 @@
                                             <button type="button" onclick="saveStep()" id="sub">ثبت این مرحله</button>
 
                                         </div>
+                                        <div id="progress-bar"></div>
                                     </div>
 
                                     <!-- Circles which indicates the steps of the form: -->
@@ -478,6 +491,7 @@
     </div>
     {% include 'scripts.html' %}
     <script>
+
         $('select').select2();
         let id = '{{id}}' //enginroom id
         let selectEnginroom = id;
@@ -486,26 +500,44 @@
         let currentbuildingImageURL;
         let currendeviceSerialImageURL;
         let imagesData = [];
+        var marker;
 
-        // Create the map
-        var map = L.map('map').setView([35.6892, 51.3890], 13);
-
-        // Add a tile layer to the map
+        var map = L.map('map').setView([35.6895, 51.3896], 16);
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors',
-            maxZoom: 18,
+            maxZoom: 20, // Set the maximum zoom level
         }).addTo(map);
+        // map.zoomControl = false
+        $(window).on('load', function () {
+            map.invalidateSize();
+        });
+        // Create a Location button
+        // var locationButton = L.control({
+        //     position: 'topleft'
+        // });
+
+        // locationButton.onAdd = function (map) {
+        //     var button = L.DomUtil.create('button', 'location-button');
+        //     button.innerHTML = '<i class="fa fa-location-arrow"></i>';
+        //     button.title = 'Show my location';
+
+        //     button.onclick = function () {
+        //         getUserLocation();
+        //     };
+
+        //     return button;
+        // };
+
+        // locationButton.addTo(map);
+
         function getUserLocation() {
             if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition(function (position) {
                     var userLat = position.coords.latitude;
                     var userLng = position.coords.longitude;
 
+                    // marker = L.marker([userLat, userLng]).addTo(map);
 
-                    var userMarker = L.marker([userLat, userLng]).addTo(map);
-
-
-                    map.setView([userLat, userLng], 13);
+                    map.setView([userLat, userLng], 16);
                 });
             } else {
                 alert("Geolocation is not supported by your browser.");
@@ -537,7 +569,7 @@
 
 
                     // Initialize the marker and location input
-                    var marker;
+
                     var locationInput = $('#location-input');
 
                     function onMarkerClick(e) {
@@ -553,6 +585,9 @@
                         var lng = parseFloat(latLng[1]);
 
                         if (!isNaN(lat) && !isNaN(lng)) {
+                            if (marker) {
+                                map.removeLayer(marker); // Remove previous marker
+                            }
                             // Create marker and add it to the map
                             marker = L.marker([lat, lng]).addTo(map);
                             // Set the view to the marker's location
@@ -655,7 +690,7 @@
 
         $(document).ready(function () {
 
-            getUserLocation()
+            //getUserLocation()
 
             // var filess = $('#enginroom-images')[0].files;
             let new_images_container = $('#new_images_container')
@@ -962,6 +997,7 @@
         function saveStep() {
 
             let locationInfoData;
+            let progress = 0;
             if (currentTab == 0) {
                 let address = $('#address').val() || '';
                 let phoneNumber1 = $('#phone-number1').val() || '';
@@ -1051,6 +1087,17 @@
                             headers: {
                                 "X-CSRFToken": $("[name=csrfmiddlewaretoken]").val(),
                             },
+                            xhr: function () {
+                                let xhr = new window.XMLHttpRequest();
+                                xhr.upload.addEventListener("progress", function (evt) {
+                                    if (evt.lengthComputable) {
+                                        progress = (evt.loaded / evt.total) * 100;
+                                        console.log("Progress:", progress);
+                                        $("#progress-bar").css({"width": progress + "%", "background-color": "#34495E", "color":"white", "border-radius":"3%", "height":"25px"}).text(" در حال ثبت "  + Math.round(progress) + "%");
+                                    }
+                                }, false);
+                                return xhr;
+                            },
                             success: function (response) {
                                 Swal.fire({
                                     icon: 'success',
@@ -1058,6 +1105,7 @@
                                     text: 'اطلاعات عمومی محل نصب با موفقیت ثبت شد.'
 
                                 }).then(function () {
+                                    $("#progress-bar").empty()
                                     locationPublicInfo();
                                     updateStep(currentTab);
                                 });

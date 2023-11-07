@@ -184,7 +184,7 @@
                                                 <th class="column-title">اطلاعات</th>
                                                 <th class="column-title">تلفن رابط</th>
                                                 <th class="column-title">نقشه</th>
-                                                <th class="column-title no-link last"><span class="nobr"></span>
+                                                <th class="column-title no-link"><span class="nobr"></span>
                                                 </th>
                                             </tr>
                                         </thead>
@@ -247,10 +247,11 @@
         let totalPages;
         function openMaps(latitude, longitude) {
             // Construct the Google Maps URL with the specified latitude and longitude
-            const googleMapsUrl = `https://www.google.com/maps?q=${latitude},${longitude}`;
+            const url = `https://neshan.org/maps/@${latitude},${longitude},15z,0p/search/${latitude},${longitude}`;
+            // const url = `https://www.google.com/maps?q=${latitude},${longitude}`;
 
             // Open the URL in a new window or tab
-            window.open(googleMapsUrl, '_blank');
+            window.open(url, '_blank');
         }
         function showDetail(id) {
             const enginroomUrl = `/enginroom-detail/${id}`;
@@ -377,6 +378,7 @@
         }
         let status;
         let trColor;
+        let map = ''
         let lastTdContent = '';
 
         function populateFilterOptions() {
@@ -707,7 +709,7 @@
                         status = 'رد';
                         trColor = '#fae0e4';
                         lastTdContent = `
-                        <a><i id="comment-button-${obj.id}" class="btn btn-sm btn-primary fa fa-comment comment-button" data-enginroom-id="${obj.id}" data-enginroom-name="${obj.enginroom_name}"></i></a>
+                        <a><i id="comment-button-${obj.id}" class="btn btn-primary fa fa-comment comment-button" data-enginroom-id="${obj.id}" data-enginroom-name="${obj.enginroom_name}"></i></a>
                             `;
                     } else {
                         status = 'در انتظار تایید';
@@ -721,7 +723,13 @@
                     let phone_number2 = obj.phone_number2 ? obj.phone_number2 : '';
                     let latitude;
                     let longitude;
-                    if (obj.location) { latitude, longitude = obj.location.split(','); }
+                    if (obj.location) { 
+                        [latitude, longitude] = obj.location.split(',');
+                        map = `<a class="btn" onclick="openMaps(${latitude}, ${longitude})"><i class="fa fa-lg fa-map-marker"></i></a>`
+                    }
+                    else{
+                        map = ''
+                    }
 
 
                     const row = `
@@ -747,7 +755,7 @@
                  <a class="phone-number" href="tel:${phone_number1}">${phone_number1}</a><br>
                  <a class="phone-number" href="tel:${phone_number2}">${phone_number2}</a>
                   </td>
-                    <td><a onclick="openMaps(${latitude}, ${longitude})"><i class="fa fa-map-marker"></i></a></td>
+                    <td id=map>${map}</td>
                     <td class="last" id=last_${obj.id}>${lastTdContent}</td>
                     </tr>
                                         

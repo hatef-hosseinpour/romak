@@ -391,7 +391,7 @@
                                     </ul>
                                     <div class="clearfix"></div>
                                 </div>
-                                <div class="x_content" id="enginroom-images" class="col-sm-12 col-xs-12">
+                                <div class="x_content container" id="enginroom-images" class="col-sm-12 col-xs-12">
 
 
                                     <!-- Next and Previous icon to change images -->
@@ -404,9 +404,9 @@
                                 </div>
                                 <br>
 
-                                <div style="text-align:center" id="activeSlide">
+                                <!-- <div style="text-align:center" id="activeSlide">
 
-                                </div>
+                                </div> -->
                             </div>
                         </div>
                     </div>
@@ -443,6 +443,7 @@
         </table>
     </div>
     {% include 'scripts.html' %}
+    
     <script>
 
         let slideIndex = 1;
@@ -475,8 +476,19 @@
             totalslides.hide();
             totaldots.removeClass("active");
 
-            totalslides.eq(slideIndex - 1).show();
+            totalslides.eq(slideIndex - 1).fadeIn();
             totaldots.eq(slideIndex - 1).addClass("active");
+        }
+        function initSliderSwipe() {
+            $(".x_content").swipe({
+                swipeLeft: function () {
+                    moveSlides(1); // Move to the next slide on left swipe
+                },
+                swipeRight: function () {
+                    moveSlides(-1); // Move to the previous slide on right swipe
+                },
+                threshold: 50 // Adjust the swipe threshold as per your needs
+            });
         }
         $(document).ready(function () {
 
@@ -649,7 +661,7 @@
                 }
             });
             let enginroomImages = $('#enginroom-images');
-            let activeSlide = $('#activeSlide')
+            // let activeSlide = $('#activeSlide')
             $.ajax({
                 type: "GET",
                 url: `/api/enginroom-images/?enginroom=${enginroomId}`,
@@ -657,12 +669,13 @@
                     for (var i = 0; i < response.length; i++) {
                         enginroomImages.append(` <div class="slide">
                                         <div class="slideNumber">${slideIndex + i}</div>
-                                        <img src="${response[i].image}" style="height: 400px; width=400px">
+                                        <img src="${response[i].image}" style="height: 60%;width: 60%;">
                                     </div>
             `);
                         displaySlide(slideIndex);
-                        activeSlide.append(`<span class="footerdot" onclick="activeSlide(${slideIndex + i})">
-                                    </span>`);
+                        initSliderSwipe()
+                        // activeSlide.append(`<span class="footerdot" onclick="activeSlide(${slideIndex + i})">
+                        //             </span>`);
                     }
                 },
                 error: function (error) {

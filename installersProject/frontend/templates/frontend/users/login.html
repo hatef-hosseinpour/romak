@@ -14,7 +14,12 @@
     /* Adjust as needed */
   }
 
-
+  #captcha-container {
+  user-select: none;
+  -moz-user-select: none;
+  -webkit-user-select: none;
+  -ms-user-select: none;
+}
 </style>
 
 <body class="login">
@@ -83,7 +88,7 @@
 
     let code = "";
     let charsArray = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-    let length = 5;
+    let length = 4;
     let captcha = [];
 
     function generateCaptcha() {
@@ -103,13 +108,13 @@
       code = generateCaptcha()
 
       $('#code').text(code);
-      console.log(code);
+      // console.log(code);
 
       $('#captcha-container').on('click', function () {
         captcha = [];
         code = generateCaptcha();
         $('#code').text("");
-        console.log(code);
+        // console.log(code);
         $('#code').text(code);
       })
 
@@ -137,8 +142,8 @@
           },
         },
         submitHandler: function (form) {
-          console.log('input', $('#captcha-input').val());
-          console.log('code', code);
+          // console.log('input', $('#captcha-input').val());
+          // console.log('code', code);
 
           if ($('#captcha-input').val() === code) {
             let formData = $(form).serialize();
@@ -169,10 +174,16 @@
               },
             });
           } else {
+            Swal.fire({
+                  icon: 'error',
+                  title: 'خطا',
+                  text: 'کد تصویر اشتباه وارد شده است',
+                  confirmButtonText: 'تایید',
+                });
             captcha = [];
             code = generateCaptcha();
             $('#code').text("");
-            console.log(code);
+            //console.log(code);
             $('#code').text(code);
           }
         },
