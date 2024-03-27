@@ -1,0 +1,90 @@
+@font-face {
+  font-family: vazir;
+  font-style: normal;
+  font-weight: normal;
+  src: url("../fonts/Vazir.eot");
+  src: url("../fonts/Vazir.woff") format("woff"),
+    url("../fonts/Vazir.ttf") format("ttf"),
+    url("../fonts/Vazir.woff2") format("woff2");
+}
+
+
+.rtl-txt {
+  direction: rtl;
+  font-family: vazir;
+}
+
+
+
+label.error {
+  color: #ed4337;
+  margin-bottom: 10px;
+}
+
+
+
+#captcha-container p {
+  pointer-events: none;
+  padding: 10px;
+  letter-spacing: 10px;
+  font-size: 20px;
+  font-weight:bold ;
+  color: #fff;
+  text-shadow: -1px -1px 0 rgb(90, 90, 90), 1px -1px 0 rgb(85, 85, 85), -1px 1px 0 rgb(85, 85, 85), 1px 1px 0 rgb(85, 85, 85);
+  transform: skew(-40deg);
+}
+
+
+
+
+#captcha-container {
+  height: 50px;
+  background: whitesmoke;
+  background-image: url('../images/noisy-captcha.jpg');
+  border-radius: 5px;
+
+  margin-bottom: 15px;
+}
+.checkbox-container {
+  display: flex;
+  align-items: center;
+}
+
+.checkbox-container p {
+  flex: 1;
+  margin: 0;
+}
+
+.checkbox-container input {
+  flex: 0;
+  margin-left: 10px;
+}
+
+/* Hide the exchanger div initially */
+#exchanger {
+  display: none;
+}
+input[type=submit] {
+  background-color: #34495E;
+  color: #F9F9F9;
+  border-radius: 5px;
+  padding: 5px 10px;
+  margin-top: 15px
+}
+
+
+
+.map {
+  width: 100%;
+  height: 300px;
+  padding: 10px;
+  margin-bottom: 10px;
+  border-radius: 10px;
+}
+
+tr:not(.heading):hover {
+  cursor: pointer;
+}
+
+
+

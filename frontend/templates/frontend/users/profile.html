@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+{% load static %}
+{% block headcontent %}
+{% include 'head.html' with title="Installers App| Dashboard" %}
+{% endblock %}
+<!-- /header content -->
+<style>
+    .gradient-custom {
+/* fallback for old browsers */
+background: #f6d365;
+
+/* Chrome 10-25, Safari 5.1-6 */
+background: -webkit-linear-gradient(to right bottom, rgba(246, 211, 101, 1), rgba(253, 160, 133, 1));
+
+/* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+background: linear-gradient(to right bottom, rgba(246, 211, 101, 1), rgba(253, 160, 133, 1))
+}
+</style>
+<body class="nav-md">
+    <div class="container body">
+        <div class="main_container">
+            <div class="col-md-3 left_col hidden-print">
+                <div class="left_col scroll-view">
+                    {% include 'navbar.html'%}
+                </div>
+            </div>
+
+            <!-- top navigation -->
+            <div class="top_nav hidden-print">
+                <div class="nav_menu">
+                    <nav>
+                        <div class="nav toggle">
+                            <a id="menu_toggle"><i class="fa fa-bars"></i></a>
+                        </div>
+
+                        <ul class="nav navbar-nav navbar-right">
+                            <li class="">
+                                <a href="javascript:;" class="user-profile dropdown-toggle" data-toggle="dropdown"
+                                    aria-expanded="false">
+                                    {{request.session.username}} <span
+                                        class=" fa fa-angle-down"></span>
+                                </a>
+                                <ul class="dropdown-menu dropdown-usermenu pull-right">
+                            </li>
+                            <li><a href="/profile/"><i class="fa fa-user pull-right"></i>
+                                    پروفایل</a></li>
+                            <li><a href="/reset_password/{{request.session.user_id}}"><i class="fa fa-lock pull-right"></i>
+                                    تغییر رمزعبور</a></li>
+                            <hr>
+                            <li><a id="logout" onclick="logout()"><i class="fa fa-sign-out pull-right"></i>
+                                    خروج</a></li>
+                        </ul>
+                        </li>
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+            <!-- /top navigation -->
+            <!-- /header content -->
+
+            <!-- page content -->
+            <div class="right_col" role="main">
+                <div class="">
+                    <div class="page-title">
+                        <div class="title_left">
+                            <h3>صفحه ساده</h3>
+                        </div>
+
+                        <div class="title_right">
+                            <div class="col-md-5 col-sm-5 col-xs-12 form-group pull-right top_search">
+                                <div class="input-group">
+                                    <input type="text" class="form-control" placeholder="جست و جو برای...">
+                                    <span class="input-group-btn">
+                                        <button class="btn btn-default" type="button"><i
+                                                class="fa fa-search"></i></button>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="clearfix"></div>
+
+                    <div class="row">
+                        <div class="col-md-12 col-sm-12 col-xs-12">
+                            <div class="x_panel">
+                                <div class="x_title">
+                                    <h2>صفحه ساده</h2>
+                                    <ul class="nav navbar-right panel_toolbox">
+                                        <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
+                                        </li>
+                                        <li class="dropdown">
+                                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button"
+                                                aria-expanded="false"><i class="fa fa-wrench"></i></a>
+                                            <ul class="dropdown-menu" role="menu">
+                                                <li><a href="#">تنظیمات 1</a>
+                                                </li>
+                                                <li><a href="#">تنظیمات 2</a>
+                                                </li>
+                                            </ul>
+                                        </li>
+                                        <li><a class="close-link"><i class="fa fa-close"></i></a>
+                                        </li>
+                                    </ul>
+                                    <div class="clearfix"></div>
+                                </div>
+                                <div class="x_content">
+                                    <section style="background-color: #eee;">
+                                        <div class="container py-5">
+                                          <div class="row">
+                                            <div class="col">
+                                             
+                                            </div>
+                                          </div>
+                                      
+                                          <div class="row">
+                                            
+                                            <section class="vh-100 rtl-txt">
+                                                <div class="container py-5 h-100">
+                                                    <div class="row d-flex justify-content-center align-items-center h-100">
+                                                        <div class="col col-lg-6 mb-4 mb-lg-0">
+                                                            <div class="card mb-3" style="border-radius: .5rem;">
+                                                                <div class="row g-0">
+                                                                    <div class="col-md-4 gradient-custom text-center text-black"
+                                                                        style="border-top-left-radius: .5rem; border-bottom-left-radius: .5rem;">
+                                            
+                                                                        <h5 class="text-black" id="username"></h5>
+                                                                        {% if request.session.is_admin %}
+                                                                        <p id="role">ادمین</p>
+                                                                        {% else %}
+                                                                        <p id="role">نصاب</p>
+                                                                        {% endif %}
+                                                                    </div>
+                                                                    <div class="col-md-8">
+                                                                        <div class="card-body p-4">
+                                                                            <h6>اطلاعات کاربری</h6>
+                                                                            <hr class="mt-0 mb-4">
+                                                                            <div class="row pt-1">
+                                                                                <div class="col-12 mb-3">
+                                                                                    <h6>نام</h6>
+                                                                                    <p class="text-muted" id="name"></p>
+                                                                                </div>
+                                                                                <div class="col-12 mb-3">
+                                                                                    <h6>شماره همراه</h6>
+                                                                                    <p class="text-muted" id="phone-number"></p>
+                                                                                </div>
+                                                                                <div class="col-12 mb-3">
+                                                                                    <h6>ایمیل</h6>
+                                                                                    <p class="text-muted" id="email"></p>
+                                                                                </div>
+                                                                                <div class="col-10 mb-3">
+                                                                                    <h6>وضعیت</h6>
+                                                                                    <p class="text-muted" id="is-active"></p>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                          </div>
+                                        </div>
+                                      </section>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- /page content -->
+
+            <!-- /page content -->
+
+            <!-- footer content -->
+            <footer class="hidden-print">
+                <div class="pull-left">
+                    Gentelella - قالب پنل مدیریت بوت استرپ <a href="https://colorlib.com">Colorlib</a> | پارسی شده توسط
+                    <a href="https://morteza-karimi.ir">مرتضی کریمی</a>
+                </div>
+                <div class="clearfix"></div>
+            </footer>
+            <!-- /footer content -->
+        </div>
+    </div>
+    <div id="lock_screen">
+        <table>
+            <tr>
+                <td>
+                    <div class="clock"></div>
+                    <span class="unlock">
+                        <span class="fa-stack fa-5x">
+                            <i class="fa fa-square-o fa-stack-2x fa-inverse"></i>
+                            <i id="icon_lock" class="fa fa-lock fa-stack-1x fa-inverse"></i>
+                        </span>
+                    </span>
+                </td>
+            </tr>
+        </table>
+    </div>
+</section>
+{% include 'scripts.html' %}
+
+<script>
+    let user_id = "{{request.session.user_id}}"
+    $(document).ready(function () {
+        $.ajax({
+            type: "GET",
+            url: `/api/users/${user_id}/`,
+            success: function (response) {
+                $('#name').text(response.first_name || response.last_name ? response.first_name + ' ' + response.last_name : '--');
+                $("#email").text(response.email || '--')
+                $("#is-active").text(response.is_active ? 'فعال' : 'غیرفعال')
+                $('#username').text(response.username);
+
+            }
+        });
+        $.ajax({
+            type: "GET",
+            url: `/api/users-profile/${user_id}/`,
+            success: function (response) {
+                $("#phone-number").text(response.phone_number ? response.phone_number : '--')
+                $('.gradient-custom').html('<img src="' + response.profile_image + '" alt="Avatar" class="img-fluid my-5" style="width: 120px; border-radius: 50%;" />')
+                console.log(response.profile_image);
+
+            },
+            error: function () {
+                console.log('Failed to retrieve profile data');
+            }
+        });
+    });
+
+
+</script>
+

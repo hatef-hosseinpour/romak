@@ -1,0 +1,1637 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+{% load static %}
+{% block headcontent %}
+{% include 'head.html' with title="Installers App| Installation INFO" %}
+{% endblock %}
+<!-- /header content -->
+<style>
+    #map {
+        height: 400px;
+        /* Adjust the height as per your requirements */
+    }
+
+    .pip {
+        display: inline-block;
+        margin: 10px 10px 0 0;
+    }
+
+    .remove {
+        margin: 10px 12px 0 0;
+    }
+
+
+
+
+
+    #checkbox-container {
+        margin-top: 10px;
+    }
+
+    #device-images {
+        display: none;
+    }
+
+    button {
+        padding: 5px 10px;
+        background-color: #34495E;
+        border: 1px solid #ccc;
+        color: #F9F9F9;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+
+    .file-style {
+
+        width: 400px;
+        display: block;
+        background-color: #f5f4f4;
+        margin: auto;
+        cursor: pointer;
+        text-align: center;
+        padding: 20px;
+        border-radius: 15px;
+        border: 2px dashed #cdc8c8;
+        margin-top: 50px;
+    }
+
+    .file-style:hover {
+        background-color: #EDEDED;
+    }
+
+    p:hover {
+
+        cursor: pointer;
+    }
+
+    input {
+        padding: 10px;
+        width: 100%;
+        font-size: 17px;
+        border: 1px solid #aaaaaa;
+    }
+
+    label {
+        margin-top: 15px;
+    }
+
+    /* Mark input boxes that gets an error on validation: */
+    input.invalid {
+        background-color: #ffdddd;
+    }
+
+    input[type=checkbox] {
+
+        margin: 20px 10px 10px 0;
+    }
+
+    /* Hide all steps by default: */
+    .tab {
+        display: none;
+    }
+
+    /* Make circles that indicate the steps of the form: */
+    .step {
+        height: 20px;
+        width: 20px;
+        margin: 0 2px;
+        background-color: #04AA6D;
+        border: none;
+        border-radius: 50%;
+        display: inline-block;
+        opacity: 0.2;
+    }
+
+    /* Mark the active step: */
+    .step.active {
+        opacity: 1;
+        background-color: #04AA6D;
+    }
+
+    /* Mark the steps that are finished and valid: */
+    .step.finish {
+        background-color: #04AA6D;
+    }
+</style>
+
+<body class="nav-md">
+    <div class="container body">
+        <div class="main_container">
+            <div class="col-md-3 left_col hidden-print">
+                <div class="left_col scroll-view">
+                    {% include 'navbar.html'%}
+                </div>
+            </div>
+
+            <!-- top navigation -->
+            <div class="top_nav hidden-print">
+                <div class="nav_menu">
+                    <nav>
+                        <div class="nav toggle">
+                            <a id="menu_toggle"><i class="fa fa-bars"></i></a>
+                        </div>
+
+                        <ul class="nav navbar-nav navbar-right">
+                            <li class="">
+                                <a href="javascript:;" class="user-profile dropdown-toggle" data-toggle="dropdown"
+                                    aria-expanded="false">
+                                    {{request.session.username}} <span class=" fa fa-angle-down"></span>
+                                </a>
+                                <ul class="dropdown-menu dropdown-usermenu pull-right">
+                            </li>
+                            <li><a href="/dashboard/"><i class="fa fa-user pull-right"></i>
+                                    پروفایل</a></li>
+                            <li><a href="/reset_password/{{request.session.user_id}}"><i
+                                        class="fa fa-lock pull-right"></i>
+                                    تغییر رمزعبور</a></li>
+                            <hr>
+                            <li><a id="logout" onclick="logout()"><i class="fa fa-sign-out pull-right"></i>
+                                    خروج</a></li>
+                        </ul>
+                        </li>
+
+
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+            <!-- /top navigation -->
+            <!-- /header content -->
+
+            <!-- page content -->
+            <div class="right_col" role="main">
+                <div class="">
+                    <div class="page-title">
+                        <div class="title_left">
+                            <h3>اطلاعات نصب موتورخانه</h3>
+
+                            <h3 id="device"> </h3>
+                        </div>
+
+                        <div class="title_right">
+                            <div class="col-md-5 col-sm-5 col-xs-12 form-group pull-right top_search">
+                                <!-- <div class="input-group">
+                                    <input type="text" class="form-control" placeholder="جست و جو برای...">
+                                    <span class="input-group-btn">
+                                        <button class="btn btn-default" type="button"><i
+                                                class="fa fa-search"></i></button>
+                                    </span>
+                                </div> -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="clearfix"></div>
+
+                    <div class="row">
+                        <div class="col-md-12 col-sm-12 col-xs-12">
+                            <div class="x_panel">
+                                <div class="x_title">
+
+                                    <ul class="nav navbar-right panel_toolbox">
+                                        <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
+                                        </li>
+
+                                        <li><a class="close-link"><i class="fa fa-close"></i></a>
+                                        </li>
+                                    </ul>
+                                    <div class="clearfix"></div>
+                                </div>
+                                <div class="x_content">
+                                    <div id="installationForm" class="rtl-txt">
+                                        {% csrf_token %}
+                                        <!-- Begin Location Public info -->
+                                        <div class="tab rtl-txt ">
+                                            <h3 class="text-center">اطلاعات عمومی محل نصب</h3>
+
+                                            <br>
+
+
+
+
+                                            <div>
+                                                <div class="col-md-6" style=" padding-right: 0">
+                                                    <label for="linker_person1">نام رابط اول</label>
+                                                    <input type="text" class="form-control" id="linker-person1"
+                                                        name="linker-person1">
+                                                </div>
+                                                <div class="col-md-6" style=" padding-right: 0">
+                                                    <label for="phone-number1">تلفن رابط اول</label>
+                                                    <input type="text" class="form-control" id="phone-number1"
+                                                        name="phone-number1">
+                                                </div>
+                                            </div>
+                                            <div>
+                                                <div class="col-md-6" style=" padding-right: 0">
+                                                    <label for="linker-person2">نام رابط دوم</label>
+                                                    <input type="text" class="form-control" id="linker-person2"
+                                                        name="linker-person2">
+                                                </div>
+                                                <div class="col-md-6" style=" padding-right: 0">
+                                                    <label for="phone-number2">تلفن رابط دوم</label>
+                                                    <input type="text" class="form-control" id="phone-number2"
+                                                        name="phone-number2">
+                                                </div>
+                                            </div>
+
+                                            <label for="building-metrage">متراژ بنا</label>
+                                            <input type="number" class="form-control" id="building-metrage"
+                                                name="building-metrage">
+                                            <label for="meter-subscribtion">شماره اشتراک کنتور</label>
+                                            <input type="text" class="form-control" id="meter-subscribtion"
+                                                name="meter-subscribtion">
+
+
+                                            <input type="hidden" class="form-control" id="user" name="user"
+                                                value="{{ request.session.user_id }}">
+
+
+
+                                            <div>
+                                                <div class="col-md-3"></div>
+                                                <div class="col-md-6 col-sm-12 col-xs-12">
+
+
+                                                    <label for="building-image" style="width: 100%;">عکس ساختمان <span
+                                                            class="badge badge-pill bg-danger">لطفا در حالت افقی عکس
+                                                            بگیرید</span>
+                                                        <img style="width: 100%;height: 250px;margin-top: 13px;"
+                                                            class="thumbnail " with="100%" heigh="30px"
+                                                            id="building-image-preview">
+
+                                                        <p class="text-center">بارگزاری عکس‌ <img width="50" height="50"
+                                                                src="{% static 'images/icons8-upload-to-cloud-50.png' %}"
+                                                                alt="upload-to-cloud--v1" /></p>
+                                                    </label>
+                                                    <input type="file" accept="image/jpeg,image/png;capture=camera"
+                                                        id="building-image" name="building-image" style="display:none;">
+                                                </div>
+                                                <div class="col-md-3"></div>
+
+
+                                            </div>
+
+                                        </div>
+
+
+                                        <!-- End Location Public info -->
+
+                                        <!-- Begin device Public info -->
+                                        <div class="tab">
+                                            <h3 class="text-center">اطلاعات عمومی موتورخانه</h3>
+                                            <label for="select-usage">نوع کاربری</label>
+                                            <select class="form-select" style="width: 100%;" id="select-usage"
+                                                aria-label="">
+                                                <option value="">انتخاب کنید</option>
+                                                <option value="heating">گرمایشی</option>
+                                                <option value="sanitary">آبگرم بهداشتی</option>
+                                                <option value="both">هردو (گرمایشی و آبگرم بهداشتی)</option>
+                                            </select>
+
+                                            <br>
+                                            <div class="checkbox-container">
+                                                <label for="has-exchanger">آیا مبدل آب استخر/ جکوزی / گرمایش از کف
+                                                    دارد؟</label>
+                                                <br>
+                                                <input type="checkbox" id="has-exchanger" class="" name="has-exchanger">
+                                            </div>
+                                            <div id="exchanger" class="rtl-txt" style="display: none;">
+                                                <label for="pool">تعداد مبدل آب استخر</label>
+                                                <input type="number" min="0" class="form-control" id="pool" name="pool">
+                                                <!-- <input type="text" inputmode="numeric" pattern="[0-9]+" class="form-control" id="pool" name="pool"> -->
+                                                <label for="jaccuzi">تعداد مبدل جکوزی</label>
+                                                <input type="number" min="0" class="form-control" id="jaccuzi"
+                                                    name="jaccuzi">
+                                                <label for="floor-heating">تعداد مبدل گرمایش از کف</label>
+                                                <input type="number" min="0" class="form-control" id="floor-heating"
+                                                    name="floor-heating">
+                                            </div>
+                                            <label for="boilers">تعداد دیگ‌ها</label>
+                                            <input type="number" min="0" class="form-control" id="boilers"
+                                                name="boilers">
+                                            <label for="circulate-pump">تعداد پمپ‌های سیرکوله</label>
+                                            <input type="number" min="0" class="form-control" id="circulate-pump"
+                                                name="circulate-pump">
+                                            <label for="coil-source">تعداد منبع کوئلی</label>
+                                            <input type="number" min="0" class="form-control" id="coil-source"
+                                                name="coil-source">
+                                            <label for="coil-source-pump">تعداد پمپ‌های منبع کوئلی</label>
+                                            <input type="number" min="0" class="form-control" id="coil-source-pump"
+                                                name="coil-source-pump">
+                                            <label for="hotwater-pump">تعداد پمپ‌های آبگرم مصرفی</label>
+                                            <input type="number" min="0" class="form-control" id="hotwater-pump"
+                                                name="hotwater-pump">
+
+                                        </div>
+                                        <!-- End device Public info -->
+
+                                        <!-- Begin Installation info -->
+                                        <div class="tab">
+                                            <h3 class="text-center">اطلاعات نصب</h3>
+                                            <label for="select-installed-model">مدل دستگاه نصب‌شده</label>
+                                            <select class="form-select" style="width: 100%;" id="select-installed-model"
+                                                aria-label="انتخاب کنید">
+                                                <option value="">انتخاب کنید</option>
+                                                <option value="8relays">۸ رله‌ای</option>
+                                                <option value="12relays">۱۲ رله‌ای</option>
+                                                <option value="16relays">۱۶ رله‌ای</option>
+                                            </select>
+                                            <label for="connection-type">نوع ارتباط</label>
+                                            <select class="form-select" style="width: 100%;" id="connection-type"
+                                                aria-label="انتخاب کنید">
+                                                <option value="">انتخاب کنید</option>
+                                                <option value="internet">اینترنت</option>
+                                                <option value="intranet">اینترانت</option>
+                                                <option value="ethernet">اترنت</option>
+                                            </select>
+                                            <label for="installation-date">تاریخ نصب</label>
+                                            <input data-jdp type="text" class="form-control" id="installation-date"
+                                                name="installation-date" />
+                                            <label for="modem-model">مدل مودم</label>
+                                            <input type="text" class="form-control" id="modem-model" name="modem-model">
+                                            <div class="checkbox-container">
+                                                <label for="has-simcard">آیا سیم‌کارت دارد؟</label><br>
+                                                <input type="checkbox" id="has-simcard" class="" name="has-simcard">
+                                            </div>
+                                            <div>
+                                                <div id="simcard" class="rtl-txt" style="display: none;">
+                                                    <div class="col-md-6 col-sm-12 col-xs-12">
+                                                        <label for="modem-simcard">شماره سیم‌کارت مودم</label>
+                                                        <input type="text" class="form-control" id="modem-simcard"
+                                                            name="modem-simcard">
+                                                        <label for="simcard-serial-image">عکس شماره سریال سیم‌کارت <span
+                                                                class="badge badge-pill badge-danger">لطفا در حالت افقی
+                                                                عکس بگیرید</span>
+                                                            <img style="width: 300px; height: 300px;" class="thumbnail"
+                                                                with="30px" heigh="30px"
+                                                                id="simcard-serial-image-preview">
+                                                            <p style="margin-right: 100px;">بارگزاری عکس‌ <img
+                                                                    width="50" height="50"
+                                                                    src="{% static 'images/icons8-upload-to-cloud-50.png' %}"
+                                                                    alt="upload-to-cloud--v1" /></p>
+                                                        </label>
+                                                        <input type="file" accept="image/jpeg,image/png"
+                                                            id="simcard-serial-image" name="simcard-serial-image"
+                                                            style="display:none;" />
+
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6 col-sm-12 col-xs-12">
+                                                    <label for="device-serial-image">عکس شماره سریال دستگاه <span
+                                                            class="badge badge-pill badge-danger">لطفا در حالت افقی عکس
+                                                            بگیرید</span>
+                                                        <img style="width: 300px; height: 300px; " class="thumbnail"
+                                                            with="30px" heigh="30px" id="device-serial-image-preview">
+                                                        <p style="margin-right: 100px;">بارگزاری عکس‌ <img width="50"
+                                                                height="50"
+                                                                src="{% static 'images/icons8-upload-to-cloud-50.png' %}"
+                                                                alt="upload-to-cloud--v1" /></p>
+                                                    </label>
+                                                    <input type="file" accept="image/jpeg,image/png"
+                                                        id="device-serial-image" name="device-serial-image"
+                                                        style="display:none;" />
+                                                </div>
+
+                                            </div>
+
+
+                                        </div>
+                                        <!-- End Installation info -->
+
+                                        <!--Begin Images of device-->
+                                        <div class="tab">
+                                            <h3 class="text-center">تصاویر موتورخانه <span
+                                                    class="badge badge-pill badge-danger">لطفا در حالت افقی عکس
+                                                    بگیرید</span> </h3>
+                                            <div class="container">
+                                                <div id="image-container" class="col-md-12 col-sm-12 col-xs-2"
+                                                    style="display: inline-block; align-items: center;">
+                                                </div>
+
+                                            </div>
+                                            <label for="device-images" class="file-style">
+                                                <img width="50" height="50"
+                                                    src="{% static 'images/icons8-upload-to-cloud-50.png' %}"
+                                                    alt="upload-to-cloud--v1" />
+                                                <p>بارگزاری عکس‌ها</p>
+                                            </label>
+                                            <input type="file" accept="image/jpeg,image/png" multiple
+                                                name="device-images" id="device-images" name="device-images[]">
+
+                                            <div id="new_images_container"></div>
+                                        </div>
+
+                                        <!--End Images of device-->
+                                    </div>
+                                    <div class="clearfix"></div>
+                                    <div>
+                                        <div id="btn-container" style="
+                                        margin-top: 40px">
+
+                                            <button type="button" id="prevBtn" onclick="nextPrev(-1)">قبلی</button>
+                                            <button type="button" id="nextBtn" onclick="nextPrev(1)">بعدی</button>
+                                            <button type="button" onclick="saveStep()" id="sub">ثبت تغییرات</button>
+
+                                        </div>
+
+                                        <div id="loading-spinner" style="display: none;">
+                                            <img src="{% static 'images/1496.gif' %}" alt="Wait" />
+                                        </div>
+                                    </div>
+
+                                    <!-- Circles which indicates the steps of the form: -->
+                                    <div style="text-align:center;margin-top:40px;">
+                                        <span class="step"></span>
+                                        <span class="step"></span>
+                                        <span class="step"></span>
+                                        <span class="step"></span>
+                                    </div>
+                                </div>
+                                <div class="clearfix"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- /page content -->
+
+        <!-- /page content -->
+
+        <!-- footer content -->
+        <footer class="hidden-print">
+            <div class="pull-left">
+
+            </div>
+            <div class="clearfix"></div>
+        </footer>
+        <!-- /footer content -->
+    </div>
+    </div>
+    <div id="lock_screen">
+        <table>
+            <tr>
+                <td>
+                    <div class="clock"></div>
+                    <span class="unlock">
+                        <span class="fa-stack fa-5x">
+                            <i class="fa fa-square-o fa-stack-2x fa-inverse"></i>
+                            <i id="icon_lock" class="fa fa-lock fa-stack-1x fa-inverse"></i>
+                        </span>
+                    </span>
+                </td>
+            </tr>
+        </table>
+    </div>
+    {% include 'scripts.html' %}
+    <script>
+
+        $('select').select2();
+        let id = '{{id}}' //device id
+        // let id = id;
+        let user = $('#user').val();
+        let currentTab;
+        let currentbuildingImageURL;
+        let currendeviceSerialImageURL;
+        let imagesData = [];
+        var marker;
+        //////////////////////// variables that used in Teska ////////////////////////////////////
+        let detials_phone_number1;
+        let detials_phone_number2;
+        let detials_linker_person1;
+        let detials_linker_person2;
+        let detials_installer_username;
+        let detials_installer_name;
+        /////////////////////////////////////////////////////////////////////////////////////////
+
+
+        function locationPublicInfo() {
+            $('#loading-spinner').hide();
+            //#region GET location, Device and installation info with Device images(later)
+            $.ajax({
+                type: "GET",
+                url: "/api/location-public-info/" + id + "/",
+                success: function (response) {
+                    $('#phone-number1').val(response.phone_number1 || '')
+                    $('#phone-number2').val(response.phone_number2 || '')
+                    $('#linker-person1').val(response.linker_person1 || '')
+                    $('#linker-person2').val(response.linker_person2 || '')
+                    $('#building-metrage').val(response.building_metrage || 0)
+                    $('#meter-subscribtion').val(response.meter_subscription_number || '')
+                    $('#building-image-preview').attr('src', response.building_image)
+                    currentbuildingImageURL = response.building_image;
+
+
+
+
+                },
+                error: function (error) {
+                    console.error('Error fetcing location-public-info details:', error.reponseJSON);
+
+                }
+            });
+        }
+
+        function engineroomPublicInfo() {
+            $('#loading-spinner').hide();
+            $.ajax({
+                type: "GET",
+                url: "/api/enginroom-public-info/" + id + "/",
+                success: function (response) {
+                    $('#select-usage').val(response.usage || '');
+                    $('#select-usage').trigger('change');
+                    $('#hotwater-pump').val(response.number_of_hot_water_pumps || '');
+                    $('#coil-source-pump').val(response.number_of_coil_sources_pumps || '');
+                    $('#coil-source').val(response.number_of_coil_sources || '');
+                    $('#circulate-pump').val(response.number_of_circulating_pumps || '');
+                    $('#boilers').val(response.number_of_boilers || '');
+                    $('#floor-heating').val(response.number_of_floor_heating_exchangers || '');
+                    $('#jaccuzi').val(response.number_of_jaccuzi_exchangers || '');
+                    $('#pool').val(response.number_of_pool_exchangers || '');
+                    $("#has-exchanger").prop("checked", response.has_exchanger);
+                    if (response.has_exchanger === true) {
+                        $('#exchanger').fadeIn();
+                    }
+
+
+                },
+                error: function (error) {
+                    console.error('Error fetcing enginroom-public-info details:', error.reponseJSON);
+
+                }
+            });
+        }
+
+        function installationInfo() {
+            $('#loading-spinner').hide();
+            $.ajax({
+                type: "GET",
+                url: "/api/installation-info/" + id + "/",
+                success: function (response) {
+                    $('#select-installed-model').val(response.installed_device_model || '');
+                    $('#select-installed-model').trigger('change');
+                    $('#connection-type').val(response.connection_type || '');
+                    $('#connection-type').trigger('change');
+                    $('#modem-model').val(response.modem_model || '');
+                    $("#has-simcard").prop("checked", response.has_simcard);
+                    if (response.has_simcard === true) {
+                        $('#simcard').fadeIn();
+                    }
+                    $('#modem-simcard').val(response.modem_simcard_number || '');
+                    $('#installation-date').val(response.installation_date || '');
+                    $('#device-serial-image-preview').attr('src', response.device_serial_number_image)
+                    $('#simcard-serial-image-preview').attr('src', response.modem_simcard_serial_number_image)
+                    currendeviceSerialImageURL = response.device_serial_number_image;
+                },
+                error: function (error) {
+                    console.error('Error fetcing enginroom-public-info details:', error.reponseJSON);
+
+                }
+            });
+
+        }
+
+        function engineroomImages() {
+            $('#loading-spinner').hide();
+            let div = $('#image-container')
+
+            $.ajax({
+                type: "GET",
+                url: `/api/enginroom-images/?device=${id}`,
+                success: function (response) {
+                    div.empty()
+                    for (var i = 0; i < response.length; i++) {
+                        div.append(`<div style="background=#fff;" class="col-xl-3 col-sm-3">
+                             <img id="image-${response[i].id}" class="img-fluid thumbnail" src="${response[i].image}" width="200px" height="200px">
+                            <a id="btn-${response[i].id}" onclick="deleteImage(${response[i].id})" class="btn btn-default " style="width: 195px;"><i class="fa fa-trash" style="color: #dd0808;"></i> حذف </a></div>
+                        `);
+
+
+                    }
+                }
+            });
+
+        }
+
+
+
+        $(document).ready(function () {
+
+            //getUserLocation()
+
+            // var filess = $('#device-images')[0].files;
+            let new_images_container = $('#new_images_container')
+
+            $("#device-images").on("change", function (e) {
+                var filess = e.target.files,
+                    filesLength = filess.length;
+
+                for (var i = 0; i < filesLength; i++) {
+                    var f = filess[i]
+                    var fileReader = new FileReader();
+
+                    fileReader.onload = (function (e) {
+                        var file = e.target;
+                        var imageThumb = `<img class="pip img-fluid thumbnail" src="${e.target.result}" title="${file.name}" width="200px" height="200px">`;
+                        var removeButton = `<br/><span class="remove btn btn-default" style="width: 195px;"><i class="fa fa-minus-circle" style="color: #dd0808;"></i>برداشتن</span>`;
+
+                        var container = $(`<span class="pip"> ${imageThumb} ${removeButton} </span>`);
+
+                        // Append the container to the new_images_container
+                        container.appendTo('#new_images_container');
+
+                        // Store the image data in the imagesData array
+                        imagesData.push(e.target.result);
+
+                        // Add a click event handler to the "Remove" button
+                        container.find(".remove").click(function () {
+                            var imageIndex = $(this).parent().index(); // Get the index of the container in the parent
+                            if (imageIndex !== -1) {
+                                imagesData.splice(imageIndex, 1); // Remove the image data from the array
+                            }
+                            $(this).parent(".pip").remove(); // Remove the container from the DOM
+                        });
+                    });
+
+                    fileReader.readAsDataURL(f);
+                }
+
+
+                console.log(imagesData); // Log the updated imagesData array
+            });
+
+
+
+
+
+
+
+
+            //#region Get device to find device name and step
+            $.ajax({
+                type: "GET",
+                url: "/apiv2/objects/device/" + id + "/",
+                success: function (response) {
+                    $('#device').text(response.name)
+                    currentTab = parseInt(response.step);
+                    showTab(currentTab);
+                    console.log(currentTab);
+                    detials_installer_username = response.creator;
+                    detials_installer_name = response.installer_name;
+                },
+                error: function (error) {
+                    console.error('Error fetcing device details:', error.reponseJSON);
+
+                }
+            });
+            //#endregion
+            locationPublicInfo();
+
+            engineroomPublicInfo();
+
+            installationInfo();
+
+            engineroomImages();
+            //////api/device-images/?device=53&user=1///////////////
+            //#endregion
+
+            //#region  Province and cities
+            // $.ajax({
+            //     type: "GET",
+            //     url: "../static/iran-cities/province.csv",
+            //     dataType: "text",
+            //     success: function (data) {
+            //         var provinceOptions = data.split("\n");
+            //         var provinceSelect = $("#select-province");
+
+            //         for (var i = 0; i < provinceOptions.length; i++) {
+            //             var parts = provinceOptions[i].split(",");
+            //             var option = $("<option></option>")
+            //                 .val(parts[0])
+            //                 .text(parts[1]);
+            //             provinceSelect.append(option);
+            //         }
+            //     }
+            // });
+
+            // $("#select-province").change(function (event, selectedCity) {
+            //     var selectedProvinceId = $(this).val();
+
+            //     // Load city data from city.csv and filter by the selected province
+            //     $.ajax({
+            //         type: "GET",
+            //         url: "../static/iran-cities/city.csv",
+            //         dataType: "text",
+            //         success: function (data) {
+            //             var cityOptions = data.split("\n");
+            //             var citySelect = $("#select-city");
+            //             citySelect.empty(); // Clear previous options
+
+            //             for (var i = 0; i < cityOptions.length; i++) {
+            //                 var parts = cityOptions[i].split(",");
+            //                 var cityProvinceId = parts[1];
+
+            //                 if (cityProvinceId === selectedProvinceId) {
+            //                     var option = $("<option></option>")
+            //                         .val(parts[0])
+            //                         .text(parts[3]);
+
+            //                     if (selectedCity === parts[0]) {
+            //                         option.prop('selected', true);
+            //                     }
+
+            //                     citySelect.append(option);
+            //                 }
+            //             }
+            //         }
+            //     });
+            // });
+
+            //#endregion
+
+            //#region display the selected  device serial image
+            $("#device-serial-image").change(function () {
+                readDeviceSerialURL(this);
+            });
+
+
+            function readDeviceSerialURL(input) {
+                if (input.files && input.files[0]) {
+                    var reader = new FileReader();
+
+                    reader.onload = function (e) {
+                        // Update the src attribute of the img tag
+                        $("#device-serial-image-preview").attr("src", e.target.result)
+                    };
+
+                    reader.readAsDataURL(input.files[0]); // Read the selected file
+                }
+            }
+            //#endregion
+
+
+            //#region display the selected  simcard serial image
+            $("#simcard-serial-image").change(function () {
+                readSimcardSerialURL(this);
+            });
+
+
+            function readSimcardSerialURL(input) {
+                if (input.files && input.files[0]) {
+                    var reader = new FileReader();
+
+                    reader.onload = function (e) {
+                        // Update the src attribute of the img tag
+                        $("#simcard-serial-image-preview").attr("src", e.target.result)
+                    };
+
+                    reader.readAsDataURL(input.files[0]); // Read the selected file
+                }
+            }
+            //#endregion
+
+
+            //#region display the selected image
+            $("#building-image").change(function () {
+                readURL(this);
+            });
+
+
+            function readURL(input) {
+                if (input.files && input.files[0]) {
+                    var reader = new FileReader();
+
+                    reader.onload = function (e) {
+                        // Update the src attribute of the img tag
+                        $("#building-image-preview").attr("src", e.target.result)
+                    };
+
+                    reader.readAsDataURL(input.files[0]); // Read the selected file
+                }
+            }
+            //#endregion
+
+            //#region has exchanger
+            function toggleExchanger() {
+                if ($('#has-exchanger').prop('checked')) {
+                    $('#exchanger').fadeIn();
+
+                } else {
+                    $('#exchanger').fadeOut();
+
+                }
+            }
+            //#endregion
+
+            //#region has model
+            function toggleModem() {
+                if ($('#has-simcard').prop('checked')) {
+                    $('#simcard').fadeIn();
+
+                } else {
+                    $('#simcard').fadeOut();
+
+                }
+            }
+            //#endregion
+
+
+
+            toggleModem();
+            $('#has-simcard').on('click', toggleModem);
+
+            toggleExchanger();
+            $('#has-exchanger').on('click', toggleExchanger);
+
+
+            jalaliDatepicker.startWatch({ time: true });
+
+
+
+
+        });
+        //#region after multiple image displayed if click on delete button
+        function deleteImage(id) {
+
+            $.ajax({
+                type: "DELETE",
+                url: `/api/enginroom-images/${id}/`,
+                headers: {
+                    'X-CSRFToken': $('input[name="csrfmiddlewaretoken"]').val()
+                },
+                success: function (response) {
+
+                    engineroomImages()
+                },
+                error: function (error) {
+                    console.error('Error deleting Engineroom:', error.responseJSON);
+                    // You can handle errors here, e.g., display an error message using SweetAlert
+                    Swal.fire('خطا', 'خطایی در حذف اتفاق افتاده است.', 'error');
+                }
+            });
+        }
+        let checkExchanger;
+        let checkSimcard;
+
+
+
+        //#region showTab
+        function showTab(n) {
+            var tabs = $(".tab");
+            tabs.eq(n).fadeIn("slow");
+            $("html, body").animate({ scrollTop: 0 }, "slow");
+
+            if (n == 0) {
+                $("#prevBtn").hide();
+            } else {
+                $("#prevBtn").show();
+            }
+            if (n == (tabs.length - 1)) {
+                $("#nextBtn").hide();
+            } else {
+                $("#nextBtn").html("بعدی");
+            }
+
+            fixStepIndicator(n);
+        }
+        //#endregion
+
+        //#region next previous
+        function nextPrev(n) {
+
+            var tabs = $(".tab");
+            tabs.eq(currentTab).hide();
+            currentTab = currentTab + n;
+
+            // console.log(currentTab);
+            if (currentTab === 3) {
+
+                $("#nextBtn").hide();
+
+            }
+            else if (currentTab > 3) {
+                $('#submit').hide();
+                $("#nextBtn").hide();
+                $("#prevBtn").show();
+            } else {
+
+                $("#nextBtn").show();
+
+            }
+
+            showTab(currentTab);
+
+
+        }
+
+        function saveStep() {
+            $('#loading-spinner').show();
+            $('#sub').hide();
+
+            let locationInfoData;
+            if (currentTab == 0) {
+
+                let phoneNumber1 = $('#phone-number1').val() || '';
+                let phoneNumber2 = $('#phone-number2').val() || '';
+                let linkerPerson1 = $('#linker-person1').val() || '';
+                let linkerPerson2 = $('#linker-person2').val() || '';
+
+                let buildingMetrage = $('#building-metrage').val() || 0;
+                let meterSubscribtion = $('#meter-subscribtion').val() || '';
+                let buildingImageInput = $("#building-image")[0].files[0];
+
+
+                //////////////////////////// Data For Show In TESKA ///////////////////
+                detials_phone_number1 = $('#phone-number1').val() || '';
+                detials_phone_number2 = $('#phone-number2').val() || '';
+                detials_linker_person1 = $('#linker-person1').val() || '';
+                detials_linker_person2 = $('#linker-person2').val() || '';
+
+                ///////////////////////////////////////////////////////////////////////
+
+
+                if (!buildingImageInput) {
+                    // If no new image uploaded, fetch the current image and convert to base64
+                    locationInfoData = {
+                        'user': user,
+                        'deivce': id,
+                        'phone_number1': phoneNumber1,
+                        'phone_number2': phoneNumber2,
+                        'linker_person1': linkerPerson1,
+                        'linker_person2': linkerPerson2,
+                        'building_metrage': buildingMetrage,
+                        'meter_subscription_number': meterSubscribtion,
+
+
+                    }
+
+                    $.ajax({
+                        type: "PATCH",
+                        url: "/api/location-public-info/" + id + "/",
+                        data: JSON.stringify(locationInfoData),
+                        contentType: "application/json",
+                        headers: {
+                            "X-CSRFToken": $("[name=csrfmiddlewaretoken]").val(),
+                        },
+                        success: function (response) {
+                            $('#loading-spinner').hide();
+                            $('#sub').show();
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'موفقیت',
+                                text: 'اطلاعات عمومی محل نصب با موفقیت ثبت شد.',
+
+
+                            }).then(function () {
+                                $('#loading-spinner').hide();
+                                $('#sub').show();
+
+                                updateStep(currentTab);
+                                var inputs = $(".tab:eq(" + currentTab + ")").find("input[type='text'], input[type='number']");
+                                inputs.val("");
+                                var selects = $(".tab:eq(" + currentTab + ")").find("select");
+                                selects.val("");
+                                locationPublicInfo();
+                                update_device_detials();
+                            });
+
+                        },
+                        error: function (error) {
+                            $('#loading-spinner').hide();
+                            $('#sub').show();
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'خطا',
+                                text: 'خطایی رخ داده است لطفا دوباره تلاش کنید'
+                            })
+                            console.error('ERROR IN UPDATE DATA TO LOCATION PUBLIC INFO', error.responseJSON);
+                        }
+                    });
+
+
+                } else {
+
+
+
+
+
+
+                    // If new image uploaded, convert it to base64
+                    let reader = new FileReader();
+                    reader.onloadend = function () {
+                        let buildingImage = reader.result;
+                        locationInfoData = {
+                            'user': user,
+                            'device': id,
+
+                            'phone_number1': phoneNumber1,
+                            'phone_number2': phoneNumber2,
+                            'linker_person1': linkerPerson1,
+                            'linker_person2': linkerPerson2,
+                            'building_metrage': buildingMetrage,
+                            'meter_subscription_number': meterSubscribtion,
+                            'building_image': buildingImage,
+
+
+                        }
+
+                        console.log('Data to be sent:', locationInfoData);
+
+
+                        $.ajax({
+                            type: "PUT",
+                            url: "/api/location-public-info/" + id + "/",
+                            data: JSON.stringify(locationInfoData),
+                            contentType: "application/json",
+                            headers: {
+                                "X-CSRFToken": $("[name=csrfmiddlewaretoken]").val(),
+                            },
+                            success: function (response) {
+                                $('#loading-spinner').hide();
+                                $('#sub').show();
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'موفقیت',
+                                    text: 'اطلاعات عمومی محل نصب با موفقیت ثبت شد.'
+
+                                }).then(function () {
+                                    $('#loading-spinner').hide();
+                                    $('#sub').show();
+                                    var inputs = $(".tab:eq(" + currentTab + ")").find("input[type='text'], input[type='number'], input[type='checkbox']");
+                                    inputs.val("");
+                                    var selects = $(".tab:eq(" + currentTab + ")").find("select");
+                                    selects.val("");
+                                    locationPublicInfo();
+                                    updateStep(currentTab);
+                                });
+
+                            },
+                            error: function (error) {
+                                $('#loading-spinner').hide();
+                                $('#sub').show();
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'خطا',
+                                    text: 'خطایی رخ داده است لطفا دوباره تلاش کنید'
+                                })
+                                console.error('ERROR IN Update DATA TO LOCATION PUBLIC INFO', error.responseJSON);
+                            }
+                        });
+
+                    };
+                    reader.readAsDataURL(buildingImageInput);
+                }
+
+
+            }
+            else if (currentTab == 1) {
+                checkExchanger = $("#has-exchanger").prop("checked");
+                $("#has-exchanger").on("change", function () {
+                    checkExchanger = $(this).prop("checked");
+                });
+
+                let usage = $('#select-usage').val();
+                // let hasExchanger = checkExchanger;
+                let numberOfPoolExchangers = checkExchanger ? $('#pool').val() : 0;
+                let numberOfJaccuziExchangers = checkExchanger ? $('#jaccuzi').val() : 0;
+                let numberOfFloorHeatingExchangers = checkExchanger ? $('#floor-heating').val() : 0;
+                let numberOfBoilers = $('#boilers').val();
+                let numberOfCirculatingPumps = $('#circulate-pump').val();
+                let numberOfCoilSources = $('#coil-source').val();
+                let numberOfCoilSourcesPumps = $('#coil-source-pump').val();
+                let numberOfHotWaterPumps = $('#hotwater-pump').val();
+
+                let deviceInfoData = {
+                    'usage': usage,
+                    'has_exchanger': checkExchanger,
+                    'number_of_pool_exchangers': numberOfPoolExchangers || 0,
+                    'number_of_jaccuzi_exchangers': numberOfJaccuziExchangers || 0,
+                    'number_of_floor_heating_exchangers': numberOfFloorHeatingExchangers || 0,
+                    'number_of_boilers': numberOfBoilers || 0,
+                    'number_of_circulating_pumps': numberOfCirculatingPumps || 0,
+                    'number_of_coil_sources': numberOfCoilSources || 0,
+                    'number_of_coil_sources_pumps': numberOfCoilSourcesPumps || 0,
+                    'number_of_hot_water_pumps': numberOfHotWaterPumps || 0,
+                    'user': user,
+                    'device': id,
+
+
+                }
+                console.log(deviceInfoData);
+                $.ajax({
+                    type: "PUT",
+                    url: "/api/enginroom-public-info/" + id + "/",
+                    data: JSON.stringify(deviceInfoData),
+                    contentType: "application/json",
+                    headers: {
+                        "X-CSRFToken": $("[name=csrfmiddlewaretoken]").val(),
+                    },
+
+                    success: function (response) {
+                        $('#loading-spinner').hide();
+                        $('#sub').show();
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'موفقیت',
+                            text: 'اطلاعات عمومی موتورخانه با موفقیت ثبت شد.'
+
+                        }).then(function () {
+                            $('#loading-spinner').hide();
+                            $('#sub').show();
+                            var inputs = $(".tab:eq(" + currentTab + ")").find("input[type='text'], input[type='number'], [type='checkbox']");
+                            inputs.val("");
+                            var selects = $(".tab:eq(" + currentTab + ")").find("select");
+                            selects.val("");
+                            engineroomPublicInfo();
+                            updateStep(currentTab);
+                        });
+
+                    },
+                    error: function (error) {
+                        $('#loading-spinner').hide();
+                        $('#sub').show();
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'خطا',
+                            text: 'خطایی رخ داده است لطفا دوباره تلاش کنید'
+                        })
+                        console.error('ERROR IN Update DATA TO ENGINROOM PUBLIC INFO', error.responseJSON);
+                    }
+                });
+
+            }
+            else if (currentTab == 2) {
+
+                let formattedInstallationDate;
+
+                let selectInstalledModel = $('#select-installed-model').val();
+                let selectConnectionType = $('#connection-type').val();
+                let modemModel = $('#modem-model').val() || '';
+                checkSimcard = $("#has-simcard").prop("checked");
+                $("#has-simcard").on("change", function () {
+                    checkSimcard = $(this).prop("checked");
+                });
+                let modelSimcard = $("#modem-simcard").val() || '';
+                let installationDate = $("#installation-date").val() || '';
+
+                let deviceSerialImageInput = $("#device-serial-image")[0].files[0];
+                let simcardSerialImageInput = $("#simcard-serial-image")[0].files[0];
+                let deviceSerialImageReader;
+                let installationinfoData;
+                let deviceSerialImage;
+                let simcardSerialImage;
+                let readerDevice = new FileReader();
+                let readerSimcard = new FileReader();
+
+
+                if (simcardSerialImageInput && deviceSerialImageInput) {
+
+                    readerDevice.onloadend = function () {
+                        let deviceSerialImage = readerDevice.result;
+
+                        readerSimcard.onloadend = function () {
+                            let simcardSerialImage = readerSimcard.result;
+
+                            // Create the installationinfoData object with both images
+                            installationinfoData = {
+                                'user': user,
+                                'devuce': id,
+                                'installed_device_model': selectInstalledModel,
+                                'connection_type': selectConnectionType,
+                                'modem_model': modemModel,
+                                'has_simcard': checkSimcard,
+                                'modem_simcard_number': modelSimcard,
+                                'installation_date': installationDate,
+                                'device_serial_number_image': deviceSerialImage,
+                                'modem_simcard_serial_number_image': simcardSerialImage,
+                            };
+
+                            // Now you can send the JSON object or perform any other desired action
+                            $.ajax({
+                                type: "PUT",
+                                url: "/api/installation-info/" + id + "/",
+                                data: JSON.stringify(installationinfoData),
+                                contentType: "application/json",
+                                headers: {
+                                    "X-CSRFToken": $("[name=csrfmiddlewaretoken]").val(),
+                                },
+                                success: function (response) {
+                                    $('#loading-spinner').hide();
+                                    $('#sub').show();
+                                    Swal.fire({
+                                        icon: 'success',
+                                        title: 'موفقیت',
+                                        text: 'اطلاعات عمومی محل نصب با موفقیت ثبت شد.'
+
+                                    }).then(function () {
+                                        $('#loading-spinner').hide();
+                                        $('#sub').show();
+                                        var inputs = $(".tab:eq(" + currentTab + ")").find("input[type='text'], input[type='number']");
+                                        inputs.val("");
+                                        var selects = $(".tab:eq(" + currentTab + ")").find("select");
+                                        selects.val("");
+                                        installationInfo()
+                                        updateStep(currentTab);
+                                    });
+
+                                },
+                                error: function (error) {
+                                    Swal.fire({
+                                        icon: 'error',
+                                        title: 'خطا',
+                                        text: 'خطایی رخ داده است لطفا دوباره تلاش کنید'
+                                    })
+                                    console.error('ERROR IN Update DATA TO INSTALLATION INFO', error.responseJSON);
+                                }
+                            });
+                            console.table('Data to be sent:', installationinfoData);
+                        };
+
+                        readerSimcard.readAsDataURL(simcardSerialImageInput);
+                    };
+
+                    readerDevice.readAsDataURL(deviceSerialImageInput);
+
+
+                }
+                else if (!simcardSerialImageInput && !deviceSerialImageInput) {
+                    installationinfoData = {
+                        'user': user,
+                        'device': id,
+                        'installed_device_model': selectInstalledModel,
+                        'connection_type': selectConnectionType,
+                        'modem_model': modemModel,
+                        'has_simcard': checkSimcard,
+                        'modem_simcard_number': modelSimcard,
+                        'installation_date': installationDate,
+                    };
+                    $.ajax({
+                        type: "PATCH",
+                        url: "/api/installation-info/" + id + "/",
+                        data: JSON.stringify(installationinfoData),
+                        contentType: "application/json",
+                        headers: {
+                            "X-CSRFToken": $("[name=csrfmiddlewaretoken]").val(),
+                        },
+                        success: function (response) {
+                            $('#loading-spinner').hide();
+                            $('#sub').show();
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'موفقیت',
+                                text: 'اطلاعات عمومی محل نصب با موفقیت ثبت شد.'
+
+                            }).then(function () {
+                                $('#loading-spinner').hide();
+                                $('#sub').show();
+                                var inputs = $(".tab:eq(" + currentTab + ")").find("input[type='text'], input[type='number']");
+                                inputs.val("");
+                                var selects = $(".tab:eq(" + currentTab + ")").find("select");
+                                selects.val("");
+                                installationInfo()
+                                updateStep(currentTab);
+                            });
+
+                        },
+                        error: function (error) {
+                            $('#loading-spinner').hide();
+                            $('#sub').show();
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'خطا',
+                                text: 'خطایی رخ داده است لطفا دوباره تلاش کنید'
+                            })
+                            console.error('ERROR IN Update DATA TO INSTALLATION INFO', error.responseJSON);
+                        }
+                    });
+                }
+                else {
+                    if (simcardSerialImageInput) {
+                        readerSimcard.onloadend = function () {
+                            let simcardSerialImage = readerSimcard.result;
+
+                            // Create the installationinfoData object with both images
+                            installationinfoData = {
+                                'user': user,
+                                'device': id,
+                                'installed_device_model': selectInstalledModel,
+                                'connection_type': selectConnectionType,
+                                'modem_model': modemModel,
+                                'has_simcard': checkSimcard,
+                                'modem_simcard_number': modelSimcard,
+                                'installation_date': installationDate,
+                                'modem_simcard_serial_number_image': simcardSerialImage,
+                            };
+
+                            // Now you can send the JSON object or perform any other desired action
+                            $.ajax({
+                                type: "PATCH",
+                                url: "/api/installation-info/" + id + "/",
+                                data: JSON.stringify(installationinfoData),
+                                contentType: "application/json",
+                                headers: {
+                                    "X-CSRFToken": $("[name=csrfmiddlewaretoken]").val(),
+                                },
+
+                                success: function (response) {
+                                    $('#loading-spinner').hide();
+                                    $('#sub').show();
+                                    Swal.fire({
+                                        icon: 'success',
+                                        title: 'موفقیت',
+                                        text: 'اطلاعات عمومی محل نصب با موفقیت ثبت شد.'
+
+                                    }).then(function () {
+                                        $('#loading-spinner').hide();
+                                        $('#sub').show();
+                                        var inputs = $(".tab:eq(" + currentTab + ")").find("input[type='text'], input[type='number']");
+                                        inputs.val("");
+                                        var selects = $(".tab:eq(" + currentTab + ")").find("select");
+                                        selects.val("");
+                                        installationInfo()
+                                        updateStep(currentTab);
+                                    });
+
+                                },
+                                error: function (error) {
+                                    $('#loading-spinner').hide();
+                                    $('#sub').show();
+                                    Swal.fire({
+                                        icon: 'error',
+                                        title: 'خطا',
+                                        text: 'خطایی رخ داده است لطفا دوباره تلاش کنید'
+                                    })
+                                    console.error('ERROR IN Update DATA TO INSTALLATION INFO', error.responseJSON);
+                                }
+                            });
+                            console.table('Data to be sent:', installationinfoData);
+                        };
+
+                        readerSimcard.readAsDataURL(simcardSerialImageInput);
+                    }
+
+                    if (deviceSerialImageInput) {
+                        readerDevice.onloadend = function () {
+                            let deviceSerialImage = readerDevice.result;
+
+                            // Create the installationinfoData object with both images
+                            installationinfoData = {
+                                'user': user,
+                                'device': id,
+                                'installed_device_model': selectInstalledModel,
+                                'connection_type': selectConnectionType,
+                                'modem_model': modemModel,
+                                'has_simcard': checkSimcard,
+                                'modem_simcard_number': modelSimcard,
+                                'installation_date': installationDate,
+                                'device_serial_number_image': deviceSerialImage,
+                                'modem_simcard_serial_number_image': simcardSerialImage,
+                            };
+
+                            // Now you can send the JSON object or perform any other desired action
+                            $.ajax({
+                                type: "PUT",
+                                url: "/api/installation-info/" + id + "/",
+                                data: JSON.stringify(installationinfoData),
+                                contentType: "application/json",
+                                headers: {
+                                    "X-CSRFToken": $("[name=csrfmiddlewaretoken]").val(),
+                                },
+
+                                success: function (response) {
+                                    $('#loading-spinner').hide();
+                                    $('#sub').show();
+                                    Swal.fire({
+                                        icon: 'success',
+                                        title: 'موفقیت',
+                                        text: 'اطلاعات عمومی محل نصب با موفقیت ثبت شد.'
+
+                                    }).then(function () {
+                                        $('#loading-spinner').hide();
+                                        $('#sub').show();
+                                        var inputs = $(".tab:eq(" + currentTab + ")").find("input[type='text'], input[type='number']");
+                                        inputs.val("");
+                                        var selects = $(".tab:eq(" + currentTab + ")").find("select");
+                                        selects.val("");
+                                        installationInfo()
+                                        updateStep(currentTab);
+                                    });
+
+                                },
+                                error: function (error) {
+                                    $('#loading-spinner').hide();
+                                    $('#sub').show();
+                                    Swal.fire({
+                                        icon: 'error',
+                                        title: 'خطا',
+                                        text: 'خطایی رخ داده است لطفا دوباره تلاش کنید'
+                                    })
+                                    console.error('ERROR IN Update DATA TO INSTALLATION INFO', error.responseJSON);
+                                }
+                            });
+                            console.table('Data to be sent:', installationinfoData);
+                        };
+
+                        readerDevice.readAsDataURL(deviceSerialImageInput);
+                    }
+                }
+            }
+            else if (currentTab == 3) {
+
+
+
+                var files = $('#device-images')[0].files;
+
+                if (!files) {
+                    Swal.fire({
+                        title: "هشدار",
+                        text: "تصویری بارگزاری نشده است",
+                        icon: "warning"
+                    });
+                }
+                else {
+                    let c = $('#new_images_container')
+
+
+                    let deviceImagesData = new FormData();
+
+                    // for (var i = 0; i < files.length; i++) {
+
+                    //     let images_reader = new FileReader();
+                    //     images_reader.onload = function (event) {
+                    //         var image_data = event.target.result
+                    //         imagesData.push(image_data);
+
+
+                    //         if (imagesData.length === files.length) {
+
+                    deviceImagesData.append('device', id);
+                    deviceImagesData.append('user', user);
+                    deviceImagesData.append('images_data', imagesData);
+
+                    uploadImages(deviceImagesData);
+
+                    //         }
+
+                    //     };
+                    //     images_reader.readAsDataURL(files[i]);
+                    // }
+
+                    console.log('images length', imagesData.length)
+                    console.log(' imagesData', imagesData);
+                }
+
+
+
+
+            }
+            else {
+                window.location.href = '/device-list/';
+            }
+        }
+
+
+        function uploadImages(deviceImagesData) {
+
+
+            $.ajax({
+                url: '/api/enginroom-images/',
+                method: 'POST',
+                data: deviceImagesData,
+                processData: false,
+                contentType: false, // Use false for file uploads
+                headers: {
+                    "X-CSRFToken": $("[name=csrfmiddlewaretoken]").val(),
+                },
+                success: function (response) {
+                    $('#loading-spinner').hide();
+                    $('#sub').show();
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'موفقیت',
+                        text: 'تصاویر موتورخانه با موفقیت ثبت شد.'
+
+                    }).then(function () {
+                        console.log('Images uploaded successfully', response);
+                        $('#loading-spinner').hide();
+                        $('#sub').show();
+                        $('#new_images_container').empty()
+                        engineroomImages()
+                        updateStep(currentTab);
+                        imagesData = []
+
+
+
+
+                    });
+
+                },
+                error: function (xhr, status, error) {
+                    if (xhr.status === 400) {
+                        $('#loading-spinner').hide();
+                        $('#sub').show();
+                        Swal.fire({
+                            title: "خطا",
+                            text: "خطایی رخ داده است",
+                            icon: "warning"
+                        });
+                    } else {
+
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'خطا',
+                            text: 'خطایی رخ داده است لطفا دوباره تلاش کنید'
+                        })
+                        console.error('Error uploading images', error.responseJSON);
+                    }
+
+                }
+            });
+
+
+        }
+        //#region Function to fetch the current image and convert it to base64
+        function getBase64FromImageUrl(url, callback) {
+            let img = new Image();
+            img.setAttribute("crossOrigin", "anonymous");
+
+            img.onload = function () {
+                let canvas = document.createElement("canvas");
+                canvas.width = this.width;
+                canvas.height = this.height;
+
+                let ctx = canvas.getContext("2d");
+                ctx.drawImage(this, 0, 0);
+
+                let dataURL = canvas.toDataURL("image/jpeg");
+                callback(dataURL.replace(/^data:image\/(png|jpg);base64,/, ""));
+                console.log(dataURL);
+            };
+
+            img.src = url;
+        }
+        //#endregion
+
+        function updateStep(tab) {
+            const requestData = { 'id': id, 'step': tab };
+            $.ajax({
+                type: "POST",
+                url: "/apiv2/update_engineroom_step/",
+                data: JSON.stringify(requestData),
+                contentType: "application/json",
+                headers: {
+                    "X-CSRFToken": $("[name=csrfmiddlewaretoken]").val(),
+                },
+                success: function (response) {
+                    console.log('SUCCESS');
+                },
+                error: function (error) {
+                    console.error('Error fetcing device details:', error.reponseJSON);
+                }
+            });
+        }
+        //#endregion
+        function update_device_detials() {
+
+            $.ajax({
+                type: "POST",
+                url: "/apiv2/update_engineroom_details/",
+                data: JSON.stringify({
+                    'id': id,
+                    'details': {
+                        'phone_number1': detials_phone_number1,
+                        'phone_number2': detials_phone_number2,
+                        'linker_person1': detials_linker_person1,
+                        'linker_person2': detials_linker_person2,
+                        'installer_username': detials_installer_username,
+                        'installer_name' : detials_installer_name
+                    }
+
+                }),
+                contentType: "application/json",
+                headers: {
+                    "X-CSRFToken": $("[name=csrfmiddlewaretoken]").val(),
+                },
+                success: function (response) {
+                    console.log('update device detials SUCCESS');
+                },
+                error: function (error) {
+                    console.error('Error fetcing device details:', error.reponseJSON);
+                }
+            });
+        }
+
+
+        //#region  add or remove active tab
+        function fixStepIndicator(n) {
+
+            var tabs = $(".step");
+            tabs.removeClass("active");
+
+            tabs.eq(n).addClass("active");
+        }
+        //#endregion
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+{% load static %}
+{% block headcontent %}
+{% include 'head.html' with title="Installers App| Login User" %}
+{% endblock %}
+<style>
+  .fa-user.form-control-feedback.left,
+  .fa-lock.form-control-feedback.left {
+    position: absolute;
+    top: 0;
+    /* Adjust as needed */
+    left: 10px;
+    /* Adjust as needed */
+  }
+
+  #captcha-container {
+  user-select: none;
+  -moz-user-select: none;
+  -webkit-user-select: none;
+  -ms-user-select: none;
+}
+</style>
+
+<body class="login">
+
+
+  <div>
+    <a class="hiddenanchor" id="signup"></a>
+    <a class="hiddenanchor" id="signin"></a>
+    <a class="hiddenanchor" id="reset"></a>
+
+    <div class="login_wrapper">
+      <di class="animate form login_form">
+        <section class="login_content">
+          <form id="login-form">
+            {% csrf_token %}
+            <h1>ورود کاربر</h1>
+            <div class="col-md-12 col-sm-12 col-xs-12 form-group has-feedback">
+              <input type="text" id="username" class="form-control" name="username" placeholder="نام کاربری"
+                required="">
+              <span class="fa fa-user form-control-feedback left" aria-hidden="true"></span>
+
+            </div>
+            <div class="col-md-12 col-sm-12 col-xs-12 form-group has-feedback">
+              <span class="fa fa-lock form-control-feedback left" aria-hidden="true"></span>
+              <input type="password" id="password" class="form-control" placeholder="رمز ورود" name="password"
+                required="" />
+
+            </div>
+            <div class="col-md-12 col-sm-12 col-xs-12 form-group has-feedback">
+              <div id="captcha-container">
+                <p class="text-center" id="code"></p>
+              </div>
+              <div>
+                <input type="text" id="captcha-input" class="form-control" name="captcha-input"
+                  placeholder="کد را وارد کنید" required="">
+
+                <div class="input-group-append">
+                  <div class="input-group-text">
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-12 col-sm-12 col-xs-12 form-group has-feedback">
+              <button type="submit" class="btn btn-primary btn-block">ورود</button>
+            </div>
+            <!-- <a class="reset_pass" href="#reset">رمز ورود را از دست دادید؟</a> -->
+
+
+            <div class="clearfix"></div>
+
+
+          </form>
+        </section>
+    </div>
+
+  </div>
+  </div>
+
+
+
+
+  {% include 'scripts.html' %}
+
+
+  <script>
+
+    let code = "";
+    let charsArray = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+    let length = 4;
+    let captcha = [];
+
+    function generateCaptcha() {
+
+
+      for (var i = 0; i < length; i++) {
+        var index = Math.floor(Math.random() * charsArray.length);
+        captcha.push(charsArray[index]);
+      }
+
+
+      return captcha.join("");
+
+
+    }
+    $(document).ready(function () {
+      code = generateCaptcha()
+
+      $('#code').text(code);
+      // console.log(code);
+
+      $('#captcha-container').on('click', function () {
+        captcha = [];
+        code = generateCaptcha();
+        $('#code').text("");
+        // console.log(code);
+        $('#code').text(code);
+      })
+
+      $('#login-form').validate({
+        rules: {
+          username: {
+            required: true,
+          },
+          password: {
+            required: true,
+          },
+          'captcha-input': {
+            required: true,
+          },
+        },
+        messages: {
+          username: {
+            required: 'نام کاربری را وارد کنید',
+          },
+          password: {
+            required: 'رمز عبور را وارد کنید',
+          },
+          'captcha-input': {
+            required: 'کد تصویر را وارد کنید',
+          },
+        },
+        submitHandler: function (form) {
+          // console.log('input', $('#captcha-input').val());
+          // console.log('code', code);
+
+          if ($('#captcha-input').val().toLowerCase() === code.toLowerCase()) {
+            let formData = $(form).serialize();
+            $.ajax({
+              url: '/api/login-user/',
+              type: 'POST',
+              data: formData,
+              success: function (response) {
+                console.log(response.user_id);
+                Swal.fire({
+                  icon: 'success',
+                  title: 'خوش آمدید',
+                  text: 'ورود کاربر با موفقیت انجام شد.',
+                  timer: 1500,
+                  showConfirmButton: false,
+                }).then(function () {
+                  window.location.href = "/dashboard/";
+                });
+              },
+              error: function (error) {
+                console.error(error.responseJSON);
+                Swal.fire({
+                  icon: 'error',
+                  title: 'خطا',
+                  text: 'نام کاربری یا رمز عبور اشتباه است.',
+                  confirmButtonText: 'تایید',
+                });
+              },
+            });
+          } else {
+            Swal.fire({
+                  icon: 'error',
+                  title: 'خطا',
+                  text: 'کد تصویر اشتباه وارد شده است',
+                  confirmButtonText: 'تایید',
+                });
+            captcha = [];
+            code = generateCaptcha();
+            $('#code').text("");
+            //console.log(code);
+            $('#code').text(code);
+          }
+        },
+      });
+    });
+  </script>
+
+</body>
+
+</html>

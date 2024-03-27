@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+{% load static %}
+{% block headcontent %}
+{% include 'head.html' with title="Installers App| Enginroom List" %}
+{% endblock %}
+<!-- /header content -->
+<style>
+    .pagination {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .pagination button {
+        border: none;
+    }
+
+    .page-numbers {
+        display: flex;
+        gap: 10px;
+    }
+
+    .prev-page,
+    .next-page {
+        padding: 5px 10px;
+        background-color: #34495E;
+        /* border: 1px solid #ccc; */
+        color: #F9F9F9;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+
+
+    .pagination .active {
+        background-color: #34495e;
+        color: #fff;
+        border-radius: 5px;
+    }
+</style>
+
+<body class="nav-md">
+
+    <div class="container body">
+        <div class="main_container">
+            <div class="col-md-3 left_col hidden-print">
+                <div class="left_col scroll-view">
+                    {% include 'navbar.html'%}
+                </div>
+            </div>
+
+            <!-- top navigation -->
+            <div class="top_nav hidden-print">
+                <div class="nav_menu">
+                    <nav>
+                        <div class="nav toggle">
+                            <a id="menu_toggle"><i class="fa fa-bars"></i></a>
+                        </div>
+
+                        <ul class="nav navbar-nav navbar-right">
+                            <li class="">
+                                <a href="javascript:;" class="user-profile dropdown-toggle" data-toggle="dropdown"
+                                    aria-expanded="false">
+                                    {{request.session.username}} <span class=" fa fa-angle-down"></span>
+                                </a>
+                                <ul class="dropdown-menu dropdown-usermenu pull-right">
+                            </li>
+                            <li><a href="/dashboard/"><i class="fa fa-user pull-right"></i>
+                                    پروفایل</a></li>
+                            <li><a href="/reset_password/{{request.session.user_id}}"><i
+                                        class="fa fa-lock pull-right"></i>
+                                    تغییر رمزعبور</a></li>
+                            <hr>
+                            <li><a id="logout" onclick="logout()"><i class="fa fa-sign-out pull-right"></i>
+                                    خروج</a></li>
+                        </ul>
+                        </li>
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+            <!-- /top navigation -->
+            <!-- /header content -->
+
+            <!-- page content -->
+            <div class="right_col" role="main">
+                <div class="">
+                    <div class="page-title">
+                        <div class="title_left">
+                            <h3></h3>
+                        </div>
+
+                        <div class="title_right">
+                            <div class="col-md-5 col-sm-5 col-xs-12 form-group pull-right top_search">
+                                <!-- <div class="input-group">
+                                    {% csrf_token %}
+                                    <input type="text" class="form-control" placeholder="جست و جو برای..." id="search">
+                                    <span class="input-group-btn">
+                                        <button class="btn btn-default" type="button"><i
+                                                class="fa fa-search"></i></button>
+                                    </span>
+                                </div> -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="clearfix"></div>
+
+                    <div class="col-md-12 col-sm-12 col-xs-12">
+                        <div class="x_panel">
+                            <div class="x_title">
+                                <div class="row x_title">
+                                    <div class="col-md-6 col-sm-12 col-xs-12">
+                                        <h3>لیست موتورخانه ها</h3>
+                                    </div>
+
+                                    <div class="col-md-6 col-sm-12 col-xs-12">
+                                        <h3>تعداد کل موتورخانه ها: <strong id="total_engineroom"></strong></h3>
+
+                                    </div>
+
+                                </div>
+
+                                <div class="col-md-3 col-lg-2 col-sm-12 col-xs-12">
+                                    <label for="installer">نصاب:</label>
+                                    <select id="installer" class="form-select" style="width: 100%;">
+                                        <!-- Add your options here -->
+                                    </select>
+                                </div>
+                                <div class="col-md-3 col-lg-2 col-sm-12 col-xs-12">
+                                    <label for="organization">سازمان:</label>
+                                    <select id="organization" class="form-select" style="width: 100%;">
+                                        <!-- Add your options here -->
+                                    </select>
+                                </div>
+                                <div class="col-md-3 col-lg-2 col-sm-12 col-xs-12">
+                                    <label for="administration">وزارت‌خانه:</label>
+                                    <select id="administration" class="form-select" style="width: 100%;">
+                                        <!-- Add your options here -->
+                                    </select>
+                                </div>
+
+                                <div class="col-md-3 col-lg-2 col-sm-12 col-xs-12">
+                                    <label for="province">استان:</label>
+                                    <select id="province" class="form-select" style="width: 100%;">
+                                        <!-- Add your options here -->
+                                    </select>
+                                </div>
+                                <div class="col-md-3 col-lg-2 col-sm-12 col-xs-12">
+                                    <label for="city">شهر:</label>
+                                    <select id="city" class="form-select" style="width: 100%;">
+                                        <!-- Add your options here -->
+                                    </select>
+                                </div>
+                                <div class="clearfix"></div>
+                            </div>
+
+                            <div class="x_content">
+
+                                <!-- <p>با افزودن کلاس <code dir="ltr">bulk_action</code> برای جدول، جدول دارای اعمال همگانی
+                                    می‌شود.</p> -->
+                                <div class="input-group">
+
+                                </div>
+                                <div class="table-responsive">
+                                    <div id="maps" class="jumbotron" style="height: 700px;"> </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            <!-- /page content -->
+
+            <!-- /page content -->
+
+            <!-- footer content -->
+            <footer class="hidden-print">
+                <div class="pull-left">
+
+                </div>
+                <div class="clearfix"></div>
+            </footer>
+            <!-- /footer content -->
+        </div>
+    </div>
+    <div id="lock_screen">
+        <table>
+            <tr>
+                <td>
+                    <div class="clock"></div>
+                    <span class="unlock">
+                        <span class="fa-stack fa-5x">
+                            <i class="fa fa-square-o fa-stack-2x fa-inverse"></i>
+                            <i id="icon_lock" class="fa fa-lock fa-stack-1x fa-inverse"></i>
+                        </span>
+                    </span>
+                </td>
+            </tr>
+        </table>
+    </div>
+    {% include 'scripts.html' %}
+    <script>
+
+
+
+        let admin = "{{request.session.is_admin}}" === "True";
+        let staff = "{{request.session.is_staff}}" === "True";
+        let access = admin || staff
+        let status;
+        var map = L.map('maps').setView([35.6892, 51.3890], 7);
+        let markers = L.layerGroup();
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap contributors <br> Romak system'
+        }).addTo(map);
+
+
+
+        var locationIcon = L.icon({
+            iconUrl: "{% static 'images/icons8-location.png' %}",
+            iconSize: [32, 32],
+            iconAnchor: [16, 32],
+        });
+        function getUserLocation() {
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(function (position) {
+            var userLat = position.coords.latitude;
+            var userLng = position.coords.longitude;
+
+            // Create a marker at the user's location
+            var userMarker = L.marker([userLat, userLng]).addTo(map);
+
+            // Set the view to the user's location
+            map.setView([userLat, userLng], 10);
+        });
+    } else {
+        alert("Geolocation is not supported by your browser.");
+    }
+}
+
+function engineroomCount() {
+            $.ajax({
+                type: 'GET',
+                url: '/apiv2/get_object_count/',
+                success: function (response) {
+                    $('#total_engineroom').text(response.device)
+                },
+                error: function (error) {
+                    console.error('Error Engineroom Count:', error.responseJSON);
+                }
+            });
+        }
+
+
+            function populateFilterOptions() {
+            $.ajax({
+                type: 'GET',
+                url: '/apiv2/get_option_for_insert/',
+                success: function (response) {
+                    populateSelectOptions('#installer', response);
+                    populateSelectOptions('#organization', response);
+                    populateSelectOptions('#administration', response);
+                    populateSelectOptions('#province', response);
+                    populateSelectOptions('#city', response);
+                },
+                error: function (error) {
+                    console.error('Error loading filter options:', error.responseJSON);
+                }
+            });
+        }
+        function populateSelectOptions(selector, response) {
+            var engineroom_feature_select = $("#engineroom_feature");
+            var province_select = $("#province");
+            var city_select = $("#city");
+            var organization_select = $("#organization");
+            var administration_select = $("#administration");
+            var installer_select = $("#installer");
+            let engineroom_features = response.features;
+            let organizations = response.organizations;
+            let administrations = response.administration;
+            let locations = response.locations;
+            let installers = response.installers;
+            if (selector === "#engineroom_feature") {
+                engineroom_feature_select.empty()
+                // engineroom_feature_select.select2();
+                engineroom_feature_select.append('<option value="">لطفا انتخاب کنید</option>');
+                engineroom_feature_select.append(engineroom_features.map(function (feature) {
+                    return $('<option>', {
+                        value: feature.main_3d_view,
+                        text: feature.main_3d_view
+                    });
+                }));
+            }
+            if (selector === "#organization") {
+                organization_select.empty()
+                organization_select.append('<option value="">لطفا انتخاب کنید</option>');
+                organization_select.append(organizations.map(function (organization) {
+                    return $('<option>', {
+                        value: organization.organization,
+                        text: organization.organization
+                    });
+                }));
+            }
+
+            if (selector === "#administration") {
+                var distinctAdministrations = $.unique(administrations.map(function (administration) {
+                    return administration.administration;
+                }));
+                administration_select.empty()
+                administration_select.append('<option value="">لطفا انتخاب کنید</option>');
+                administration_select.append(distinctAdministrations.map(function (administration) {
+                    return $('<option>', {
+                        value: administration,
+                        text: administration
+                    });
+                }));
+            }
+            /////////////
+            if (selector == "#province") {
+                var distinctocation = $.unique(locations.map(function (location) {
+                    return location.location[0];
+                }));
+                province_select.empty()
+                province_select.append('<option value="">لطفا انتخاب کنید</option>');
+                province_select.append(distinctocation.map(function (location) {
+
+                    return $('<option>', {
+                        value: location,
+                        text: location
+                    });
+                }));
+            }
+            if (selector == "#city") {
+                city_select.empty()
+                city_select.append('<option value="">لطفا انتخاب کنید</option>');
+                city_select.append(locations.map(function (location) {
+
+                    return $('<option>', {
+                        value: location.location[1],
+                        text: location.location[1]
+                    });
+                }));
+            }
+            if (selector === "#installer") {
+                installer_select.empty()
+                installer_select.append('<option value="">لطفا انتخاب کنید</option>');
+                installer_select.append(installers.map(function (installer) {
+                    return $('<option>', {
+                        value: installer.id,
+                        text: installer.installer
+                    });
+                }));
+            }
+        }
+        function populateSelectProvinceOptionsWithCsv(selector, options) {
+            const selectElement = $(selector);
+            selectElement.empty();
+
+            // Add an "All" option if needed
+            selectElement.append($('<option>', {
+                value: '',
+                text: 'انتخاب کنید'
+            }));
+
+
+
+            $.each(options, function (index, option) {
+                $.ajax({
+                    type: "GET",
+                    url: "../static/iran-cities/province.csv",
+                    dataType: "text",
+                    success: function (data) {
+                        var provinceOptions = data.split("\n");
+                        var provinceSelect = $("#select-province");
+
+                        for (var i = 0; i < provinceOptions.length; i++) {
+                            var parts = provinceOptions[i].split(",");//.val(parts[0]) .text(parts[1]);
+                            if (parts[0] === option) {
+                                selectElement.append($('<option>', {
+                                    value: option,
+                                    text: parts[1]
+                                }));
+                            }
+
+                        }
+                    }
+                });
+
+
+            });
+        }
+        function populateSelectCityOptionsWithCsv(selector, options) {
+            const selectElement = $(selector);
+            selectElement.empty();
+
+            // Add an "All" option if needed
+            selectElement.append($('<option>', {
+                value: '',
+                text: 'انتخاب کنید'
+            }));
+
+
+
+            $.each(options, function (index, option) {
+                $.ajax({
+                    type: "GET",
+                    url: "../static/iran-cities/city.csv",
+                    dataType: "text",
+                    success: function (data) {
+                        var provinceOptions = data.split("\n");
+                        var provinceSelect = $("#select-province");
+
+                        for (var i = 0; i < provinceOptions.length; i++) {
+                            var parts = provinceOptions[i].split(",");//.val(parts[0]) .text(parts[1]);
+                            if (parts[0] === option) {
+                                selectElement.append($('<option>', {
+                                    value: option,
+                                    text: parts[3]
+                                }));
+                            }
+
+                        }
+                    }
+                });
+
+
+            });
+        }
+
+
+
+        $(document).ready(function () {
+
+            engineroomCount()
+
+            function applyFilters() {
+                markers.clearLayers()
+                const installer = $('#installer').val();
+                const organization = $('#organization').val();
+                const administration = $('#administration').val();
+                const province = $('#province').val();
+                const city = $('#city').val();
+
+                // Make an AJAX request to retrieve the filtered results
+                $.ajax({
+                    type: 'GET',
+                    url: '/apiv2/get_locations/',
+                    data: {
+                        installer: installer,
+                        organization: organization,
+                        administration: administration,
+                        province: province,
+                        city: city
+
+                    },
+                    success: function (response) {
+                        // Handle the filtered results
+                        console.log(response);
+                        listOfEnginroom(response);
+
+
+
+
+                    },
+                    error: function (error) {
+                        console.error('Error loading filtered results:', error.responseJSON);
+                    }
+                });
+            }
+
+
+            function loadEnginerooms() {
+                markers.clearLayers()
+                // Make an AJAX request to retrieve the engine rooms based on the selected filters
+                const installer = $('#installer').val();
+                const organization = $('#organization').val();
+                const administration = $('#administration').val();
+                const province = $('#province').val();
+                const city = $('#city').val();
+
+                let url = '/apiv2/get_locations/';
+
+                // Append the selected filters to the URL if any filter is selected
+                if (installer || organization || administration || province || city) {
+                    url += '&installer=' + installer;
+                    url += '&organization=' + organization;
+                    url += '&administration=' + administration;
+                    url += '&province=' + province;
+                    url += '&city=' + city;
+                }
+
+                $.ajax({
+                    type: 'GET',
+                    url: url,
+                    success: function (response) {
+                        listOfEnginroom(response);
+                    },
+                    error: function (error) {
+                        console.error('Error loading enginerooms:', error.responseJSON);
+                    }
+                });
+            }
+
+            function loadFilteredEnginerooms() {
+                markers.clearLayers()
+                // Make an AJAX request to retrieve the filtered engine rooms
+                const installer = $('#installer').val();
+                const organization = $('#organization').val();
+                const administration = $('#administration').val();
+                const province = $('#province').val();
+                const city = $('#city').val();
+
+                $.ajax({
+                    type: 'GET',
+                    url: '/apiv2/get_locations/',
+                    data: {
+                        installer: installer,
+                        organization: organization,
+                        administration: administration,
+                        province: province,
+                        city: city
+                    },
+                    success: function (response) {
+                        listOfEnginroom(response);
+
+
+                    },
+                    error: function (error) {
+                        console.error('Error loading filtered results:', error.responseJSON);
+                    }
+                });
+            }
+
+
+            populateFilterOptions();
+            loadEnginerooms();
+            $('#installer').on('change', function () {
+                if ($('#installer').val() || $('#organization').val() || $('#administration').val() || $('#province').val() || $('#city').val()) {
+                    loadFilteredEnginerooms();
+                } else {
+                    loadEnginerooms();
+                }
+            });
+
+            $('#organization').on('change', function () {
+                if ($('#installer').val() || $('#organization').val() || $('#administration').val() || $('#province').val() || $('#city').val()) {
+                    loadFilteredEnginerooms();
+                } else {
+                    loadEnginerooms();
+                }
+            });
+
+            $('#administration').on('change', function () {
+                if ($('#installer').val() || $('#organization').val() || $('#administration').val() || $('#province').val() || $('#city').val()) {
+                    loadFilteredEnginerooms();
+                } else {
+                    loadEnginerooms();
+                }
+            });
+
+            $('#province').on('change', function () {
+                if ($('#installer').val() || $('#organization').val() || $('#administration').val() || $('#province').val() || $('#city').val()) {
+                    loadFilteredEnginerooms();
+                } else {
+                    loadEnginerooms();
+                }
+            });
+
+            $('#city').on('change', function () {
+                if ($('#installer').val() || $('#organization').val() || $('#administration').val() || $('#province').val() || $('#city').val()) {
+                    loadFilteredEnginerooms();
+                } else {
+                    loadEnginerooms();
+                }
+            });
+
+
+            function listOfEnginroom(resp) {
+
+                map.eachLayer(function (layer) {
+                    if (layer instanceof L.Marker) {
+                        map.removeLayer(layer);
+                    }
+                });
+                resp.forEach(function (engineroom) {
+                    if (engineroom.lat_long) {
+                        latlng = engineroom.lat_long.split(',')
+                        var marker = L.marker(latlng, {
+                            icon: locationIcon,
+                        }
+                        ).addTo(map);
+                        console.log(engineroom.name);
+                        marker.bindPopup(`<a class='rtl-txt' href="/enginroom-detail/${engineroom.id}"><h5>${engineroom.name}</h5></a>`);
+
+                    }
+                })
+
+                map.on('popupopen', function (e) {
+                    var marker = e.popup._source;
+
+                });
+            }
+
+        });
+        $('select').select2();
+
+
+
+
+
+
+
+
+    </script>
+
+</body>
+
+</html>

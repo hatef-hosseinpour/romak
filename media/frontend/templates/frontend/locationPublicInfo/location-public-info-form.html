@@ -1,0 +1,105 @@
+{% extends 'main.html'%}
+{% load static %}
+{% block headcontent %}
+{% include 'head.html' with title="Installers App| Create location public information" %} {% endblock %}
+{% block content %}
+
+<div class="loginbox rtl-txt col-lg-8 col-xs-12 col-centered" style="margin-top: 25%;">
+    <h1> اطلاعات عمومی محل نصب</h1>
+    <form action="" method="POST" id="public-info-form" enctype="multipart/form-data">
+        {% csrf_token %}
+
+        <p>نام سازمان</p>
+        <select class="form-select" id="select-enginroom" aria-label="Default select example">
+            <option>---</option>
+        </select>
+        <br>
+        <p>آدرس</p>
+        <textarea class="form-control" id="address" name="address" rows="5"></textarea>
+        <p style="margin-top: 5%;">تلفن رابط۱</p>
+        <input type="text" class="form-control" id="phone-number1" name="phone-number1">
+        <p>تلفن رابط۲</p>
+        <input type="text" class="form-control" id="phone-number2" name="phone-number2">
+
+        <p>متراژ بنا</p>
+        <input type="number" class="form-control" id="building-metrage" name="building-metrage">
+        <p>شماره اشتراک کنتور</p>
+        <input type="text" class="form-control" id="meter-subscribtion" name="meter-subscribtion">
+        <p>عکس ساختمان</p>
+        <input type="file" accept="image/jpeg,image/png" id="building-image" name="building-image" />
+
+        <input type="hidden" class="form-control" id="user" name="user" value="{{request.session.user_id}}">
+        <input type="hidden" class="form-control" id="location-input" name="location-input">
+        <p>موقعیت محل نصب</p>
+        <div id="map"
+            style="width: 100%; height: 300px; padding: 10px; margin-top: 10px; border-radius: 10px; margin-bottom:10px;">
+        </div>
+        <input type="submit" value="ثبت" name="" id="create-location-public-info">
+    </form>
+</div>
+<script>
+    $(document).ready(function () {
+
+        var map = L.map('map').setView([35.6892, 51.3890], 13);
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: 'Map data © <a href="https://openstreetmap.org">OpenStreetMap</a> contributors'
+        }).addTo(map);
+
+        // when want to edit location public info
+        var locationField = $('#location-input');
+        if (locationField && locationField.value) {
+            var loc = locationField.value.split(',');
+            var lat = parseFloat(loc[0]);
+            var lng = parseFloat(loc[1]);
+            map.setView([lat, lng], 13);
+            marker = L.marker([lat, lng]).addTo(map);
+            locationField.value = lat + ',' + lng;
+        }
+        var marker;
+        map.on('click', function (e) {
+
+            document.getElementById('location-input').value = e.latlng.lat + ',' + e.latlng.lng;
+
+
+            fetch('', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'X-CSRFToken': '{{ csrf_token }}'
+                },
+                body: new URLSearchParams({
+                    location: e.latlng.lat + ',' + e.latlng.lng
+                })
+            })
+            if (marker) {
+                map.removeLayer(marker);
+            }
+            marker = L.marker(e.latlng).addTo(map);
+        });
+        map.doubleClickZoom.disable();
+
+        function listOfEnginroom(resp) {
+            let selectElement = $('#select-enginroom');
+            resp.forEach(function (obj) {
+                let option = $('<option>');
+                option.val(obj.id).text(obj.enginroom)
+
+                selectElement.append(option)
+            })
+        }
+        $.ajax({
+            type: "GET",
+            url: "/api/enginroom/",
+            success: function (response) {
+                listOfEnginroom(response)
+            },
+            error: function (error) {
+                console.error('Error fetcing Enginroom details:', error.reponseJSON);
+
+            }
+        });
+    });
+</script>
+{% endblock content %}

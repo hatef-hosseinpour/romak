@@ -1,0 +1,115 @@
+{% extends 'main.html'%}
+{% load static %}
+{% block headcontent %}
+{% include 'head.html' with title="Installers App| Enginroom public info list" %}
+{% endblock %}
+{% block content %}
+
+<br>
+<a class="btn btn-primary rtl-txt" href="/create-enginroom-info/" style="margin: 10px; font-family: vazir;">افزودن
+    اطلاعات عمومی موتورخانه</a>
+<br><br>
+<table class="table table-hover rtl-txt " id="enginroom-info-list">
+    {% csrf_token %}
+    <thead>
+        <tr>
+            <th scope="col">نام سازمان</th>
+            <th scope="col">کاربری</th>
+            <th scope="col">مبدل</th>
+            <th scope="col">نصاب</th>
+            <th scope="col">وضعیت</th>
+            <th scope="col"></th>
+        </tr>
+    </thead>
+    <tbody>
+
+    </tbody>
+</table>
+
+<script>
+    $(document).ready(function () {
+        function listOfEnginroom(resp) {
+            const tableBody = $('#enginroom-info-list tbody');
+            tableBody.empty()
+            resp.forEach(function (obj) {
+                const statusClass = obj.status ? 'btn-success readonly' : 'btn-warning';
+                const statusText = obj.status ? 'تایید' : 'در انتظار تایید';
+                const row = `
+            <tr id="enginroom${obj.id}">
+                <td>${obj.organization_name}</td>
+                <td>${obj.usage}</td>
+                <td>${obj.has_exchanger ? 'دارد' : 'ندارد'}</td>
+                <td>${obj.installer_username}</td>
+                <td><a data-id="${obj.id}" data-status="${obj.status}" class="btn ${statusClass} " id="status-btn" ${obj.status ? 'disabled' : ''}>${statusText}</a></td>
+                <td >
+                        <a class="btn btn-sm btn-danger" id="delete-btn" data-id="${obj.id}"><img width="20" height="20" src="{% static 'icons/icons8-trash-24.png' %}" alt="trash"/></a>
+
+                        <a class="btn btn-sm btn-warning" href="/update-enginroom-info/${obj.id}"><img width="20" height="20" src="{% static 'icons/icons8-pencil-50.png' %}" alt="pencil"/></a>
+
+                        <a class="btn btn-sm btn-success" href="/enginroom-info-detail/${obj.id}"><img width="20" height="20" src="{% static 'icons/icons8-eye-50.png' %}" alt="eye"/></a>
+                    </td>
+                </tr>
+            `;
+                tableBody.append(row);
+            });
+        }
+
+        $.ajax({
+            type: "GET",
+            url: "/api/enginroom-public-info/",
+            success: function (response) {
+                listOfEnginroom(response)
+            },
+            error: function (error) {
+                console.error('Error fetcing Enginroom details:', error.reponseJSON);
+
+            }
+        });
+
+
+        $(document).on('click', '#delete-btn', function (e) {
+            e.preventDefault();
+            const id = $(this).data('id');
+
+            console.log(id);
+            $.ajax({
+                method: 'DELETE',
+                url: `/api/enginroom-public-info/${id}/`,
+                headers: {
+                    'X-CSRFToken': $('[name=csrfmiddlewaretoken]').val()
+                },
+                success: function (response) {
+                    $(`#enginroom${id}`).remove();
+                    console.log(response);
+                },
+                error: function (error) {
+                    console.error('Error deleting organization:', error);
+                }
+            })
+        })
+        $(document).on('click', '#status-btn', function (e) {
+            e.preventDefault()
+            const id = $(this).data('id');
+            const statusButton = $(this);
+            console.log(id);
+            $.ajax({
+                method: 'PATCH',
+                url: `/api/enginroom-public-info/${id}/`,
+                data: {
+                    'status': true
+                },
+                headers: {
+                    'X-CSRFToken': $('[name=csrfmiddlewaretoken]').val()
+                },
+                success: function (response) {
+                    statusButton.removeClass('btn-warning').addClass('btn-success').text('تایید').addClass('readonly').attr('disabled', 'disabled');
+                    console.log(response);
+                },
+                error: function (error) {
+                    console.error('Error Accept organization:', error.reponseJSON);
+                }
+            })
+        });
+    });
+</script>
+{% endblock content %}

@@ -1,0 +1,994 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+{% load static %}
+{% block headcontent %}
+{% include 'head.html' with title="Installers App| Engineroom" %}
+{% endblock %}
+<!-- /header content -->
+<style>
+    p {
+        font-size: 15px;
+    }
+
+    .slide img {
+        width: 60%;
+        height: 60%;
+        margin-right: 25%;
+    }
+
+    .height {
+        height: 10px;
+    }
+
+    /* Image-container design */
+    .image-container {
+        max-width: 800px;
+        position: relative;
+        margin: auto;
+    }
+
+    .next {
+        right: 0;
+    }
+
+    .previous {
+        left: 0;
+    }
+
+    /* Next and previous icon design */
+    .previous,
+    .next {
+        cursor: pointer;
+        position: absolute;
+        top: 50%;
+        padding: 10px;
+        margin-top: -25px;
+
+    }
+
+    /* caption decorate */
+    .captionText {
+        color: #000000;
+        font-size: 14px;
+        position: absolute;
+        padding: 12px 12px;
+        bottom: 8px;
+        width: 100%;
+        text-align: center;
+    }
+
+    /* Slider image number */
+    .slideNumber {
+        background-color: #5574C5;
+        color: white;
+        border-radius: 25px;
+        right: 0;
+        opacity: .5;
+        margin: 5px;
+        width: 30px;
+        height: 30px;
+        text-align: center;
+        font-weight: bold;
+        font-size: 24px;
+        position: absolute;
+    }
+
+    /* .fa {
+        font-size: 32px;
+    } */
+
+    .fa:hover {
+        /* transform: rotate(360deg); */
+        transition: 1s;
+        /* color: white; */
+    }
+
+    .footerdot {
+        cursor: pointer;
+        height: 15px;
+        width: 15px;
+        margin: 0 2px;
+        background-color: #bbbbbb;
+        border-radius: 50%;
+        display: inline-block;
+        transition: background-color 0.5s ease;
+    }
+
+
+    .footerdot:hover {
+        background-color: black;
+    }
+</style>
+
+<body class="nav-md">
+    <div class="container body">
+        <div class="main_container">
+            <div class="col-md-3 left_col hidden-print">
+                <div class="left_col scroll-view">
+                    {% include 'navbar.html'%}
+                </div>
+            </div>
+
+            <!-- top navigation -->
+            <div class="top_nav hidden-print">
+                <div class="nav_menu">
+                    <nav>
+                        <div class="nav toggle">
+                            <a id="menu_toggle"><i class="fa fa-bars"></i></a>
+                        </div>
+
+                        <ul class="nav navbar-nav navbar-right">
+                            <li class="">
+                                <a href="javascript:;" class="user-profile dropdown-toggle" data-toggle="dropdown"
+                                    aria-expanded="false">
+                                    {{request.session.username}} <span class=" fa fa-angle-down"></span>
+                                </a>
+                                <ul class="dropdown-menu dropdown-usermenu pull-right">
+                            </li>
+                            <li><a href="/dashboard/"><i class="fa fa-user pull-right"></i>
+                                    پروفایل</a></li>
+                            <li><a href="/reset_password/{{request.session.user_id}}"><i
+                                        class="fa fa-lock pull-right"></i>
+                                    تغییر رمزعبور</a></li>
+                            <hr>
+                            <li><a id="logout" onclick="logout()"><i class="fa fa-sign-out pull-right"></i>
+                                    خروج</a></li>
+                        </ul>
+                        </li>
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+            <!-- /top navigation -->
+            <!-- /header content -->
+
+            <!-- page content -->
+            <div class="right_col" role="main">
+                <div class="">
+                    <div class="page-title">
+                        <div class="title_left">
+                            <h3 id="device"></h3>
+                        </div>
+
+                        <div class="title_right">
+                            <div class="col-md-5 col-sm-5 col-xs-12 form-group pull-right top_search">
+                                <div class="input-group">
+
+                                    <span class="input-group-btn">
+
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="clearfix"></div>
+
+                    <div class="row" class="col-md-12 col-sm-12 col-xs-12">
+                        <div>
+                            <div class="x_panel">
+                                <div class="x_title">
+                                    <h2>اطلاعات موتورخانه</h2>
+                                    <ul class="nav navbar-right panel_toolbox">
+                                        <li><a class="collapse-link"><i class="fa fa-chevron-down"></i></a>
+                                        </li>
+
+
+                                    </ul>
+                                    <div class="clearfix"></div>
+                                </div>
+                                <div class="x_content" style="display: none;">
+                                    <div class="col-md-6 col-sm-12 col-xs-12">
+
+                                        <h4>نام سازمان / خصوصی</h4>
+                                        <p id="organization"> </p>
+                                        <h4>نام نهاد / خصوصی</h4>
+                                        <p id="administration"> </p>
+
+                                    </div>
+                                    <div class="col-md-6 col-sm-12 col-xs-12">
+                                        <h4>نام نصاب</h4>
+                                        <p id="installer"> </p>
+
+                                        <h4>وضعیت</h4>
+                                        <p id="status"> </p>
+                                    </div>
+                                    <div>
+                                        <h4 id="note" style="display: none;">پیام مدیر</h4>
+                                        <p id="reject"> </p>
+                                    </div>
+                                    <div class="col-md-2 col-sm-1 col-xs-1"></div>
+                                    <div class="col-md-8 col-sm-11 col-xs-11" id="feature"></div>
+                                    <div class="col-md-2 col-sm-1 col-xs-1"></div>
+                                </div>
+                                
+                            </div>
+                            <div class="x_panel">
+                                <div class="x_title">
+                                    <h2>اطلاعات محل نصب</h2>
+                                    <ul class="nav navbar-right panel_toolbox">
+                                        <li><a class="collapse-link"><i class="fa fa-chevron-down"></i></a>
+                                        </li>
+
+
+                                    </ul>
+                                    <div class="clearfix"></div>
+                                </div>
+                                <div class="x_content" style="display: none;">
+                                    <div class="container mt-4">
+                                        <div class="row">
+                                            <div class="col-md-6 col-sm-12 col-xs-12" id="building">
+
+                                                <!-- Righ Part with Image -->
+                                                <div class="container">
+                                                    <div class="col-md-6 col-sm-12 col-xs-12" style=" padding-right: 0">
+
+                                                        <h4>رابط اول</h4>
+                                                        <p id="linker-person1"> </p>
+                                                        <h4>رابط دوم</h4>
+                                                        <p id="linker-person2"> </p>
+                                                        <h4>متراژ ساختمان</h4>
+                                                        <p id="building-metrage">10 مترمربع</p>
+
+                                                    </div>
+                                                    <div class="col-md-6 col-sm-12 col-xs-12" style=" padding-right: 0">
+                                                        <h4>تلفن رابط اول</h4>
+                                                        <p id="phone-number1"> </p>
+                                                        <h4>تلفن رابط دوم</h4>
+                                                        <p id="phone-number2"> </p>
+
+                                                    </div>
+                                                </div>
+
+
+                                                <h4>عکس ساختمان</h4>
+
+
+
+                                            </div>
+                                            <div class="col-md-6 col-sm-12 col-xs-12">
+                                                <!-- Left Part with Text -->
+                                                <h4>آدرس</h4>
+                                                <p id="address"> </p>
+                                                <div class="container">
+                                                    <div class="col-md-6 col-sm-12 col-xs-12" style=" padding-right: 0">
+
+                                                        <h4>استان</h4>
+                                                        <p id="province"> </p>
+                                                    </div>
+                                                    <div class="col-md-6 col-sm-12 col-xs-12" style=" padding-right: 0">
+                                                        <h4>شهر</h4>
+                                                        <p id="city"> </p>
+                                                    </div>
+                                                </div>
+                                                <h4>موقعیت محل نصب </h4>
+                                                <div class="col-md-11 jumbotron" style="height: 400px;top: 25px;"
+                                                    id="map">
+
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="x_panel">
+                                <div class="x_title">
+                                    <h2>اطلاعات موتورخانه</h2>
+                                    <ul class="nav navbar-right panel_toolbox">
+                                        <li><a class="collapse-link"><i class="fa fa-chevron-down"></i></a>
+                                        </li>
+
+
+                                    </ul>
+                                    <div class="clearfix"></div>
+                                </div>
+                                <div class="x_content" style="display: none;">
+                                    <div class="col-md-6 col-sm-12 col-xs-12">
+                                        <h4>کاربری موتورخانه</h4>
+                                        <p id="usage"> </p>
+
+                                        <h4>آیا مبدل استخر / جکوزی / گرمایش از کف دارد؟</h4>
+                                        <p id="has-exchanger"> </p>
+
+                                        <div id="exchanger" style="display: none;">
+                                            <h4>تعداد مبدل های استخر</h4>
+                                            <p id="pool"> </p>
+
+                                            <h4>تعداد مبدل های جکوزی</h4>
+                                            <p id="jaccuzi"> </p>
+
+                                            <h4>تعداد مبدل های گرمایش از کف</h4>
+                                            <p id="floor-heating"> </p>
+                                        </div>
+
+                                    </div>
+                                    <div class="col-md-6 col-sm-12 col-xs-12">
+                                        <h4>تعداد دیگ ها</h4>
+                                        <p id="boilers"> </p>
+
+                                        <h4>تعداد پمپ های سیرکوله</h4>
+                                        <p id="circulating-pump"> </p>
+
+                                        <h4>تعداد منبع کوئلی</h4>
+                                        <p id="coil-sources"> </p>
+
+                                        <h4>تعداد پمپ های منبع کوئلی</h4>
+                                        <p id="coil-sources-pumps"> </p>
+
+                                        <h4>تعداد پمپ های آبگرم مصرفی</h4>
+                                        <p id="hot-water-pumps"> </p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="x_panel">
+                                <div class="x_title">
+                                    <h2>اطلاعات نصب</h2>
+                                    <ul class="nav navbar-right panel_toolbox">
+                                        <li><a class="collapse-link"><i class="fa fa-chevron-down"></i></a>
+                                        </li>
+
+
+                                    </ul>
+                                    <div class="clearfix"></div>
+                                </div>
+                                <div class="x_content" style="display: none;">
+                                    <div class="container mt-4">
+                                        <div class="row">
+                                            <div class="col-md-6 col-sm-12 col-xs-12">
+
+                                                <!--Right Part with Image -->
+                                                <div class="container">
+                                                    <div class="col-md-6 col-sm-12 col-xs-12" style=" padding-right: 0">
+
+                                                        <h4>مدل دستگاه نصب شده</h4>
+                                                        <p id="installed-device-model"> </p>
+
+                                                        <h4>نوع ارتباط</h4>
+                                                        <p id="connection-type"> </p>
+
+                                                        <h4>تاریخ نصب</h4>
+                                                        <p id="installation-date"> </p>
+                                                        <h4 id="modem-simcard-img" style="display: none;">تصویر شماره
+                                                            سریال سیم‌کارت مودم</h4>
+                                                    </div>
+                                                    <div class="col-md-6 col-sm-12 col-xs-12" style=" padding-right: 0">
+                                                        <h4>مدل مودم</h4>
+                                                        <p id="modem-model"> </p>
+
+                                                        <h4>آیا مودم سیم‌کارت دارد؟</h4>
+                                                        <p id="has-simcard"> </p>
+
+                                                        <div id="simcard" style="display: none;">
+                                                            <h4>شماره سیم‌کارت مودم</h4>
+                                                            <p id="modem-simcard-number"> </p>
+
+                                                        </div>
+
+                                                    </div>
+                                                    <div id="modem_simcard_serial_number_image" style="display: none;">
+
+                                                    </div>
+
+                                                </div>
+
+
+
+                                            </div>
+                                            <div class="col-md-6 col-sm-12 col-xs-12" id="serial-number"
+                                                style="margin-top: 178px;">
+                                                <!-- left Part with Text -->
+                                                <h4>عکس شماره سریال دستگاه</h4>
+
+
+
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="x_panel">
+                                <div class="x_title">
+                                    <h2>تصاویر موتورخانه</h2>
+                                    <ul class="nav navbar-right panel_toolbox">
+                                        <li><a class="collapse-link"><i class="fa fa-chevron-down"></i></a>
+                                        </li>
+
+
+                                    </ul>
+                                    <div class="clearfix"></div>
+                                </div>
+                                <div class="x_content container" style="display: none;" id="device-images"
+                                    class="col-sm-12 col-xs-12">
+
+
+                                    <!-- Next and Previous icon to change images -->
+                                    <a class="previous" onclick="moveSlides(-1)">
+                                        <i class="fa fa-chevron-circle-left fa-lg"></i>
+                                    </a>
+                                    <a class="next" onclick="moveSlides(1)">
+                                        <i class="fa fa-chevron-circle-right fa-lg"></i>
+                                    </a>
+                                </div>
+                                <br>
+
+                                <!-- <div style="text-align:center" id="activeSlide">
+
+                                </div> -->
+                            </div>
+
+
+                            <div class="x_panel">
+                                <div class="x_title">
+                                    <h2>رخداد‌ها</h2>
+                                    <ul class="nav navbar-right panel_toolbox">
+                                        <li><a class="collapse-link"><i class="fa fa-chevron-down"></i></a>
+                                        </li>
+
+
+                                    </ul>
+                                    <div class="clearfix"></div>
+                                </div>
+                                <div class="x_content" style="display: none;">
+                                    <div class="table-responsive" style="overflow-x: auto;">
+                                        <table class="table table-striped jambo_table dataTable no-footer "
+                                            id="event_history-list">
+                                            <thead>
+                                                <tr class="headings">
+    
+    
+                                                    <th class="column-title">عنوان</th>
+                                                  
+                                                    <th class="column-title">ایجادکننده</th>
+                                                    <th class="column-title">متن</th>
+                                                    <th class="column-title">تاریخ ثبت</th>
+                                                    <!-- <th class="column-title no-link"><span class="nobr"></span>
+                                                    </th> -->
+                                                </tr>
+                                            </thead>
+    
+                                            <tbody>
+    
+                                            </tbody>
+    
+                                        </table>
+    
+                                        <div class="col-md-3 col-xs-3">
+                                            <!-- <a class="btn btn-success" style="left:3%;" id="add_eventhistory" href="/event-history/">افزودن
+                                                رخداد<i class="fa fa-plus-circle"></i></a> -->
+                                            <div class="pagination-container">
+                                                <button class="prev-page"><i class="fa fa-chevron-right"></i></button>
+                                                <div class="pagination justify-content-center pagination-sm">
+                                                    <div class="page-numbers"></div>
+                                                </div>
+                                                <button class="next-page"><i class="fa fa-chevron-left"></i></button>
+                                            </div>
+    
+                                        </div>
+                                    </div>
+                                </div>
+
+
+
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            <!-- /page content -->
+
+            <!-- /page content -->
+
+            <!-- footer content -->
+            <footer class="hidden-print">
+                <div class="pull-left">
+                </div>
+                <div class="clearfix"></div>
+            </footer>
+            <!-- /footer content -->
+        </div>
+    </div>
+    <div id="lock_screen">
+        <table>
+            <tr>
+                <td>
+                    <div class="clock"></div>
+                    <span class="unlock">
+                        <span class="fa-stack fa-5x">
+                            <i class="fa fa-square-o fa-stack-2x fa-inverse"></i>
+                            <i id="icon_lock" class="fa fa-lock fa-stack-1x fa-inverse"></i>
+                        </span>
+                    </span>
+                </td>
+            </tr>
+        </table>
+    </div>
+    {% include 'scripts.html' %}
+
+    <script>
+
+        let slideIndex = 1;
+        let deviceId = "{{enginroom_id}}";
+
+        console.log(deviceId)
+
+        displaySlide(slideIndex);
+
+        function moveSlides(n) {
+            displaySlide(slideIndex += n);
+        }
+
+        function activeSlide(n) {
+            displaySlide(slideIndex = n);
+        }
+
+        /* Main function */
+        function displaySlide(n) {
+            let totalslides = $(".slide");
+            let totaldots = $(".footerdot");
+
+
+            if (n > totalslides.length) {
+                slideIndex = 1;
+            }
+
+            if (n < 1) {
+                slideIndex = totalslides.length;
+            }
+
+            totalslides.hide();
+            totaldots.removeClass("active");
+
+            totalslides.eq(slideIndex - 1).fadeIn();
+            totaldots.eq(slideIndex - 1).addClass("active");
+        }
+        function initSliderSwipe() {
+            $(".x_content").swipe({
+                swipeLeft: function () {
+                    moveSlides(1); // Move to the next slide on left swipe
+                },
+                swipeRight: function () {
+                    moveSlides(-1); // Move to the previous slide on right swipe
+                },
+                threshold: 50 // Adjust the swipe threshold as per your needs
+            });
+        }
+        $(document).ready(function () {
+
+            $.ajax({
+                type: "GET",
+                url: "/apiv2/objects/device/" + deviceId + "/",
+                success: function (response) {
+                    $('#device').text(response.name);
+                    $('#organization').text(response.organization);
+                    $('#administration').text(response.administration);
+                    $('#installer').text(response.creator);
+                    $('#address').text(response.address || '---');
+                    $('#province').text(response.province)
+                    $('#city').text(response.city)
+                    if (response.status === true) {
+                        $('#status').text('تایید');
+                    } else if (response.status === false) {
+                        $('#status').text('رد')
+                        $('#note').show();
+                        $('#reject').text(response.rejection_note ? response.rejection_note : 'پیامی موجود نیست')
+                    } else {
+                        $('#status').text('در انتظار تایید');
+                    }
+                    if (response.lat_long) {
+                        var latlng = response.lat_long.split(',');
+                        var map = L.map('map').setView(latlng, 16);
+                        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                            maxZoom: 16, // Set the maximum zoom level
+                        }).addTo(map);
+                        var marker = L.marker(latlng).addTo(map);
+                        map.setMaxZoom(16);
+                        map.setMinZoom(16);
+                        marker.bindPopup(`<h3 class="rtl-txt">${response.name}</h3>`).openPopup();
+                    } else {
+                        // Tehran's coordinates
+                        var tehranLatlng = [35.6895, 51.3896];
+                        var map = L.map('map').setView(tehranLatlng, 16);
+                        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                            maxZoom: 16, // Set the maximum zoom level
+                        }).addTo(map);
+                    }
+
+                    $('#feature').append(`<img class="thumbnail  col-md-12 col-sm-12 col-xs-12" src="../static/images/engineroomfeatures/${response.main_3d_view}.png" id="feature-image" style="height: 400px;top: 30px;">`)
+                }
+            });
+            $.ajax({
+                type: "GET",
+                url: "/api/location-public-info/" + deviceId + "/",
+                success: function (response) {
+                    $('#phone-number1').text(response.phone_number1 || "---");
+                    $('#phone-number2').text(response.phone_number2 || "---");
+                    $('#linker-person1').text(response.linker_person1 || "---");
+                    $('#linker-person2').text(response.linker_person2 || "---");
+                    $('#building-metrage').text(response.building_metrage + " مترمربع " || "0  مترمربع");
+                    $('#building').append(`<img class="thumbnail col-md-11 col-sm-12 col-xs-12" src="${response.building_image}" id="building-image" style="height: 400px;top: 30px;">`)
+
+
+
+
+
+                    // $.ajax({
+                    //     type: "GET",
+                    //     url: "../static/iran-cities/province.csv",
+                    //     dataType: "text",
+                    //     success: function (data) {
+                    //         var provinceData = data.split("\n");
+
+
+                    //         for (var i = 0; i < provinceData.length; i++) {
+                    //             var parts = provinceData[i].split(",");
+                    //             if (response.province === parts[0]) {
+                    //                 $('#province').text(parts[1])
+                    //             }
+                    //             else {
+                    //                 $('#province').text('---')
+                    //             }
+
+
+                    //         }
+                    //     }
+                    // });
+                    // $.ajax({
+                    //     type: "GET",
+                    //     url: "../static/iran-cities/city.csv",
+                    //     dataType: "text",
+                    //     success: function (data) {
+                    //         var cityData = data.split("\n");
+
+
+                    //         for (var i = 0; i < cityData.length; i++) {
+                    //             var parts = cityData[i].split(",");
+                    //             if (response.city === parts[0]) {
+                    //                 $('#city').text(parts[3])
+                    //             }
+                    //             else {
+                    //                 $('#city').text('---')
+                    //             }
+
+
+                    //         }
+                    //     }
+                    // });
+                }
+
+            });
+            $.ajax({
+                type: "GET",
+                url: "/api/enginroom-public-info/" + deviceId + "/",
+                success: function (response) {
+                    if (response.usage === 'heating') {
+                        $('#usage').text('گرمایشی');
+                    }
+                    else if (response.usage === 'sanitary') {
+                        $('#usage').text('آبگرم بهداشتی');
+
+                    } else if (response.usage === 'both') {
+                        $('#usage').text('هردو (گرمایشی و آبگرم بهداشتی)');
+                    } else {
+                        $('#usage').text('---');
+                    }
+                    $('#has-exchanger').text(response.has_exchanger ? 'بله' : 'خیر')
+                    if (response.has_exchanger) {
+                        $('#exchanger').show();
+                    }
+                    $('#pool').text(response.number_of_pool_exchangers);
+                    $('#jaccuzi').text(response.number_of_jaccuzi_exchangers);
+                    $('#floor-heating').text(response.number_of_floor_heating_exchangers);
+
+
+                    $('#boilers').text(response.number_of_boilers);
+                    $('#circulating-pump').text(response.number_of_circulating_pumps);
+                    $('#coil-sources').text(response.number_of_coil_sources);
+                    $('#coil-sources-pumps').text(response.number_of_coil_sources_pumps);
+                    $('#hot-water-pumps').text(response.number_of_hot_water_pumps);
+                }
+            });
+            $.ajax({
+                type: "GET",
+                url: "/api/installation-info/" + deviceId + "/",
+                success: function (response) {
+                    if (response.installed_device_model === '8relays') {
+                        $('#installed-device-model').text('8 رله‌ای');
+                    } else if (response.installed_device_model === '12relays') {
+                        $('#installed-device-model').text('12 رله‌ای');
+                    } else if (response.installed_device_model === '16relays') {
+                        $('#installed-device-model').text('16 رله‌ای');
+                    } else {
+                        $('#installed-device-model').text('---');
+                    }
+
+                    if (response.connection_type === 'internet') {
+                        $('#connection-type').text('اینترنت');
+                    } else if (response.connection_type === 'intranet') {
+                        $('#connection-type').text('اینترانت');
+                    } else if (response.connection_type === 'ethernet') {
+                        $('#connection-type').text('اترنت');
+                    } else {
+                        $('#connection-type').text('---');
+                    }
+                    $('#modem-model').text(response.modem_model || '---');
+                    $('#has-simcard').text(response.has_simcard ? 'بله' : 'خیر');
+                    $('#modem_simcard_serial_number_image').append(`<img class="thumbnail col-md-11 col-sm-12 col-xs-12" src="${response.modem_simcard_serial_number_image}" id="building-image" style="height: 400px;top: 30px;">`)
+                    if (response.has_simcard) {
+                        $('#simcard').show();
+                        $('#modem-simcard-img').show()
+                        $('#modem_simcard_serial_number_image').show()
+                    }
+                    $('#modem-simcard-number').text(response.modem_simcard_number);
+                    $('#installation-date').text(response.installation_date || '---');
+                    $('#serial-number').append(`<img class="thumbnail col-md-11 col-sm-12 col-xs-12" src="${response.device_serial_number_image}" id="building-image" style="height: 400px;top: 30px;">`)
+
+
+                }
+            });
+            let deviceImages = $('#device-images');
+            // let activeSlide = $('#activeSlide')
+            $.ajax({
+                type: "GET",
+                url: `/api/enginroom-images/?device=${deviceId}`,
+                success: function (response) {
+                    for (var i = 0; i < response.length; i++) {
+                        deviceImages.append(` <div class="slide container">
+                                        <div class="slideNumber">${slideIndex + i}</div>
+                                        <img class="thumbnail col-md-11 col-sm-12 col-xs-12" src="${response[i].image}" id="building-image" style="height: 400px;top: 30px;">
+                                        </div>`);
+                        displaySlide(slideIndex);
+                        initSliderSwipe()
+                        // activeSlide.append(`<span class="footerdot" onclick="activeSlide(${slideIndex + i})">
+                        //             </span>`);
+                    }
+                },
+                error: function (error) {
+                    console.error('Error :', error.reponseJSON);
+
+                }
+            })
+
+        });
+
+        //////////////////////////////////////Event History///////////////////////////
+
+        // EventHistoryCount()
+        let currentPage = 1;
+        let totalPages;
+        let admin = "{{request.session.is_admin}}" === "True";
+        let staff = "{{request.session.is_staff}}" === "True";
+        let access = admin || staff
+
+        let status;
+        let trColor;
+        let fill_content;
+        let map = ''
+        let lastTdContent = '';
+        //////////////////////////////////////////////////////////////////////////////////////////////////////
+
+        function loadEventHistories(page) {
+
+            const searchQuery = $('#search').val();
+
+            let url = '/api/event-history/?page=' + page + '&device=' + deviceId;
+
+            if (searchQuery) {
+                url += '&search=' + encodeURIComponent(searchQuery);
+            }
+
+            $.ajax({
+                type: 'GET',
+                url: url,
+                success: function (response) {
+                    listOfEventHistory(response);
+                    currentPage = page;
+                    totalPages = response.total_pages;
+                    // $('#total_EventHistory').text(response.count)
+                    updatePageNumbers();
+                },
+                error: function (error) {
+                    console.error('Error loading EventHistories:', error.responseJSON);
+                }
+            });
+        }
+
+        function loadFilteredEventHistories(page) {
+            const searchQuery = $('#search').val();
+
+
+
+            $.ajax({
+                type: 'GET',
+                url: '/api/event-history/?device=' + deviceId,
+                data: {
+                    search: searchQuery
+                },
+                success: function (response) {
+                    listOfEventHistory(response);
+                    currentPage = page;
+                    totalPages = response.total_pages;
+                    updatePageNumbers();
+                },
+                error: function (error) {
+                    console.error('Error loading filtered results:', error.responseJSON);
+                }
+            });
+        }
+
+        loadEventHistories(currentPage);
+
+
+        $(".prev-page").on("click", function () {
+
+            if (currentPage > 1) {
+                loadEventHistories(currentPage - 1); // Load the previous page
+            }
+
+        });
+
+        $(".next-page").on("click", function () {
+
+            if (currentPage < totalPages) {
+                loadEventHistories(currentPage + 1); // Load the next page
+            }
+
+
+        });
+
+        function updatePageNumbers() {
+            if (totalPages <= 1) {
+                $(".prev-page").hide();
+                $(".next-page").hide();
+                $(".page-numbers").empty(); // Clear page numbers
+                return;
+            }
+            if (currentPage === 1) {
+                $(".prev-page").hide();
+            } else {
+                $(".prev-page").show();
+            }
+
+            // Hide/show next button based on current page
+            if (currentPage === totalPages) {
+                $(".next-page").hide();
+            } else {
+                $(".next-page").show();
+            }
+            const pageNumbers = $(".page-numbers");
+            pageNumbers.empty();
+
+            const visiblePages = 3;
+            let startPage = Math.max(1, currentPage - Math.floor(visiblePages / 2));
+            let endPage = Math.min(totalPages, startPage + visiblePages - 1);
+
+            if (totalPages > visiblePages) {
+                if (endPage === totalPages) {
+                    startPage = Math.max(1, totalPages - visiblePages + 1);
+                } else if (startPage === 1) {
+                    endPage = Math.min(visiblePages, totalPages);
+                }
+            }
+
+            if (startPage > 1) {
+                pageNumbers.append($("<button>", { class: "page-number", text: 1, "data-page": 1 }));
+                if (startPage > 2) {
+                    pageNumbers.append('<span class="ellipsis">...</span>');
+                }
+            }
+
+            for (let i = startPage; i <= endPage; i++) {
+                let pageNumberButton = $("<button>", { class: "page-number", text: i, "data-page": i });
+                pageNumbers.append(pageNumberButton);
+            }
+
+            if (endPage < totalPages) {
+                if (endPage < totalPages - 1) {
+                    pageNumbers.append('<span class="ellipsis">...</span>');
+                }
+                pageNumbers.append($("<button>", { class: "page-number", text: totalPages, "data-page": totalPages }));
+            }
+
+            // Highlight the current page number
+            $(`.page-number[data-page=${currentPage}]`).addClass("active");
+
+            // Page number click event handler
+            $(".page-number").on("click", function () {
+                const page = $(this).data("page");
+                $(`.page-number[data-page=${currentPage}]`).removeClass("active");
+                $(`.page-number[data-page=${page}]`).addClass("active");
+                loadEventHistories(page);
+            });
+        }
+
+
+
+
+        $("#search").on("keyup", function () {
+            // var value = $(this).val().toLowerCase();
+
+            loadFilteredEventHistories(currentPage);
+
+            // $("#EventHistory-list tbody tr").filter(function () {
+            //     $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+            // });
+
+        });
+
+        function listOfEventHistory(resp) {
+            const tableBody = $('#event_history-list tbody');
+            tableBody.empty()
+            resp.results.forEach(function (obj) {
+
+                const hideLastTd = obj.status === null;
+
+                const row = `
+       
+        <tr id="event_history_${obj.id}" data-event_history-id="${obj.id}"  id="status-${obj.id}" style="background-color: ${trColor};">
+
+
+        
+        <td class=" ">${obj.title}</td>
+        
+        <td class=" ">${obj.creator}</td>
+        <td class=" ">${obj.text}</td>
+        <td class=" ">${obj.timestamp}</td>
+        
+        
+      
+      <!--  <td class="last" id=last_${obj.id}><a id="edit_event_history" href="/edit-event-history/${obj.id}"><i class="btn btn-sm btn-warning fa fa-pencil"></i></a>
+        <a id="delete_event_history" data-id=${obj.id} onclick="delete_event_history(${obj.id}, '${obj.title.replace("'", "\\'")}')"><i class="btn btn-sm btn-danger fa fa-trash"></i></a></td> -->
+        </tr>
+                            
+
+        
+    `;
+                tableBody.append(row);
+            });
+
+        }
+
+        // // Function to delete the event_history using AJAX
+        function EventHistoryCount() {
+            $.ajax({
+                type: 'GET',
+                url: '/apiv2/get_object_count/',
+                success: function (response) {
+                    $('#total_event_history').text(response.event_history)
+                },
+                error: function (error) {
+                    console.error('Error event_history Count:', error.responseJSON);
+                }
+            });
+        }
+        function delete_event_history(event_historyId, event_history_title) {
+            $.ajax({
+                type: "DELETE",
+                url: `/api/event-history/${event_historyId}/`,
+                headers: {
+                    'X-CSRFToken': $('input[name="csrfmiddlewaretoken"]').val() // Include the CSRF token in the headers
+                },
+                success: function (response) {
+                    // Remove the row from the table
+                    $(`#event_history_${event_historyId}`).remove();
+                    // Hide the modal
+                    $('#deleteConfirmationModal').modal('hide');
+                    // Show a success message using SweetAlert
+                    Swal.fire('حذف شد!', `"${event_history_title}" با موفقیت حذف شد.`, 'success');
+                    // EventHistoryCount()
+                },
+                error: function (error) {
+                    console.error('Error deleting event_history:', error);
+                    // You can handle errors here, e.g., display an error message using SweetAlert
+                    Swal.fire('خطا', 'خطایی در حذف اتفاق افتاده است.', 'error');
+                }
+            });
+        }
+
+    </script>
+
+</body>
+
+</html>

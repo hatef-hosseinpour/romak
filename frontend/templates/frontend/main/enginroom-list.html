@@ -1,0 +1,1275 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+{% load static %}
+{% block headcontent %}
+{% include 'head.html' with title="Installers App| Enginroom List" %}
+{% endblock %}
+<!-- /header content -->
+<style>
+    .close {
+        color: #fff;
+        opacity: 1;
+    }
+
+    .pagination-container {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+
+        padding: 10px;
+        border: 1px white;
+        border-radius: 5px;
+    }
+
+    .pagination button {
+        border: 2px solid #34495E;
+
+    }
+
+    .prev-page,
+    .next-page {
+        background-color: #34495E;
+        color: white;
+        border: none;
+        padding: 8px 16px;
+        margin: 0 2px;
+        cursor: pointer;
+        border-radius: 5px;
+
+    }
+
+    .prev-page:hover,
+    .next-page:hover {
+        background-color: #334658;
+
+    }
+
+    .page-numbers {
+        display: flex;
+    }
+
+    .page-number {
+        padding: 6px 12px;
+        margin: 0 2px;
+        border-radius: 5px;
+        display: flex;
+        gap: 10px;
+    }
+
+    .ellipsis {
+        padding: 2px 0;
+        color: #34495E;
+        font-size: 20px;
+        font-weight: bold;
+        margin: 0 4px;
+    }
+
+    .page-number.active {
+        background-color: #34495e;
+        color: #fff;
+        border-radius: 5px;
+
+    }
+
+
+    .phone-number {
+        text-decoration: underline;
+
+
+    }
+
+    #reset_filter {
+        display: flex;
+        border-radius: 50%;
+        border: none;
+        margin-top: 32px;
+    }
+
+    #reset_filter i {
+        color: #ff0000;
+    }
+</style>
+
+<body class="nav-md">
+
+    <div class="container body">
+        <div class="main_container">
+            <div class="col-md-3 left_col hidden-print">
+                <div class="left_col scroll-view">
+                    {% include 'navbar.html'%}
+                </div>
+            </div>
+
+            <!-- top navigation -->
+            <div class="top_nav hidden-print">
+                <div class="nav_menu">
+                    <nav>
+                        <div class="nav toggle">
+                            <a id="menu_toggle"><i class="fa fa-bars"></i></a>
+                        </div>
+
+                        <ul class="nav navbar-nav navbar-right">
+                            <li class="">
+                                <a href="javascript:;" class="user-profile dropdown-toggle" data-toggle="dropdown"
+                                    aria-expanded="false">
+                                    {{request.session.username}} <span class=" fa fa-angle-down"></span>
+                                </a>
+                                <ul class="dropdown-menu dropdown-usermenu pull-right">
+                            </li>
+                            <li><a href="/dashboard/"><i class="fa fa-user pull-right"></i>
+                                    پروفایل</a></li>
+                            <li><a href="/reset_password/{{request.session.user_id}}"><i
+                                        class="fa fa-lock pull-right"></i>
+                                    تغییر رمزعبور</a></li>
+                            <hr>
+                            <li><a id="logout" onclick="logout()"><i class="fa fa-sign-out pull-right"></i>
+                                    خروج</a></li>
+                        </ul>
+                        </li>
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+            <!-- /top navigation -->
+            <!-- /header content -->
+
+            <!-- page content -->
+            <div class="right_col" role="main">
+                <div class="">
+                    <div class="page-title">
+                        <div class="title_left">
+                            <h3></h3>
+                        </div>
+
+                        <div class="title_right">
+                            <div class="col-md-5 col-sm-5 col-xs-12 form-group pull-right top_search">
+                                <div class="input-group">
+                                    {% csrf_token %}
+                                    <input type="text" class="form-control" placeholder="جست و جو برای..." id="search">
+                                    <span class="input-group-btn">
+                                        <button class="btn btn-default" type="button" id="search-btn"><i
+                                                class="fa fa-search"></i></button>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="clearfix"></div>
+
+                    <div class="col-md-12 col-sm-12 col-xs-12">
+                        <div class="x_panel">
+                            <div class="x_title">
+                                <div class="row x_title">
+                                    <div class="col-md-6 col-sm-12 col-xs-12">
+                                        <h3>لیست دستگاه‌ها</h3>
+                                    </div>
+
+                                    <div class="col-md-6 col-sm-12 col-xs-12">
+                                        <h3>تعداد کل دستگاه‌ها: <strong id="total_engineroom"></strong></h3>
+                                        <h3 style="display: none;" id="filter_name">تعداد دستگاه‌های فیلترشده : <strong
+                                                id="filtered_count"></strong></h3>
+                                    </div>
+
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-2 col-lg-2">
+                                        <label for="installer">نصاب:</label>
+                                        <select id="installer" class="form-select" style="width: 100%;">
+                                            <!-- Add your options here -->
+                                        </select>
+                                    </div>
+                                    <div class="col-md-2 col-lg-2 col-sm-12 col-xs-12">
+                                        <label for="organization">سازمان:</label>
+                                        <select id="organization" class="form-select" style="width: 100%;">
+                                            <!-- Add your options here -->
+                                        </select>
+                                    </div>
+                                    <div class="col-md-2 col-lg-2 col-sm-12 col-xs-12">
+                                        <label for="administration">وزارت‌خانه:</label>
+                                        <select id="administration" class="form-select" style="width: 100%;">
+                                            <!-- Add your options here -->
+                                        </select>
+                                    </div>
+
+                                    <div class="col-md-2 col-lg-2 col-sm-12 col-xs-12">
+                                        <label for="province">استان:</label>
+                                        <select id="province" class="form-select" style="width: 100%;">
+                                            <!-- Add your options here -->
+                                        </select>
+                                    </div>
+                                    <div class="col-md-2 col-lg-2 col-sm-12 col-xs-12">
+                                        <label for="city">شهر:</label>
+                                        <select id="city" class="form-select" style="width: 100%;">
+                                            <!-- Add your options here -->
+                                        </select>
+                                    </div>
+                                    <!-- <button onclick="reset_filter()" id="reset_filter">
+                                        <i class="fa fa-times-circle" aria-hidden="true"></i>
+                                    </button> -->
+                                </div>
+
+
+                                <div class="clearfix"></div>
+                            </div>
+
+                            <div class="x_content">
+
+                                <!-- <p>با افزودن کلاس <code dir="ltr">bulk_action</code> برای جدول، جدول دارای اعمال همگانی
+                                    می‌شود.</p> -->
+                                <div class="input-group">
+                                    <div id="applied-filters">
+                                        <!-- Badges representing selected filters will be dynamically added here -->
+                                    </div>
+
+                                </div>
+                                <div class="table-responsive">
+                                    <table class="table table-striped jambo_table dataTable no-footer "
+                                        id="enginroom-list">
+                                        <thead>
+                                            <tr class="headings">
+
+                                                <th class="column-title">نام دستگاه</th>
+                                                <th class="column-title">سازمان / خصوصی</th>
+                                                <th class="column-title">وزارت‌خانه / خصوصی</th>
+                                                <th class="column-title">نام نصاب</th>
+                                                <th class="column-title">وضعیت</th>
+                                                <th class="column-title">اطلاعات</th>
+                                                <th class="column-title">تلفن رابط</th>
+                                                <th class="column-title">نقشه</th>
+                                                <th class="column-title no-link"><span class="nobr"></span>
+                                                </th>
+                                            </tr>
+                                        </thead>
+
+                                        <tbody>
+
+                                        </tbody>
+
+                                    </table>
+
+                                    <div class="col-md-3 col-xs-3">
+                                        <a class="btn btn-success" style="left:3%;" id="add_device"
+                                            href="/create-enginroom/">افزودن
+                                            دستگاه<i class="fa fa-plus-circle"></i></a>
+                                        <div class="pagination-container">
+                                            <button class="prev-page"><i class="fa fa-chevron-right"></i></button>
+                                            <div class="pagination justify-content-center pagination-sm">
+                                                <div class="page-numbers"></div>
+                                            </div>
+                                            <button class="next-page"><i class="fa fa-chevron-left"></i></button>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            <!-- /page content -->
+
+            <!-- /page content -->
+
+            <!-- footer content -->
+            <footer class="hidden-print">
+                <div class="pull-left">
+
+                </div>
+                <div class="clearfix"></div>
+            </footer>
+            <!-- /footer content -->
+        </div>
+    </div>
+    <div id="lock_screen">
+        <table>
+            <tr>
+                <td>
+                    <div class="clock"></div>
+                    <span class="unlock">
+                        <span class="fa-stack fa-5x">
+                            <i class="fa fa-square-o fa-stack-2x fa-inverse"></i>
+                            <i id="icon_lock" class="fa fa-lock fa-stack-1x fa-inverse"></i>
+                        </span>
+                    </span>
+                </td>
+            </tr>
+        </table>
+    </div>
+    {% include 'scripts.html' %}
+    <script>
+        let currentPage = 1;
+        let totalPages;
+
+
+        function reset_filter() {
+
+            if ($('#installer').val()) {
+                $('#installer').val('');
+                $('#installer').change();
+
+            }
+            if ($('#organization').val()) {
+                $('#organization').val('');
+                $('#organization').change();
+
+            }
+            if ($('#administration').val()) {
+                $('#administration').val('');
+                $('#administration').change();
+
+            }
+            if ($('#province').val()) {
+                $('#province').val('');
+                $('#province').change();
+            }
+            if ($('#city').val()) {
+                $('#city').val('');
+                $('#city').change();
+            }
+        }
+
+
+        function openMaps(latitude, longitude) {
+            // Construct the Google Maps URL with the specified latitude and longitude
+            const url = `https://neshan.org/maps/@${latitude},${longitude},15z,0p/search/${latitude},${longitude}`;
+            // const url = `https://www.google.com/maps?q=${latitude},${longitude}`;
+
+            // Open the URL in a new window or tab
+            window.open(url, '_blank');
+        }
+        function showDetail(id) {
+            const enginroomUrl = `/enginroom-detail/${id}`;
+            window.location.href = enginroomUrl;
+        }
+        let admin = "{{request.session.is_admin}}" === "True";
+        let staff = "{{request.session.is_staff}}" === "True";
+        let access = admin || staff
+
+        $(document).on('click', '.comment-button', function () {
+            const enginroomId = $(this).data('enginroom-id');
+            const enginroomName = $(this).data('enginroom-name');
+
+            // Make an AJAX request to fetch the rejection note
+            $.ajax({
+                type: 'GET',
+                url: `/apiv2/objects/device/${enginroomId}/`,
+                success: function (response) {
+                    const rejectionNote = response.rejection_note;
+
+                    Swal.fire({
+                        icon: 'info',
+                        title: `رد دستگاه ${enginroomName}`,
+                        html: `<span style="font-size: 20px;">${rejectionNote ? rejectionNote : 'پیامی نیست'}</span>`,
+
+                    })
+                },
+                error: function (error) {
+                    console.error(`Error fetching rejection note:`, error.responseJSON);
+                }
+            });
+        });
+
+
+
+        function acceptEnginroom(id) {
+            const url = '/apiv2/update_device_by_status/';
+            $.ajax({
+                type: "POST",
+                url: url,
+                data: JSON.stringify({ id: id, status: "true", rejection_note: "" }),
+                contentType: "application/json",
+                headers: {
+                    "X-CSRFToken": $("[name=csrfmiddlewaretoken]").val(),
+                },
+                success: function (response) {
+
+                    console.log(`Engineroom ${id} has been accepted.`);
+                    $(`#enginroom_${id}`).css({ "background-color": "#d8f3dc" });
+                    $(`#last_${id}`).empty();
+                    $(`#fill_data_${id}`).empty();
+
+                    $(`#fill_data_${id}`).html(`<a href="/create-installation/${id}" class="btn btn-info"> تکمیل اطلاعات </a>`);
+                    // fill_content = `<td class=" "><a href="/create-installation/${id}" class="btn btn-info"> تکمیل اطلاعات </a></td>`
+                    if (access) {
+                        $(`#last_${id}`).html(`<a href="/update-enginroom/${id}"><i class="btn btn-sm btn-warning fa fa-pencil"></i></a>`);
+                    }
+                    else {
+                        $(`#last_${id}`).html('');
+                    }
+
+
+                },
+                error: function (error) {
+
+                    console.error(`Error accepting engineroom ${id}:`, error.responseJSON);
+                }
+            });
+
+        }
+        function rejectEnginroom(id, enginroom_name) {
+            $.ajax({
+                type: "POST",
+                url: '/apiv2/update_device_by_status/', // Specify the correct URL for your API
+                data: JSON.stringify({ id: id, status: "false", rejection_note: "" }), // Update status to 'true'
+                contentType: "application/json",
+                headers: {
+                    "X-CSRFToken": $("[name=csrfmiddlewaretoken]").val(),
+                },
+                success: function (response) {
+                    $(`#enginroom_${id}`).css({ "background-color": "#fae0e4" });
+                    console.log(`Engineroom ${id} has been rejected.`);
+
+
+                    Swal.fire({
+
+                        icon: 'info',
+                        title: ' رد دستگاه ' + enginroom_name,
+
+                        html: '<textarea class="form-control" id="sweetTextarea" rows="4" cols="50"></textarea>',
+                        showCancelButton: true,
+                        confirmButtonColor: '#3085d6',
+                        cancelButtonColor: '#d33',
+                        confirmButtonText: 'تایید',
+                        cancelButtonText: 'بستن',
+                        preConfirm: () => {
+                            const text = Swal.getPopup().querySelector('#sweetTextarea').value;
+                            if (text) {
+                                $.ajax({
+                                    type: "POST",
+                                    url: '/apiv2/update_device_by_status/',
+                                    data: JSON.stringify({ id: id, status: "false", rejection_note: text }),
+                                    contentType: "application/json",
+                                    headers: {
+                                        "X-CSRFToken": $("[name=csrfmiddlewaretoken]").val()
+                                    },
+                                    success(response) {
+
+                                        $(`#last_${id}`).empty()
+                                        $(`#last_${id}`).html(`
+                        <a><i id="comment-button-${id}" class="btn btn-sm btn-primary fa fa-comment comment-button" data-enginroom-id="${id}" data-enginroom-name="${enginroom_name}"></i></a>
+                        <a href="/update-enginroom/${id}"><i class="btn btn-sm btn-warning fa fa-pencil"></i></a>
+                            `)
+                                        $(`#fill_data_${id}`).empty();
+                                        $(`#fill_data_${id}`).html('');
+
+
+                                    }
+                                });
+                            }
+                            return text;
+                        }
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+
+
+
+                        }
+                    });
+                },
+                error: function (error) {
+
+                    console.error(`Error rejecting engineroom ${id}:`, error.responseJSON);
+                }
+            });
+
+        }
+        let status;
+        let trColor;
+        let fill_content;
+        let map = ''
+        let lastTdContent = '';
+        let fill_data = '';
+
+        function populateFilterOptions() {
+            $.ajax({
+                type: 'GET',
+                url: '/apiv2/get_option_for_insert/',
+                success: function (response) {
+                    populateSelectOptions('#installer', response);
+                    populateSelectOptions('#organization', response);
+                    populateSelectOptions('#administration', response);
+                    populateSelectOptions('#province', response);
+                    populateSelectOptions('#city', response);
+                },
+                error: function (error) {
+                    console.error('Error loading filter options:', error.responseJSON);
+                }
+            });
+        }
+        function populateSelectOptions(selector, response) {
+            var engineroom_feature_select = $("#engineroom_feature");
+            var province_select = $("#province");
+            var city_select = $("#city");
+            var organization_select = $("#organization");
+            var administration_select = $("#administration");
+            var installer_select = $("#installer");
+            let engineroom_features = response.features;
+            let organizations = response.organizations;
+            let administrations = response.administration;
+            let locations = response.locations;
+            let installers = response.installers;
+            if (selector === "#engineroom_feature") {
+                engineroom_feature_select.empty()
+                // engineroom_feature_select.select2();
+                engineroom_feature_select.append('<option value="">لطفا انتخاب کنید</option>');
+                engineroom_feature_select.append(engineroom_features.map(function (feature) {
+                    return $('<option>', {
+                        value: feature.main_3d_view,
+                        text: feature.main_3d_view
+                    });
+                }));
+            }
+            if (selector === "#organization") {
+                organization_select.empty()
+                organization_select.append('<option value="">لطفا انتخاب کنید</option>');
+                organization_select.append(organizations.map(function (organization) {
+                    return $('<option>', {
+                        value: organization.organization,
+                        text: organization.organization
+                    });
+                }));
+            }
+
+            if (selector === "#administration") {
+                var distinctAdministrations = $.unique(administrations.map(function (administration) {
+                    return administration.administration;
+                }));
+                administration_select.empty()
+                administration_select.append('<option value="">لطفا انتخاب کنید</option>');
+                administration_select.append(distinctAdministrations.map(function (administration) {
+                    return $('<option>', {
+                        value: administration,
+                        text: administration
+                    });
+                }));
+            }
+            /////////////
+            if (selector == "#province") {
+                var distinctlocation = $.unique(locations.map(function (location) {
+                    return location.location[0].trim();
+                }));
+                province_select.empty()
+                province_select.append('<option value="">لطفا انتخاب کنید</option>');
+                province_select.append(distinctlocation.map(function (location) {
+
+                    return $('<option>', {
+                        value: location,
+                        text: location
+                    });
+                }));
+            }
+            if (selector == "#city") {
+                city_select.empty()
+                city_select.append('<option value="">لطفا انتخاب کنید</option>');
+                city_select.append(locations.map(function (location) {
+
+                    return $('<option>', {
+                        value: location.location[1],
+                        text: location.location[1]
+                    });
+                }));
+            }
+            if (selector === "#installer") {
+                installer_select.empty()
+                installer_select.append('<option value="">لطفا انتخاب کنید</option>');
+                installer_select.append(installers.map(function (installer) {
+                    return $('<option>', {
+                        value: installer.id,
+                        text: installer.installer
+                    });
+                }));
+            }
+        }
+
+        function populateSelectProvinceOptionsWithCsv(selector, options) {
+            const selectElement = $(selector);
+            selectElement.empty();
+
+            // Add an "All" option if needed
+            selectElement.append($('<option>', {
+                value: '',
+                text: 'انتخاب کنید'
+            }));
+
+
+
+            $.each(options, function (index, option) {
+                $.ajax({
+                    type: "GET",
+                    url: "../static/iran-cities/province.csv",
+                    dataType: "text",
+                    success: function (data) {
+                        var provinceOptions = data.split("\n");
+                        var provinceSelect = $("#select-province");
+
+                        for (var i = 0; i < provinceOptions.length; i++) {
+                            var parts = provinceOptions[i].split(",");//.val(parts[0]) .text(parts[1]);
+                            if (parts[0] === option) {
+                                selectElement.append($('<option>', {
+                                    value: option,
+                                    text: parts[1]
+                                }));
+                            }
+
+                        }
+                    }
+                });
+
+
+            });
+        }
+        function populateSelectCityOptionsWithCsv(selector, options) {
+            const selectElement = $(selector);
+            selectElement.empty();
+
+            // Add an "All" option if needed
+            selectElement.append($('<option>', {
+                value: '',
+                text: 'انتخاب کنید'
+            }));
+
+
+
+            $.each(options, function (index, option) {
+                $.ajax({
+                    type: "GET",
+                    url: "../static/iran-cities/city.csv",
+                    dataType: "text",
+                    success: function (data) {
+                        var provinceOptions = data.split("\n");
+                        var provinceSelect = $("#select-province");
+
+                        for (var i = 0; i < provinceOptions.length; i++) {
+                            var parts = provinceOptions[i].split(",");//.val(parts[0]) .text(parts[1]);
+                            if (parts[0] === option) {
+                                selectElement.append($('<option>', {
+                                    value: option,
+                                    text: parts[3]
+                                }));
+                            }
+
+                        }
+                    }
+                });
+
+
+            });
+        }
+
+        $(document).ready(function () {
+
+
+            // Function to dynamically create and append a badge with a close button
+            function addBadge(value, filterType) {
+                // Remove existing badges for the same filter type
+                $('.filter-badge[data-filter-type="' + filterType + '"]').remove();
+
+                // Create and append the new badge
+                const badgeHtml = `
+            <span class="badge badge-pill filter-badge" data-filter-type="${filterType}" style="background-color: #34495E;">
+                ${value}
+                <button type="button" class="close" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </span> 
+            
+             
+           
+            `;
+                $('#applied-filters').append(badgeHtml);
+                $('#filter_name').show();
+            }
+
+            // Event handler for closing the badge
+            $(document).on('click', '.filter-badge .close', function () {
+                const filterType = $(this).closest('.filter-badge').data('filter-type');
+
+                removeBadge(filterType);
+                $('#' + filterType).trigger('change');
+                if (filterType === 'search') {
+                    $('#search-btn').click();
+
+                }
+                if ($('.filter-badge').length === 0) {
+                    $('#filter_name').hide();
+                }
+                else {
+                    $('#filter_name').show();
+                }
+
+            });
+
+            // Function to remove the badge and reset the filter
+            function removeBadge(filterType) {
+                // Remove the badge
+                $('.filter-badge[data-filter-type="' + filterType + '"]').remove();
+
+                // Reset the corresponding select element
+                $('#' + filterType).val('');
+
+            }
+            $('#installer, #organization, #administration, #province, #city').on('change', function () {
+                currentPage = 1;
+                const selectedValue = $(this).val();
+                const filterType = $(this).attr('id');
+
+                if (selectedValue === '') {
+                    removeBadge(filterType);
+                    $('#filter_name').hide();
+                } else {
+                    addBadge(selectedValue, filterType);
+                    loadFilteredEnginerooms(currentPage);
+                    $('#filter_name').show();
+                }
+            });
+
+
+            engineroomCount()
+            function applyFilters() {
+                const installer = $('#installer').val();
+                const organization = $('#organization').val();
+                const administration = $('#administration').val();
+                const province = $('#province').val();
+                const city = $('#city').val();
+
+                // Make an AJAX request to retrieve the filtered results
+                $.ajax({
+                    type: 'GET',
+                    url: '/apiv2/devices-list/',
+                    data: {
+                        installer: installer,
+                        organization: organization,
+                        administration: administration,
+                        province: province,
+                        city: city
+
+                    },
+                    success: function (response) {
+                        // Handle the filtered results
+                        console.log(response);
+                        listOfEnginroom(response);
+                        totalPages = response.total_pages;
+                        $('#filter_name').show();
+                        $('#filtered_count').text(response.count)
+
+
+                        console.log('filter total page', response.total_pages)
+                        updatePageNumbers();
+
+                    },
+                    error: function (error) {
+                        console.error('Error loading filtered results:', error.responseJSON);
+                    }
+                });
+            }
+
+
+            function loadEnginerooms(page) {
+                // Make an AJAX request to retrieve the engine rooms based on the selected filters
+                const installer = $('#installer').val();
+                const organization = $('#organization').val();
+                const administration = $('#administration').val();
+                const province = $('#province').val();
+                const city = $('#city').val();
+
+                const searchQuery = $('#search').val();
+
+                let url = '/apiv2/devices-list/?page=' + page;
+
+                // Append the selected filters to the URL if any filter is selected
+                if (installer || organization || administration || province || city) {
+                    url += '&installer=' + installer;
+                    url += '&organization=' + organization;
+                    url += '&administration=' + administration;
+                    url += '&province=' + province;
+                    url += '&city=' + city;
+                    $('#filter_name').show();
+                }
+                if (searchQuery) {
+                    url += '&search=' + encodeURIComponent(searchQuery);
+                    $('#filter_name').show();
+                }
+
+                $.ajax({
+                    type: 'GET',
+                    url: url,
+                    success: function (response) {
+                        listOfEnginroom(response);
+                        currentPage = page;
+                        totalPages = response.total_pages;
+                        $('#filtered_count').text(response.count);
+
+                        // $('#total_engineroom').text(response.count)
+                        updatePageNumbers();
+                    },
+                    error: function (error) {
+                        console.error('Error loading enginerooms:', error.responseJSON);
+                    }
+                });
+            }
+
+            function loadFilteredEnginerooms(page) {
+                // Make an AJAX request to retrieve the filtered engine rooms
+                const installer = $('#installer').val();
+                const organization = $('#organization').val();
+                const administration = $('#administration').val();
+                const province = $('#province').val();
+                const city = $('#city').val();
+                const searchQuery = $('#search').val();
+
+
+
+                $.ajax({
+                    type: 'GET',
+                    url: '/apiv2/devices-list/',
+                    data: {
+                        installer: installer,
+                        organization: organization,
+                        administration: administration,
+                        province: province,
+                        city: city,
+                        search: searchQuery
+                    },
+                    success: function (response) {
+                        listOfEnginroom(response);
+                        currentPage = page;
+                        totalPages = response.total_pages;
+                        $('#filtered_count').text(response.count);
+                        filtered_count = response.count
+
+                        updatePageNumbers();
+                    },
+                    error: function (error) {
+                        console.error('Error loading filtered results:', error.responseJSON);
+                    }
+                });
+            }
+
+            loadEnginerooms(currentPage);
+
+
+
+
+            $(".prev-page").on("click", function () {
+
+                if (currentPage > 1) {
+                    loadEnginerooms(currentPage - 1); // Load the previous page
+                }
+
+            });
+
+            $(".next-page").on("click", function () {
+
+                if (currentPage < totalPages) {
+                    loadEnginerooms(currentPage + 1); // Load the next page
+                }
+
+
+            });
+
+            function updatePageNumbers() {
+                if (totalPages <= 1) {
+                $(".prev-page").hide();
+                $(".next-page").hide();
+                $(".page-numbers").empty(); 
+                return;
+            }
+                if (currentPage === 1) {
+                    $(".prev-page").hide();
+                } else {
+                    $(".prev-page").show();
+                }
+
+                // Hide/show next button based on current page
+                if (currentPage === totalPages) {
+                    $(".next-page").hide();
+                } else {
+                    $(".next-page").show();
+                }
+                const pageNumbers = $(".page-numbers");
+                pageNumbers.empty();
+
+                const visiblePages = 3;
+                let startPage = Math.max(1, currentPage - Math.floor(visiblePages / 2));
+                let endPage = Math.min(totalPages, startPage + visiblePages - 1);
+
+                if (totalPages > visiblePages) {
+                    if (endPage === totalPages) {
+                        startPage = Math.max(1, totalPages - visiblePages + 1);
+                    } else if (startPage === 1) {
+                        endPage = Math.min(visiblePages, totalPages);
+                    }
+                }
+
+                if (startPage > 1) {
+                    pageNumbers.append($("<button>", { class: "page-number", text: 1, "data-page": 1 }));
+                    if (startPage > 2) {
+                        pageNumbers.append('<span class="ellipsis">...</span>');
+                    }
+                }
+
+                for (let i = startPage; i <= endPage; i++) {
+                    let pageNumberButton = $("<button>", { class: "page-number", text: i, "data-page": i });
+                    pageNumbers.append(pageNumberButton);
+                }
+
+                if (endPage < totalPages) {
+                    if (endPage < totalPages - 1) {
+                        pageNumbers.append('<span class="ellipsis">...</span>');
+                    }
+                    pageNumbers.append($("<button>", { class: "page-number", text: totalPages, "data-page": totalPages }));
+                }
+
+                // Highlight the current page number
+                $(`.page-number[data-page=${currentPage}]`).addClass("active");
+
+                // Page number click event handler
+                $(".page-number").on("click", function () {
+                    const page = $(this).data("page");
+                    $(`.page-number[data-page=${currentPage}]`).removeClass("active");
+                    $(`.page-number[data-page=${page}]`).addClass("active");
+                    loadEnginerooms(page);
+                });
+            }
+
+
+            populateFilterOptions();
+
+            $('#installer').on('change', function () {
+                currentPage = 1
+                if ($('#installer').val() || $('#organization').val() || $('#administration').val() || $('#province').val() || $('#city').val()) {
+                    const selectedText = $(this).find('option:selected').text();
+                    const filterType = $(this).attr('id'); // Get the ID of the select element as the filter type
+
+                    if (selectedText && selectedText !== 'لطفا انتخاب کنید') {
+                        addBadge(selectedText, filterType);
+                        loadFilteredEnginerooms(currentPage);
+                        $('#filter_name').show();
+                    } else {
+                        // Reset the filter if "لطفا انتخاب کنید" is selected
+
+                        removeBadge(filterType);
+                        $(this).val('');
+
+                        loadEnginerooms(currentPage);
+
+                        $('#filter_name').hide();
+
+
+                    }
+                    // loadFilteredEnginerooms(currentPage);
+                } else {
+                    loadEnginerooms(currentPage);
+                    $(this).val('');
+                    $('#filter_name').hide();
+                }
+            });
+
+            $('#organization').on('change', function () {
+                currentPage = 1
+                if ($('#installer').val() || $('#organization').val() || $('#administration').val() || $('#province').val() || $('#city').val()) {
+                    const selectedText = $(this).find('option:selected').text();
+                    const filterType = $(this).attr('id'); // Get the ID of the select element as the filter type
+                    if (selectedText && selectedText !== 'لطفا انتخاب کنید') {
+                        addBadge(selectedText, filterType);
+                        loadFilteredEnginerooms(currentPage);
+                        $('#filter_name').show();
+                    }
+
+                    else {
+
+                        // Reset the filter if "لطفا انتخاب کنید" is selected
+                        removeBadge(filterType)
+                        $(this).val('');
+                        $(this).parent('.filter-badge').remove();
+                        loadEnginerooms(currentPage);
+                        $('#filter_name').hide();
+                        ;
+                    }
+                    // loadFilteredEnginerooms(currentPage);
+                } else {
+                    loadEnginerooms(currentPage);
+                    $(this).val('');
+                    $('#filter_name').hide();
+                }
+            });
+
+            $('#administration').on('change', function () {
+                currentPage = 1
+                if ($('#installer').val() || $('#organization').val() || $('#administration').val() || $('#province').val() || $('#city').val()) {
+                    const selectedText = $(this).find('option:selected').text();
+                    const filterType = $(this).attr('id'); // Get the ID of the select element as the filter type
+                    if (selectedText && selectedText !== 'لطفا انتخاب کنید') {
+                        addBadge(selectedText, filterType);
+                        loadFilteredEnginerooms(currentPage);
+                        $('#filter_name').show();
+                    } else {
+                        // Reset the filter if "لطفا انتخاب کنید" is selected
+                        removeBadge(filterType);
+                        $(this).val('');
+                        loadEnginerooms(currentPage);
+                        $('#filter_name').hide();
+                    }
+                    // loadFilteredEnginerooms(currentPage);
+                } else {
+                    loadEnginerooms(currentPage);
+                    $(this).val('');
+                    $('#filter_name').hide();
+                }
+            });
+
+            $('#province').on('change', function () {
+                currentPage = 1
+                if ($('#installer').val() || $('#organization').val() || $('#administration').val() || $('#province').val() || $('#city').val()) {
+                    const selectedText = $(this).find('option:selected').text();
+                    const filterType = $(this).attr('id'); // Get the ID of the select element as the filter type
+                    if (selectedText && selectedText !== 'لطفا انتخاب کنید') {
+                        addBadge(selectedText, filterType);
+                        loadFilteredEnginerooms(currentPage);
+                        $('#filter_name').show();
+                    } else {
+                        // Reset the filter if "لطفا انتخاب کنید" is selected
+                        removeBadge(filterType);
+                        loadEnginerooms(currentPage);
+                        $(this).val('');
+                        $('#filter_name').hide();
+                    }
+                    // loadFilteredEnginerooms(currentPage);
+                } else {
+                    loadEnginerooms(currentPage);
+                    $(this).val('');
+                    $('#filter_name').hide();
+                }
+            });
+
+            $('#city').on('change', function () {
+                currentPage = 1
+                if ($('#installer').val() || $('#organization').val() || $('#administration').val() || $('#province').val() || $('#city').val()) {
+                    const selectedText = $(this).find('option:selected').text();
+                    const filterType = $(this).attr('id'); // Get the ID of the select element as the filter type
+                    if (selectedText && selectedText !== 'لطفا انتخاب کنید') {
+                        addBadge(selectedText, filterType);
+                        loadFilteredEnginerooms(currentPage);
+                        $('#filter_name').show();
+                    } else {
+                        // Reset the filter if "لطفا انتخاب کنید" is selected
+                        removeBadge(filterType);
+                        loadEnginerooms(currentPage);
+                        $(this).val('');
+                        $('#filter_name').hide();
+                    }
+                    // loadFilteredEnginerooms(currentPage);
+                } else {
+                    loadEnginerooms(currentPage);
+                    $(this).val('');
+                    $('#filter_name').hide();
+                }
+            });
+
+            // Click event for the search button
+            $("#search-btn").on("click", function () {
+                search();
+            });
+
+            // Keyup event for the search input field
+            $("#search").on("keyup", function (event) {
+                // Check if the Enter key was pressed (keyCode 13)
+                if (event.keyCode === 13) {
+                    search();
+                }
+            });
+
+            // Function to handle search functionality
+            function search() {
+                currentPage = 1;
+                var searchTerm = $('#search').val().trim();
+
+                if (searchTerm !== '') {
+                    addBadge(`جستجو : ${searchTerm}`, 'search');
+                    $('#filter_name').show();
+                    loadFilteredEnginerooms(currentPage);
+                } else {
+                    loadEnginerooms(currentPage);
+                    removeBadge('search');
+                    $('#filter_name').hide();
+                }
+            }
+
+
+
+            function listOfEnginroom(resp) {
+                const tableBody = $('#enginroom-list tbody');
+                tableBody.empty()
+                resp.results.forEach(function (obj) {
+
+                    if (obj.status === true) {
+                        status = 'تایید';
+                        trColor = '#d8f3dc';
+                        if (access) {
+                            lastTdContent = `<a href="/update-enginroom/${obj.id}"><i class="btn btn-sm btn-warning fa fa-pencil"></i></a>`;
+                        }
+
+                        fill_data = `<a href="/create-installation/${obj.id}" class="btn btn-info"> تکمیل اطلاعات </a>`;
+                    } else if (obj.status === false) {
+                        status = 'رد';
+                        trColor = '#fae0e4';
+                        lastTdContent = `
+                        <a><i id="comment-button-${obj.id}" class="btn btn-primary fa fa-comment comment-button" data-enginroom-id="${obj.id}" data-enginroom-name="${obj.name}"></i></a>
+                        <a href="/update-enginroom/${obj.id}"><i class="btn btn-sm btn-warning fa fa-pencil"></i></a>
+                            `;
+                        fill_data = ''
+                    } else {
+                        status = 'در انتظار تایید';
+                        trColor = '';
+                        lastTdContent = `<a href="/update-enginroom/${obj.id}"><i class="btn btn-sm btn-warning fa fa-pencil"></i></a>`;
+                        fill_data = ''
+
+                        // <a class="btn btn-sm btn-danger fa fa-trash delete-button" data-toggle="modal" data-target="#deleteConfirmationModal" data-enginroom-id="${obj.id}" data-enginroom-name="${obj.name}"></a>
+                    }
+
+                    const hideLastTd = obj.status === null;
+                    let phone_number1;
+                    let phone_number2
+                    if (obj.details != null) {
+
+                        phone_number1 = obj.details.phone_number1 ? obj.details.phone_number1 : '';
+                        phone_number2 = obj.details.phone_number2 ? obj.details.phone_number2 : '';
+                    } else {
+                        phone_number1 = '';
+                        phone_number2 = '';
+                    }
+                    let latitude;
+                    let longitude;
+                    if (obj.lat_long) {
+                        [latitude, longitude] = obj.lat_long.split(',');
+                        map = `<a class="btn" onclick="openMaps(${latitude}, ${longitude})"><i class="fa fa-lg fa-map-marker"></i></a>`
+                    }
+                    else {
+                        map = 'عدم‌انتخاب موقعیت روی نقشه'
+                    }
+                    // if(obj.status === null || obj.status === false){
+                    //     fill_content  = `<td class=" ">اجازه دسترسی ندارد</td>`
+                    // }
+                    // else{
+                    //     fill_content = `<td class=" "><a href="/create-installation/${obj.id}" class="btn btn-info"> تکمیل اطلاعات </a></td>`
+                    // }
+
+                    const row = `
+                   
+                    <tr id="enginroom_${obj.id}" data-enginroom-id="${obj.id}"  id="status-${obj.id}" style="background-color: ${trColor};">
+        
+
+                    <td class="enginroom-name" onclick="showDetail(${obj.id})">${obj.name}</td>
+                    <td class=" " onclick="showDetail(${obj.id})">${obj.organization}</td>
+                    <td class=" " onclick="showDetail(${obj.id})">${obj.administration}</td>
+                    <td class=" " onclick="showDetail(${obj.id})">${obj.creator}</td>
+                    ${access
+                            ? `<td class="a-right">
+                                <a  class="btn btn-success" onclick="acceptEnginroom(${obj.id})">تایید</a>
+                        <a class="btn btn-danger " onclick="rejectEnginroom(${obj.id}, '${obj.name}')">  رد </a>
+                                </td>`
+                            : `<td class="a-right" onclick="showDetail(${obj.id})" ><p id="status">${status}</p></td>`
+                        }
+                    
+                        <td class=" " id="fill_data_${obj.id}">${fill_data}</td>
+                    
+                   
+                    <td>
+                 <a class="phone-number" href="tel:${phone_number1}">${phone_number1}</a><br>
+                 <a class="phone-number" href="tel:${phone_number2}">${phone_number2}</a>
+                  </td>
+                    <td id=map>${map}</td>
+                    <td class="last" id=last_${obj.id}>${lastTdContent}</td>
+                    </tr>
+                                        
+
+                    
+                `;
+                    tableBody.append(row);
+                });
+
+            }
+
+        });
+        $('select').select2();
+        let enginroomToDeleteId;
+        // $('.phone-number').on('click', function (event) {
+        //     event.preventDefault();
+        //     const phoneNumber = $(this).attr('href').substr(4); // Extract the phone number from the href attribute
+        //     const phoneNumberInput = $('<input type="tel">').val(phoneNumber); // Create a hidden input field with the phone number
+        //     $('body').append(phoneNumberInput); // Append the input field to the body
+        //     phoneNumberInput.focus().select(); // Focus and select the input field to trigger the mobile keypad
+        //     phoneNumberInput.remove(); // Remove the input field once it loses focus
+        // });
+        // When the trash button is clicked
+        // $(document).on('click', '.delete-button', function () {
+        //     const enginroomId = $(this).data('enginroom-id');
+        //     const enginroomName = $(this).data('enginroom-name'); // Add data-enginroom-name attribute to your HTML
+
+        //     // Display a SweetAlert confirmation dialog
+        //     Swal.fire({
+
+        //         title: 'حذف دستگاه',
+        //         html: `<span style="font-size: 20px;">آیا می‌خواهید دستگاه ${enginroomName} را حذف کنید؟</span>`,
+        //         icon: 'warning',
+        //         iconHtml: '؟',
+        //         showCancelButton: true,
+        //         confirmButtonColor: '#3085d6',
+        //         cancelButtonColor: '#d33',
+        //         confirmButtonText: 'بله',
+        //         cancelButtonText: 'خیر'
+        //     }).then((result) => {
+        //         if (result.isConfirmed) {
+        //             // User clicked "بله," proceed with the deletion
+
+        //             deleteEnginroom(enginroomId, enginroomName);
+        //             // engineroomCount()
+        //         }
+        //     });
+        // });
+
+        // // Function to delete the Engineroom using AJAX
+        function engineroomCount() {
+            $.ajax({
+                type: 'GET',
+                url: '/apiv2/get_object_count/',
+                success: function (response) {
+                    $('#total_engineroom').text(response.device)
+                },
+                error: function (error) {
+                    console.error('Error Engineroom Count:', error.responseJSON);
+                }
+            });
+        } 
+        // function deleteEnginroom(enginroomId, enginroomName) {
+        // $.ajax({
+        //     type: "DELETE",
+        //     url: `/api/enginroom/${enginroomId}/`,
+        //     headers: {
+        //         'X-CSRFToken': $('input[name="csrfmiddlewaretoken"]').val() // Include the CSRF token in the headers
+        //     },
+        //     success: function (response) {
+        //         // Remove the row from the table
+        //         $(`#enginroom_${enginroomId}`).remove();
+        //         // Hide the modal
+        //         $('#deleteConfirmationModal').modal('hide');
+        //         // Show a success message using SweetAlert
+        //         Swal.fire('حذف شد!', `"${enginroomName}" با موفقیت حذف شد.`, 'success');
+        //         engineroomCount()
+        //     },
+        //     error: function (error) {
+        //         console.error('Error deleting Engineroom:', error.responseJSON);
+        //         // You can handle errors here, e.g., display an error message using SweetAlert
+        //         Swal.fire('خطا', 'خطایی در حذف اتفاق افتاده است.', 'error');
+        //     }
+        // });
+        // }
+
+
+    </script>
+
+</body>
+
+</html>

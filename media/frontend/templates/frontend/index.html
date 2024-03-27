@@ -1,0 +1,20 @@
+{% extends 'main.html' %}
+{% load static %}
+{% block headcontent %}
+{% include 'head.html' with title="Installers App" %}
+{% endblock %}
+{% block content%}
+<style>
+    .center {
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+        margin-top: auto;
+        width: 40%;
+        border-radius: 50%;
+        padding-top: 10px;
+    }
+</style>
+<img src="{% static 'images/logo-romak.jpg' %}" class="center">
+
+{% endblock%}

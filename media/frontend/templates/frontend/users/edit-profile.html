@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+{% load static %}
+{% block headcontent %}
+{% include 'head.html' with title="Installers App| Edit Profile" %}
+{% endblock %}
+<!-- /header content -->
+
+<body class="nav-md">
+
+    <div class="container body">
+        <div class="main_container">
+            <div class="col-md-3 left_col hidden-print">
+                <div class="left_col scroll-view">
+                    {% include 'navbar.html'%}
+                </div>
+            </div>
+
+            <!-- top navigation -->
+            <div class="top_nav hidden-print">
+                <div class="nav_menu">
+                    <nav>
+                        <div class="nav toggle">
+                            <a id="menu_toggle"><i class="fa fa-bars"></i></a>
+                        </div>
+
+                        <ul class="nav navbar-nav navbar-right">
+                            <li class="">
+                                <a href="javascript:;" class="user-profile dropdown-toggle" data-toggle="dropdown"
+                                    aria-expanded="false">
+                                    {{request.session.username}} <span class=" fa fa-angle-down"></span>
+                                </a>
+                                <ul class="dropdown-menu dropdown-usermenu pull-right">
+                            </li>
+                            <li><a href="/dashboard/"><i class="fa fa-user pull-right"></i>
+                                    پروفایل</a></li>
+                            <li><a href="/reset_password/{{request.session.user_id}}"><i
+                                        class="fa fa-lock pull-right"></i>
+                                    تغییر رمزعبور</a></li>
+                            <hr>
+                            <li><a id="logout" onclick="logout()"><i class="fa fa-sign-out pull-right"></i>
+                                    خروج</a></li>
+                        </ul>
+                        </li>
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+            <!-- /top navigation -->
+            <!-- /header content -->
+
+            <!-- page content -->
+            <div class="right_col" role="main">
+                <div class="">
+                    <div class="page-title">
+                        <div class="title_left">
+
+                        </div>
+
+                        <div class="title_right">
+                            <div class="col-md-5 col-sm-5 col-xs-12 form-group pull-right top_search">
+                                <div class="input-group">
+                                    {% csrf_token %}
+
+                                    <span class="input-group-btn">
+
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="clearfix"></div>
+
+                    <div class="col-md-12 col-sm-12 col-xs-12">
+                        <div class="x_panel">
+                            <div class="x_title">
+                                <div class="row x_title">
+
+                                    <h1 class="text-center"> بروزرسانی کاربر</h1>
+                                    <form method="POST" id="update-form">
+                                        {% csrf_token %}
+                                        <label for="username">نام کاربری</label>
+                                        <input type="text" id="username" name="username" class="form-control"
+                                            required />
+                                        <label for="password">رمزعبور</label>
+                                       
+                                        <p class="small">
+                                            رمزعبور قابل مشاهده نیست برای تغییر رمزعبور
+                                            روی این <a class="btn btn-primary"
+                                                href="/reset_password/{{request.session.user_id}}">لینک</a> کلیک کنید
+                                        </p>
+                                        <br />
+                                        <label for="first-name">نام</label>
+                                        <input type="text" id="first-name" name="first-name" class="form-control" />
+                                        <label for="last-name">نام خانوادگی</label>
+                                        <input type="text" id="last-name" name="last-name" class="form-control" />
+                                        <label for="email">ایمیل</label>
+                                        <input type="email" id="email" name="email" class="form-control" />
+                                        <label for="change-profile-image">عکس پروفایل 
+                                        <img src="" id="current-profile-image" name="current-profile-image"
+                                            loading="lazy" class="img-fluid thumbnail"
+                                            style="width: 100px; height: 100px;" />
+                                        <p >بارگزاری عکس‌ <img width="50" height="50"
+                                                src="{% static 'images/icons8-upload-to-cloud-50.png' %}"
+                                                alt="upload-to-cloud--v1" /></p><br>
+                                            </label>
+                                        <input type="file" accept="image/jpeg,image/png" id="change-profile-image"
+                                            name="change-profile-image"  style="display:none;"/>
+
+
+                                    
+
+
+
+                                        <label for="phone-number" style="display:inherit;">شماره همراه</label>
+                                        <input type="text" id="phone-number" name="phone-number" class="form-control" />
+                                        <br>
+                                        <input type="submit" value="بروزرسانی" id="update-user" />
+                                    </form>
+                                    <div class="progress" style="display: none;">
+
+                                    </div>
+                                </div>
+
+
+
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            <!-- /page content -->
+
+            <!-- /page content -->
+
+            <!-- footer content -->
+            <footer class="hidden-print">
+                <div class="pull-left">
+
+                </div>
+                <div class="clearfix"></div>
+            </footer>
+            <!-- /footer content -->
+        </div>
+    </div>
+    <div id="lock_screen">
+        <table>
+            <tr>
+                <td>
+                    <div class="clock"></div>
+                    <span class="unlock">
+                        <span class="fa-stack fa-5x">
+                            <i class="fa fa-square-o fa-stack-2x fa-inverse"></i>
+                            <i id="icon_lock" class="fa fa-lock fa-stack-1x fa-inverse"></i>
+                        </span>
+                    </span>
+                </td>
+            </tr>
+        </table>
+    </div>
+    {% include 'scripts.html' %}
+
+    <script>
+        // The User id that receive from Front View
+        let user_id = "{{request.session.user_id}}";
+        // console.log("user admin: ", is_admin);
+        let newImageUploaded = false
+        let profileImage;
+        $(document).ready(function () {
+            $("#change-profile-image").on("change", function (e) {
+                let imgUploaded = URL.createObjectURL(e.target.files[0])
+                console.log(imgUploaded);
+                $("#current-profile-image").attr("src", imgUploaded);
+            })
+            // This Ajax method based on user_id and this endpoint /api/users/user_id/ Filling user data
+            $.ajax({
+                type: "GET",
+                url: `/api/users/${user_id}/`,
+                success: function (response) {
+                    $("[name=username]").val(response.username);
+                    $("#first-name").val(response.first_name);
+                    $("#last-name").val(response.last_name);
+                    $("#email").val(response.email);
+                   
+                    let isActive = response.is_active;
+
+                    // let password = response.password;
+                    // let lastLogin = response.last_login;
+                    let isSuperuser = response.is_superuser;
+                    let isStaff = response.is_staff;
+                    // let dateJoined = response.date_joined;
+                    // let groups = response.groups;
+                    // let userPermission = response.user_permissions
+
+                    $("#update-user").on("click", function (e) {
+
+                        let username = $('[name=username]').val();
+                        // let password = $("#password").val();
+                        let firstName = $("#first-name").val();
+                        let lastName = $("#last-name").val();
+                        let email = $("#email").val();
+
+
+                        e.preventDefault();
+                        const userData = {
+                            // 'password': password,
+                            'username': username,
+                            'email': email,
+                            'is_active': isActive,
+                            'first_name': firstName,
+                            'last_name': lastName,
+                            'is_staff': isStaff,
+                            'is_superuser': isSuperuser,
+                            // 'last_login': lastLogin,
+                            // 'date_joined': dateJoined,
+                            // 'groups': groups
+                        };
+                        console.table(userData);
+
+                        $.ajax({
+                            type: "PATCH",
+                            url: `/api/users/${user_id}/`,
+                            data: userData,
+                            headers: {
+                                "X-CSRFToken": $("[name=csrfmiddlewaretoken]").val(),
+                            },
+                            success: function (response) {
+                                console.log("User data updated", response);
+                                // window.location.href = "/dashboard/";
+                            },
+                            error: function (response) {
+                                console.log("Error updating user data.", response.error);
+                            },
+                        });
+                    });
+                },
+            });
+            $.ajax({
+                type: "GET",
+                url: `/api/users-profile/${user_id}/`,
+                success: function (response) {
+                    currentProfileImageURL = response.profile_image;
+                    console.log(currentProfileImageURL);
+                    $("#current-profile-image").attr("src", currentProfileImageURL);
+                    $("#phone-number").val(response.phone_number);
+
+                    $("#update-user").on("click", function (e) {
+                        e.preventDefault();
+
+                        let phone_number = $("#phone-number").val();
+                        let img = $("#change-profile-image")[0].files[0];
+
+                        if (!img) {
+
+                            let profileData = {
+                                'phone_number': phone_number,
+                                'user': user_id
+                            };
+
+                            $.ajax({
+                                type: "PATCH",
+                                url: `/api/users-profile/${user_id}/`,
+                                data: JSON.stringify(profileData),
+                                contentType: "application/json",
+                                headers: {
+                                    "X-CSRFToken": $("[name=csrfmiddlewaretoken]").val(),
+                                },
+                                xhr: function () {
+                                    let xhr = new window.XMLHttpRequest();
+                                    xhr.upload.addEventListener("progress", function (evt) {
+                                        if (evt.lengthComputable) {
+                                            progress = (evt.loaded / evt.total) * 100;
+                                            // console.log("Progress:", progress);
+                                            $(".progress").show()
+                                            $(".progress").append(`<div class="progress">
+                                        <div class="progress-bar progress-bar-striped bg-info" role="progressbar" style="width: ${progress}%" aria-valuenow="${progress}" aria-valuemin="0" aria-valuemax="100"> درحال ثبت ${Math.round(progress) + "%"}</div>
+                                        </div>`);
+                                        }
+                                    }, false);
+                                    return xhr;
+                                },
+                                success: function (response) {
+                                    console.log("profile data updated", response);
+
+                                    window.location.href = '/dashboard/'
+                                },
+                                error: function (error) {
+                                    console.error('ERROR PROFILE DATE :', error.responseJSON)
+                                }
+                            });
+
+
+                        } else {
+                            // If new image uploaded, convert it to base64
+                            let reader = new FileReader();
+                            reader.onloadend = function () {
+                                let profileImage = reader.result;
+
+
+                                let profileData = {
+                                    'phone_number': phone_number,
+                                    'profile_image': profileImage,
+                                    'user': user_id
+                                };
+
+                                console.log('Data to be sent:', profileData);
+
+
+                                $.ajax({
+                                    type: "PUT",
+                                    url: `/api/users-profile/${user_id}/`,
+                                    data: JSON.stringify(profileData),
+                                    contentType: "application/json",
+                                    headers: {
+                                        "X-CSRFToken": $("[name=csrfmiddlewaretoken]").val(),
+                                    },
+                                    xhr: function () {
+                                        let xhr = new window.XMLHttpRequest();
+                                        xhr.upload.addEventListener("progress", function (evt) {
+                                            if (evt.lengthComputable) {
+                                                progress = (evt.loaded / evt.total) * 100;
+                                                // console.log("Progress:", progress);
+                                                $(".progress").show()
+                                                $(".progress").append(`<div class="progress">
+                                        <div class="progress-bar progress-bar-striped bg-info" role="progressbar" style="width: ${progress}%" aria-valuenow="${progress}" aria-valuemin="0" aria-valuemax="100">${Math.round(progress) + "%"}</div>
+                                        </div>`);
+                                            }
+                                        }, false);
+                                        return xhr;
+                                    },
+                                    success: function (response) {
+                                        console.log("profile data updated", response);
+
+                                        Swal.fire({
+                                            icon: 'success',
+                                            title: 'تایید',
+                                            text: 'پروفایل با موفقیت بروز رسانی شد',
+
+                                        });
+                                        window.location.href = '/dashboard/'
+                                        // }
+                                        // else {
+                                        //   window.location.href = '/profile/'
+                                        // }
+                                    },
+                                    error: function (error) {
+                                        console.error('ERROR PROFILE DATE :', error.responseJSON)
+                                        Swal.fire({
+                                            icon: 'error',
+                                            title: 'خطا',
+                                            text: 'خطایی رخ داده است',
+                                            confirmButtonText: 'تایید',
+                                        });
+                                    }
+                                });
+
+                            };
+                            reader.readAsDataURL(img);
+                        }
+                    });
+                },
+            });
+
+            // Function to fetch the current image and convert it to base64
+            function getBase64FromImageUrl(url, callback) {
+                let img = new Image();
+                img.setAttribute("crossOrigin", "anonymous");
+
+                img.onload = function () {
+                    let canvas = document.createElement("canvas");
+                    canvas.width = this.width;
+                    canvas.height = this.height;
+
+                    let ctx = canvas.getContext("2d");
+                    ctx.drawImage(this, 0, 0);
+
+                    let dataURL = canvas.toDataURL("image/jpeg");
+                    callback(dataURL.replace(/^data:image\/(png|jpg);base64,/, ""));
+                    console.log(dataURL);
+                };
+
+                img.src = url;
+            }
+
+
+
+        });
+    </script>
+
+
+
+</body>
+
+</html>

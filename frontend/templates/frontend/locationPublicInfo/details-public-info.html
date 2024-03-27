@@ -1,0 +1,51 @@
+{% extends 'main.html' %}
+{% block headcontent %}
+{% include 'head.html' with title="Installers App| Installation public info details" %}
+{% endblock %}
+{% load static %}
+{% block content %}
+
+<div class="container rtl-txt my-5">
+    <p>اطلاعات عمومی نصب</p>
+
+
+
+
+    <div class="card">
+        <img src="" class="card-img-top" alt="Building Image">
+        <div class="card-body">
+            <h5 class="card-title"> enginroom </h5>
+            <p class="card-text"><strong>آدرس</strong> address </p>
+            <p class="card-text"><strong>تلفن رابط۱: </strong> phone_number1</p>
+            <p class="card-text"><strong>تلفن رابط۲: :</strong> {{ location_public_info.phone_number2 }}</p>
+            <p class="card-text"><strong>متراژ بنا: </strong> {{ location_public_info.building_metrage }} مترمربع</p>
+            <p class="card-text"><strong>شماره اشتراک کنتور:</strong>
+                {{location_public_info.meter_subscription_number }}</p>
+            <p class="card-text" id="loc"><strong>Location:</strong> {{ location_public_info.location }}</p>
+            <div id="map" style="width: 300px; height: 300px;"></div>
+        </div>
+    </div>
+</div>
+<script src="{% static 'leaflet/leaflet.js' %}"></script>
+<script>
+    let p = document.getElementById('loc')
+    let pText = p.textContent;
+    console.log('pText: ', pText);
+    let loc = pText.split(': ')[1]
+    console.log('location: ', loc);
+    let l = loc.split(',')
+    let lat = parseFloat(l[0])
+    var lng = parseFloat(l[1])
+    console.log('lat: ', lat, 'lng: ', lng);
+    var map = L.map('map').setView([35.6892, 51.3890], 13);
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        attribution: 'Map data © <a href="https://openstreetmap.org">OpenStreetMap</a> contributors'
+    }).addTo(map);
+    L.marker([lat, lng]).addTo(map);
+
+
+</script>
+
+{% endblock content %}

@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+{% load static %}
+{% block headcontent %}
+{% include 'head.html' with title="Installers App| Engineroom Features List" %}
+{% endblock %}
+<!-- /header content --> 
+<style>
+    .pagination-container {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+
+        padding: 10px;
+        border: 1px white;
+        border-radius: 5px;
+    }
+
+    .pagination button {
+        border: 2px solid #34495E;
+
+    }
+
+    .prev-page,
+    .next-page {
+        background-color: #34495E;
+        color: white;
+        border: none;
+        padding: 8px 16px;
+        margin: 0 2px;
+        cursor: pointer;
+        border-radius: 5px;
+
+    }
+
+    .prev-page:hover,
+    .next-page:hover {
+        background-color: #334658;
+
+    }
+
+    .page-numbers {
+        display: flex;
+    }
+
+    .page-number {
+        padding: 6px 12px;
+        margin: 0 2px;
+        border-radius: 5px;
+        display: flex;
+        gap: 10px;
+    }
+
+    .ellipsis {
+        padding: 2px 0;
+        color: #34495E;
+        font-size: 20px;
+        font-weight: bold;
+        margin: 0 4px;
+    }
+
+    .page-number.active {
+        background-color: #34495e;
+        color: #fff;
+        border-radius: 5px;
+
+    }
+
+
+    .phone-number {
+        text-decoration: underline;
+
+
+    }
+
+    #reset_filter {
+        display: flex;
+        border-radius: 50%;
+        border: none;
+        margin-top: 32px;
+    }
+
+    #reset_filter i {
+        color: #ff0000;
+    }
+</style>
+
+<body class="nav-md">
+
+    <div class="container body">
+        <div class="main_container">
+            <div class="col-md-3 left_col hidden-print">
+                <div class="left_col scroll-view">
+                    {% include 'navbar.html'%}
+                </div>
+            </div>
+
+            <!-- top navigation -->
+            <div class="top_nav hidden-print">
+                <div class="nav_menu">
+                    <nav>
+                        <div class="nav toggle">
+                            <a id="menu_toggle"><i class="fa fa-bars"></i></a>
+                        </div>
+
+                        <ul class="nav navbar-nav navbar-right">
+                            <li class="">
+                                <a href="javascript:;" class="user-profile dropdown-toggle" data-toggle="dropdown"
+                                    aria-expanded="false">
+                                    {{request.session.username}} <span class=" fa fa-angle-down"></span>
+                                </a>
+                                <ul class="dropdown-menu dropdown-usermenu pull-right">
+                            </li>
+                            <li><a href="/dashboard/"><i class="fa fa-user pull-right"></i>
+                                    پروفایل</a></li>
+                            <li><a href="/reset_password/{{request.session.user_id}}"><i
+                                        class="fa fa-lock pull-right"></i>
+                                    تغییر رمزعبور</a></li>
+                            <hr>
+                            <li><a id="logout" onclick="logout()"><i class="fa fa-sign-out pull-right"></i>
+                                    خروج</a></li>
+                        </ul>
+                        </li>
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+            <!-- /top navigation -->
+            <!-- /header content -->
+
+            <!-- page content -->
+            <div class="right_col" role="main">
+                <div class="">
+                    <div class="page-title">
+                        <div class="title_left">
+                            <h3></h3>
+                        </div>
+
+                        <div class="title_right">
+                            <div class="col-md-5 col-sm-5 col-xs-12 form-group pull-right top_search">
+                                <div class="input-group">
+                                    {% csrf_token %}
+                                    <input type="text" class="form-control" placeholder="جست و جو برای..." id="search">
+                                    <span class="input-group-btn">
+                                        <button class="btn btn-default" type="button"><i
+                                                class="fa fa-search"></i></button>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+
+                    <div class="col-md-12 col-sm-12 col-xs-12">
+                        <div class="x_panel">
+                            <div class="x_title">
+                                <div class="row x_title">
+                                    <div class="col-md-6 col-sm-12 col-xs-12">
+                                        <h3>لیست نمای موتور‌خانه‌ها</h3>
+                                    </div>
+
+                                    <div class="col-md-6 col-sm-12 col-xs-12">
+                                        <h3>تعداد کل نمای موتور‌خانه‌ها: <strong id="total_engineroomfeature"></strong>
+                                        </h3>
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                            <div class="x_content">
+
+
+                                <div class="input-group">
+
+                                </div>
+                                <div class="table-responsive">
+                                    <table class="table table-striped jambo_table dataTable no-footer "
+                                        id="engineroomfeature-list">
+                                        <thead>
+                                            <tr class="headings">
+
+
+                                                <th class="column-title">نمای موتورخانه</th>
+                                                <!-- <th class="column-title">شهر</th> -->
+                                                <th class="column-title no-link"><span class="nobr"></span>
+                                                </th>
+                                            </tr>
+                                        </thead>
+
+                                        <tbody>
+
+                                        </tbody>
+
+                                    </table>
+
+                                    <div class="col-md-3 col-xs-3">
+                                        <!-- <a class="btn btn-success" style="left:3%;" id="add_engineroomfeature">افزودن
+                                            سازمان<i class="fa fa-plus-circle"></i></a> -->
+                                        <div class="pagination-container">
+                                            <button class="prev-page"><i class="fa fa-chevron-right"></i></button>
+                                            <div class="pagination justify-content-center pagination-sm">
+                                                <div class="page-numbers"></div>
+                                            </div>
+                                            <button class="next-page"><i class="fa fa-chevron-left"></i></button>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            <!-- /page content -->
+
+            <!-- /page content -->
+
+            <!-- footer content -->
+            <footer class="hidden-print">
+                <div class="pull-left">
+
+                </div>
+                <div class="clearfix"></div>
+            </footer>
+            <!-- /footer content -->
+        </div>
+    </div>
+    <div id="lock_screen">
+        <table>
+            <tr>
+                <td>
+                    <div class="clock"></div>
+                    <span class="unlock">
+                        <span class="fa-stack fa-5x">
+                            <i class="fa fa-square-o fa-stack-2x fa-inverse"></i>
+                            <i id="icon_lock" class="fa fa-lock fa-stack-1x fa-inverse"></i>
+                        </span>
+                    </span>
+                </td>
+            </tr>
+        </table>
+    </div>
+    {% include 'scripts.html' %}
+    <script>
+
+        let currentPage = 1;
+        let totalPages;
+        let admin = "{{request.session.is_admin}}" === "True";
+        let staff = "{{request.session.is_staff}}" === "True";
+        let access = admin || staff
+
+        let status;
+        let trColor;
+        let fill_content;
+        let map = ''
+        let lastTdContent = '';
+
+
+
+        $(document).ready(function () {
+
+            engineroomfeatureCount()
+
+            $('#add_engineroomfeature').on('click', function () {
+                Swal.fire({
+                    title: "اضافه کردن نمای‌جدید",
+                    html: '<input id="feature_name" class="swal2-input" placeholder="نمای موتورخانه">',
+                    showCancelButton: true,
+                    confirmButtonText: "ثبت",
+                    cancelButtonText: "انصراف",
+
+
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        var feature_name = $("#feature_name").val();
+
+
+                        $.ajax({
+                            type: "POST",
+                            url: "/apiv2/objects/engineroomfeature/add/",
+                            data: JSON.stringify({
+                                "main_3d_view": feature_name
+                            }),
+                            contentType: "application/json",
+                            headers: {
+                                "X-CSRFToken": $("[name=csrfmiddlewaretoken]").val(),
+                            },
+                            success: function (response) {
+
+                                Swal.fire("تایید", "نمای‌موتورخانه با موفقیت اضافه شد", "success");
+                                $('#engineroomfeature-list tbody').empty();
+                                // Populate the table with the updated data
+                                loadEngineroomfeatures(currentPage);
+                                // engineroomfeature_select.find('option').last().prop('selected', true);
+                            },
+                            error: function (xhr, status, error) {
+                                if (xhr.status === 409) {
+                                    Swal.fire({
+                                        title: "خطا",
+                                        text: "نمای موتورخانه قبلا ثبت شده است.",
+                                        icon: "error"
+                                    });
+                                } else {
+
+
+                                    Swal.fire({
+                                        title: "خطا",
+                                        text: "خطایی رخ داده است",
+                                        icon: "error"
+                                    });
+                                    console.error('Failed to ّINSERT engineroom features details: ', error.responseJSON);
+                                }
+
+                            }
+                        });
+                    }
+                })
+            });
+            /////////////////////////////////////edit Engineroomfeature /////////////////////////////////////
+            $(document).on("click", "#edit_engineroomfeature", function () {
+                var id = $(this).data("id");
+
+
+
+
+                if (!id) {
+                    Swal.fire({
+                        title: "خطا",
+                        text: "لطفاً یک نما را انتخاب کنید",
+                        icon: "error"
+                    });
+                    return;
+                }
+
+                // If an engineroomfeature ID is selected, proceed with AJAX request to fetch its details
+                $.ajax({
+                    type: "GET",
+                    url: `/apiv2/objects/engineroomfeature/${id}/`,
+                    success: function (response) {
+                        Swal.fire({
+                            title: "ویرایش نمای موتور‌خانه",
+                            html: '<input id="feature_name" class="swal2-input" placeholder="نمای موتورخانه" value="' + response.main_3d_view + '">',
+                            showCancelButton: true,
+                            confirmButtonText: "ثبت",
+                            cancelButtonText: "انصراف",
+                            preConfirm: function () {
+                                var feature_name = $("#feature_name").val();
+
+                                // Perform AJAX request to update feature details
+                                $.ajax({
+                                    type: "POST",
+                                    url: "/apiv2/objects/engineroomfeature/edit/",
+                                    data: JSON.stringify({
+                                        "id": id,
+                                        "main_3d_view": feature_name,
+
+                                    }),
+                                    contentType: "application/json",
+                                    headers: {
+                                        "X-CSRFToken": $("[name=csrfmiddlewaretoken]").val(),
+                                    },
+                                    success: function (response) {
+                                        Swal.fire("تایید", "نمای موتورخانه با موفقیت بروزرسانی شد", "success");
+                                        $('#engineroomfeature-list tbody').empty();
+                                        // Populate the table with the updated data
+                                        loadEngineroomfeatures(currentPage);
+                                    },
+                                    error: function (xhr, status, error) {
+                                        Swal.fire({
+                                            title: "خطا",
+                                            text: "خطایی رخ داده است",
+                                            icon: "error"
+                                        });
+                                        console.error('Failed to UPDATE Feature details: ', error.responseJSON);
+                                    }
+                                });
+                            }
+                        });
+                    },
+                    error: function (xhr, status, error) {
+                        Swal.fire({
+                            title: "خطا",
+                            text: "نمای موتور‌خانه‌ای یافت نشد",
+                            icon: "error"
+                        });
+                        console.error('Failed to fetch engineroomfeature details: ', error.responseJSON);
+                    }
+                });
+            })
+            //////////////////////////////////////////////////////////////////////////////////////////////////////
+            $(document).on("click", "#show_engineroomfeature", function () {
+                var view = $(this).data("view");
+
+                var imageUrl = `../static/images/engineroomfeatures/${view}.png`
+
+            // Display the image preview and feature details in a SweetAlert dialog
+            Swal.fire({
+                title: "اطلاعات نمای‌موتورخانه",
+                html: `<b>نمای‌موتورخانه</b>: ${view}<br><br>
+                <img src="${imageUrl}" style="display: block; margin: 0 auto; max-width: 100%; border-radious=5px" alt="Engine Room Preview">`,
+                // Allow outside click to close the dialog
+                allowOutsideClick: true,
+
+                width: 'auto'
+            });
+            })
+
+
+            function loadEngineroomfeatures(page) {
+
+                const searchQuery = $('#search').val();
+
+                let url = '/apiv2/objects/engineroomfeature/?page=' + page;
+
+                if (searchQuery) {
+                    url += '&search=' + encodeURIComponent(searchQuery);
+                }
+
+                $.ajax({
+                    type: 'GET',
+                    url: url,
+                    success: function (response) {
+                        listOfEngineroomfeature(response);
+                        currentPage = page;
+                        totalPages = response.total_pages;
+                        // $('#total_Engineroomfeature').text(response.count)
+                        updatePageNumbers();
+                    },
+                    error: function (error) {
+                        console.error('Error loading engineroomfeatures:', error.responseJSON);
+                    }
+                });
+            }
+
+            function loadFilteredEngineroomfeatures(page) {
+                const searchQuery = $('#search').val();
+
+
+
+                $.ajax({
+                    type: 'GET',
+                    url: '/apiv2/objects/engineroomfeature/',
+                    data: {
+                        search: searchQuery
+                    },
+                    success: function (response) {
+                        listOfEngineroomfeature(response);
+                        currentPage = page;
+                        totalPages = response.total_pages;
+                        updatePageNumbers();
+                    },
+                    error: function (error) {
+                        console.error('Error loading filtered results:', error.responseJSON);
+                    }
+                });
+            }
+
+            loadEngineroomfeatures(currentPage);
+
+
+
+            $(".prev-page").on("click", function () {
+
+                if (currentPage > 1) {
+                    loadEngineroomfeatures(currentPage - 1); // Load the previous page
+                }
+
+            });
+
+            $(".next-page").on("click", function () {
+
+                if (currentPage < totalPages) {
+                    loadEngineroomfeatures(currentPage + 1); // Load the next page
+                }
+
+
+            });
+
+            function updatePageNumbers() {
+                if (currentPage === 1) {
+                    $(".prev-page").hide();
+                } else {
+                    $(".prev-page").show();
+                }
+
+                // Hide/show next button based on current page
+                if (currentPage === totalPages) {
+                    $(".next-page").hide();
+                } else {
+                    $(".next-page").show();
+                }
+                const pageNumbers = $(".page-numbers");
+                pageNumbers.empty();
+
+                const visiblePages = 3;
+                let startPage = Math.max(1, currentPage - Math.floor(visiblePages / 2));
+                let endPage = Math.min(totalPages, startPage + visiblePages - 1);
+
+                if (totalPages > visiblePages) {
+                    if (endPage === totalPages) {
+                        startPage = Math.max(1, totalPages - visiblePages + 1);
+                    } else if (startPage === 1) {
+                        endPage = Math.min(visiblePages, totalPages);
+                    }
+                }
+
+                if (startPage > 1) {
+                    pageNumbers.append($("<button>", { class: "page-number", text: 1, "data-page": 1 }));
+                    if (startPage > 2) {
+                        pageNumbers.append('<span class="ellipsis">...</span>');
+                    }
+                }
+
+                for (let i = startPage; i <= endPage; i++) {
+                    let pageNumberButton = $("<button>", { class: "page-number", text: i, "data-page": i });
+                    pageNumbers.append(pageNumberButton);
+                }
+
+                if (endPage < totalPages) {
+                    if (endPage < totalPages - 1) {
+                        pageNumbers.append('<span class="ellipsis">...</span>');
+                    }
+                    pageNumbers.append($("<button>", { class: "page-number", text: totalPages, "data-page": totalPages }));
+                }
+
+                // Highlight the current page number
+                $(`.page-number[data-page=${currentPage}]`).addClass("active");
+
+                // Page number click event handler
+                $(".page-number").on("click", function () {
+                    const page = $(this).data("page");
+                    $(`.page-number[data-page=${currentPage}]`).removeClass("active");
+                    $(`.page-number[data-page=${page}]`).addClass("active");
+                    loadEngineroomfeatures(page);
+                });
+            }
+
+
+
+
+            $("#search").on("keyup", function () {
+                // var value = $(this).val().toLowerCase();
+
+                loadFilteredEngineroomfeatures(currentPage);
+
+                // $("#engineroomfeature-list tbody tr").filter(function () {
+                //     $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+                // });
+
+            });
+
+            function listOfEngineroomfeature(resp) {
+                const tableBody = $('#engineroomfeature-list tbody');
+                tableBody.empty()
+                resp.results.forEach(function (obj) {
+                    var engineroom_feature_without_prefix= obj.main_3d_view.replace(/^Hirkan_/, '');
+
+                    const hideLastTd = obj.status === null;
+
+                    const row = `
+                   
+                    <tr id="engineroomfeature_${obj.id}" data-engineroomfeature-id="${obj.id}"  id="status-${obj.id}" style="background-color: ${trColor};">
+        
+
+                    
+                    <td class=" ">${engineroom_feature_without_prefix}</td>
+                    
+                    
+                  </td>
+                    <td class="last" id=last_${obj.id}><!--<a id="edit_engineroomfeature" data-id=${obj.id}><i class="btn btn-sm btn-warning fa fa-pencil"></i></a>-->
+                        <a id="show_engineroomfeature" data-view=${obj.main_3d_view}><i class="btn btn-sm btn-success fa fa-eye"></i></a>
+                    </td>
+                    </tr>
+                                        
+
+                    
+                `;
+                    tableBody.append(row);
+                });
+
+            }
+
+        });
+
+        let engineroomfeatureToDeleteId;
+
+
+
+
+
+
+        // // Function to delete the engineroomfeature using AJAX
+        function engineroomfeatureCount() {
+            $.ajax({
+                type: 'GET',
+                url: '/apiv2/get_object_count/',
+                success: function (response) {
+                    $('#total_engineroomfeature').text(response.engineroom_feature)
+                },
+                error: function (error) {
+                    console.error('Error engineroomfeature Count:', error.responseJSON);
+                }
+            });
+        }
+        // function deleteengineroomfeature(engineroomfeatureId, engineroomfeatureName) {
+        // $.ajax({
+        //     type: "DELETE",
+        //     url: `/api/engineroomfeature/${engineroomfeatureId}/`,
+        //     headers: {
+        //         'X-CSRFToken': $('input[name="csrfmiddlewaretoken"]').val() // Include the CSRF token in the headers
+        //     },
+        //     success: function (response) {
+        //         // Remove the row from the table
+        //         $(`#engineroomfeature_${engineroomfeatureId}`).remove();
+        //         // Hide the modal
+        //         $('#deleteConfirmationModal').modal('hide');
+        //         // Show a success message using SweetAlert
+        //         Swal.fire('حذف شد!', `"${engineroomfeatureName}" با موفقیت حذف شد.`, 'success');
+        //         engineroomfeatureCount()
+        //     },
+        //     error: function (error) {
+        //         console.error('Error deleting engineroomfeature:', error.responseJSON);
+        //         // You can handle errors here, e.g., display an error message using SweetAlert
+        //         Swal.fire('خطا', 'خطایی در حذف اتفاق افتاده است.', 'error');
+        //     }
+        // });
+        // }
+
+
+    </script>
+
+</body>
+
+</html>

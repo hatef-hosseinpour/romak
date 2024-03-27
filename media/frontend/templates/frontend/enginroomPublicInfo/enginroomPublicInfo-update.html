@@ -1,0 +1,204 @@
+{% extends 'main.html'%}
+{% load static %}
+{% block headcontent %}
+{% include 'head.html' with title="Installers App| Update Enginroom public info " %}
+{% endblock %}
+{% block content %}
+
+
+<div class="loginbox rtl-txt col-lg-8 col-xs-12 col-centered">
+    <h1> ویرایش اطلاعات عمومی موتورخانه</h1>
+    <form action="" method="" id="public-info-form">
+        {% csrf_token %}
+        <p>نوع کاربری</p>
+        <select class="form-select" id="select-usage" aria-label="Default select example">
+            <option>---</option>
+            <option value="heating">گرمایشی</option>
+            <option value="sanitary">آبگرم بهداشتی</option>
+            <option value="both">هردو (گرمایشی و آبگرم بهداشتی)</option>
+        </select>
+
+        <p>نام سازمان</p>
+        <select class="form-select" id="select-organization" aria-label="Default select example">
+            <option>---</option>
+
+        </select>
+
+        <br>
+        <div class="checkbox-container ">
+            <p class="col-md-7">آیا مبدل آب استخر/ جکوزی / گرمایش از کف دارد؟</p><br>
+            <input type="checkbox" id="has-exchanger" class="" name="has-exchanger">
+        </div>
+        <div id="exchanger" class="rtl-txt" style="display: none;">
+            <p>تعداد مبدل آب استخر</p>
+            <input type="number" min="0" class="form-control" id="pool" name="pool">
+            <p>تعداد مبدل جکوزی</p>
+            <input type="number" min="0" class="form-control" id="jaccuzi" name="jaccuzi">
+            <p>تعداد مبدل گرمایش از کف</p>
+            <input type="number" min="0" class="form-control" id="floor-heating" name="floor-heating">
+        </div>
+        <p>تعداد دیگ‌ها</p>
+        <input type="number" min="0" class="form-control" id="boilers" name="boilers" required>
+        <p>تعداد پمپ‌های سیرکوله</p>
+        <input type="number" min="0" class="form-control" id="circulate-pump" name="circulate-pump" required>
+        <p>تعداد منبع کوئلی</p>
+        <input type="number" min="0" class="form-control" id="coil-source" name="coil-source" required>
+        <p>تعداد پمپ‌های منبع کوئلی</p>
+        <input type="number" min="0" class="form-control" id="coil-source-pump" name="coil-source-pump" required>
+        <p>تعداد پمپ‌های آبگرم مصرفی</p>
+        <input type="number" min="0" class="form-control" id="hotwater-pump" name="hotwater-pump" required>
+
+        <input type="hidden" class="form-control" id="user" name="user">
+        <input type="submit" value="ویرایش" name="" id="update-public-info">
+    </form>
+
+    <script>
+        let id = '{{id}}'
+        function listOfEnginroom(resp) {
+            let selectElement = $('#select-organization');
+            resp.forEach(function (obj) {
+                let option = $('<option>');
+                option.val(obj.id).text(obj.organization)
+
+                selectElement.append(option)
+            })
+        }
+        $.ajax({
+            type: "GET",
+            url: "/api/organization/",
+            success: function (response) {
+                listOfEnginroom(response)
+            },
+            error: function (error) {
+                console.error('Error fetcing Enginroom details:', error);
+
+            }
+        });
+        $(document).ready(function () {
+
+
+            function toggleExchanger() {
+                if ($('#has-exchanger').prop('checked')) {
+                    $('#exchanger').fadeIn();
+
+                    $('#pool').prop('required', true);
+                    $('#jaccuzi').prop('required', true);
+                    $('#floor-heating').prop('required', true);
+                } else {
+                    $('#exchanger').fadeOut();
+
+                    $('#pool').prop('required', false);
+                    $('#jaccuzi').prop('required', false);
+                    $('#floor-heating').prop('required', false);
+                }
+            }
+
+
+
+
+            $.ajax({
+                type: "GET",
+                url: `/api/enginroom-public-info/${id}/`,
+                success: function (response) {
+                    $('#select-usage').val(response.usage);
+                    $('#has-exchanger').prop('checked', response.has_exchanger);
+                    if ($('#has-exchanger').prop('checked')) {
+                        $('#exchanger').fadeIn();
+
+                        $('#pool').prop('required', true);
+                        $('#jaccuzi').prop('required', true);
+                        $('#floor-heating').prop('required', true);
+                    } else {
+                        $('#exchanger').fadeOut();
+
+                        $('#pool').prop('required', false);
+                        $('#jaccuzi').prop('required', false);
+                        $('#floor-heating').prop('required', false);
+                    }
+                    $('#select-organization').val(response.organization);
+
+
+                    $('#pool').val(response.number_of_pool_exchangers);
+                    $('#jaccuzi').val(response.number_of_jaccuzi_exchangers);
+                    $('#floor-heating').val(response.number_of_floor_heating_exchangers);
+                    $('#boilers').val(response.number_of_boilers);
+                    $('#circulate-pump').val(response.number_of_circulating_pumps);
+                    $('#coil-source').val(response.number_of_coil_sources);
+                    $('#coil-source-pump').val(response.number_of_coil_sources_pumps);
+                    $('#hotwater-pump').val(response.number_of_hot_water_pumps)
+                    $('#user').val(response.user)
+                }
+
+            });
+            toggleExchanger();
+
+
+            $('#has-exchanger').on('click', toggleExchanger);
+        });
+        $('#update-public-info').on('click', function (event) {
+            event.preventDefault(event);
+
+
+
+            if ($('#select-usage').val() === '---') {
+                createAlert('danger', 'لطفا نوع کاربری موتورخانه را انتخاب کنید')
+            }
+            else if ($('#select-organization').val() === '---') {
+                createAlert('danger', 'لطفا سازمان موردنظر را انتخاب کنید')
+            }
+            else {
+                updateHasExchanger = $("#has-exchanger").prop("checked");
+
+                $("#has-exchanger").on("change", function () {
+                    updateHasExchanger = $(this).prop("checked");
+                });
+                updateFormData = {
+                    'usage': $('#select-usage').val(),
+                    'has_exchanger': updateHasExchanger,
+                    'number_of_pool_exchangers': updateHasExchanger ? $('#pool').val() : 0,
+                    'number_of_jaccuzi_exchangers': updateHasExchanger ? $('#jaccuzi').val() : 0,
+                    'number_of_floor_heating_exchangers': updateHasExchanger ? $('#floor-heating').val() : 0,
+                    'number_of_boilers': $('#boilers').val(),
+                    'number_of_circulating_pumps': $('#circulate-pump').val(),
+                    'number_of_coil_sources': $('#coil-source').val(),
+                    'number_of_coil_sources_pumps': $('#coil-source-pump').val(),
+                    'number_of_hot_water_pumps': $('#hotwater-pump').val(),
+                    'user': $('#user').val(),
+                    'organization': $('#select-organization').val()
+
+
+
+
+                }
+                console.log(updateFormData);
+                $.ajax({
+                    url: `/api/enginroom-public-info/${id}/`,
+                    type: 'PUT',
+                    data: updateFormData,
+                    headers: {
+                        "X-CSRFToken": $("[name=csrfmiddlewaretoken]").val(),
+                    },
+                    success: function (response) {
+
+                        console.log(response);
+                        createAlert('success', 'Data loaded successfully!');
+                        window.location.href = "/enginroom-info-list/"
+                    },
+                    error: function (error) {
+                        console.error(error.responseJSON);
+                        createAlert('danger', 'خطایی رخ داده است');
+                    }
+                });
+
+
+            }
+
+
+        });
+
+
+
+
+
+    </script>
+    {% endblock content%}

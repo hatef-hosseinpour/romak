@@ -1,0 +1,47 @@
+{% extends 'main.html'%}
+{% load static %}
+{% block headcontent %}
+{% include 'head.html' with title="Installers App| User Profile" %}
+{% endblock %}
+{% block content %}
+<div class="loginbox">
+
+
+  <h1> حذف کاربر </h1>
+  <form action="" method="POST" id="delete-user">
+    {% csrf_token %}
+    <p>آیا میخواهید {{user_id}} را حذف کنید؟</p><br>
+    <input type="submit" value="تایید" name="delete-btn" id="delete-btn">
+    <input type="submit" value="بازگشت" name="back-btn" id="back-btn">
+
+  </form>
+  <script>
+
+    $('#back-btn').on('click', function(e){
+      e.preventDefault()
+      window.location.href =  window.location.href = '/users-list/';
+    })
+    let user_id = "{{user_id}}";
+    console.log(user_id);
+
+    $('#delete-btn').on('click', function (e) {
+      e.preventDefault();
+      $.ajax({
+        method: "DELETE",
+        url: `/api/users/${user_id}/`,
+        headers: {
+          'X-CSRFToken': $('[name=csrfmiddlewaretoken]').val()
+        },
+ 
+        success: function (response) {
+           alert('کاربر با موفقیت حذف شد');
+          window.location.href = '/users-list/'; 
+        },
+        error: function (response) {
+           alert('خطایی رخ داده است');
+        }
+      });
+    })
+
+  </script>
+  {% endblock content %}

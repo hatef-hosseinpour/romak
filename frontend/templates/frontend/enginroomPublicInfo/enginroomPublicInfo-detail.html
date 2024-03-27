@@ -1,0 +1,123 @@
+{% extends 'main.html'%}
+{% load static %}
+{% block headcontent %}
+{% include 'head.html' with title="Installers App| Enginroom public info details" %}
+{% endblock %}
+{% block content %}
+
+<section class="vh-100 rtl-txt">
+    <div class="container py-5 h-100">
+        <div class="row d-flex justify-content-center align-items-center h-100">
+            <div class="col col-lg-6 mb-4 mb-lg-0">
+                <div class="card mb-3" style="border-radius: .5rem;">
+                    <div class="row g-0">
+                        <div class="col-md-4 gradient-custom text-center text-black"
+                            style="border-top-left-radius: .5rem; border-bottom-left-radius: .5rem;">
+                            <p class="img-fluid my-5" style="text-align: center;"> نوع کاربری</p>
+                            <h5 class="text-black" id="usage"></h5>
+
+                            <p class="img-fluid my-5" style="text-align: center;">نام نصاب</p>
+                            <h5 class="text-black" id="installer_name"></h5>
+                            
+                        </div>
+                        
+                        <div class="col-md-8">
+                            <div class="card-body p-4">
+                                <h6>اطلاعات عمومی موتورخانه</h6>
+                                <hr class="mt-0 mb-4">
+                                <div class="row pt-1">
+                                    <div class="col-12 mb-3">
+                                        <h6>نام سازمان</h6>
+                                        <p class="text-muted" id="enginroom-name"></p>
+                                    </div>
+                                    <div class="col-12 mb-3">
+                                        <h6>مبدل</h6>
+                                        <p class="text-muted" id="has-exchanger"></p>
+                                    </div>
+                                    <div class="col-12 mb-3" id="pool-exchangers">
+                                        <h6>تعداد مبدل آب استخر</h6>
+                                        <p class="text-muted" id="num-pool"></p>
+                                    </div>
+                                    <div class="col-12 mb-3" id="jaccuzi-exchangers">
+                                        <h6>تعداد مبدل جکوزی</h6>
+                                        <p class="text-muted" id="num-jaccuzi"></p>
+                                    </div>
+                                    <div class="col-12 mb-3" id="floor-heating-exchangers">
+                                        <h6>تعداد مبدل گرمایش از کف</h6>
+                                        <p class="text-muted" id="num-floor-heating"></p>
+                                    </div>
+                                    <div class="col-12 mb-3">
+                                        <h6>تعداد دیگ‌ها</h6>
+                                        <p class="text-muted" id="boilers"></p>
+                                    </div>
+                                    <div class="col-12 mb-3">
+                                        <h6>تعداد پمپ‌های سیرکوله</h6>
+                                        <p class="text-muted" id="circulate-pump"></p>
+                                    </div>
+                                    <div class="col-12 mb-3">
+                                        <h6>تعداد منبع کوئلی</h6>
+                                        <p class="text-muted" id="coil-source"></p>
+                                    </div>
+                                    <div class="col-12 mb-3">
+                                        <h6>تعداد پمپ‌های منبع کوئلی</h6>
+                                        <p class="text-muted" id="coil-source-pump"></p>
+                                    </div>
+                                    <div class="col-12 mb-3">
+                                        <h6>تعداد پمپ‌های آبگرم مصرفی</h6>
+                                        <p class="text-muted" id="hot-water-pump"></p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+    let id = '{{enginroom_id}}';
+    console.log('id', id);
+    // $('#edit').attr('href', `/update-user/${user_id}`)
+    $(document).ready(function () {
+        $.ajax({
+            type: "GET",
+            url: `/api/enginroom-public-info/${id}/`,
+            success: function (response) {
+                if (response.usage == 'sanitary') {
+                    $('#usage').text('آبگرم بهداشتی')
+                } else if (response.usage == 'heating') {
+                    $('#usage').text('گرمایشی')
+                } else {
+                    $('#usage').text('گرمایشی و آبگرم بهداشتی')
+                }
+                $('#enginroom-name').text(response.enginroom)
+                $('#has-exchanger').text(response.has_exchanger ? 'دارد' : 'ندارد')
+                if (response.has_exchanger) {
+                    $('#num-pool').text(response.number_of_pool_exchangers);
+                    $('#num-jaccuzi').text(response.number_of_jaccuzi_exchangers);
+                    $('#num-floor-heating').text(response.number_of_floor_heating_exchangers);
+                } else {
+                    $('#pool-exchangers').hide();
+                    $('#jaccuzi-exchangers').hide();
+                    $('#floor-heating-exchangers').hide();
+                }
+                $('#boilers').text(response.number_of_boilers);
+                $('#circulate-pump').text(response.number_of_circulating_pumps);
+                $('#coil-source').text(response.number_of_coil_sources);
+                $('#coil-source-pump').text(response.number_of_coil_sources_pumps);
+                $('#hot-water-pump').text(response.number_of_hot_water_pumps);
+                $('#installer_name').text(response.installer_name)
+
+
+
+            },
+            error: function () {
+                console.log('Failed to retrieve data');
+            }
+        });
+    })
+</script>
+
+{% endblock content %}

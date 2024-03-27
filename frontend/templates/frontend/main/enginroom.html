@@ -1,0 +1,1233 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+{% load static %}
+{% block headcontent %}
+{% include 'head.html' with title="Installers App| Enginroom List" %}
+{% endblock %}
+<!-- /header content -->
+<style>
+    input[type=submit] {
+        background-color: #34495E;
+        color: #F9F9F9;
+        border-radius: 5px;
+        padding: 10px 20px;
+        /* Adjust padding for a bit bigger size */
+        display: block;
+        margin: 15px auto 0;
+    }
+
+    .button {
+        background-color: #34495E;
+        color: #34495E;
+        border-radius: 5px;
+        padding: 10px 20px;
+
+        display: inline-block;
+        margin: 15px auto 0;
+        cursor: pointer;
+    }
+
+    .custom-btn {
+        display: inline-block;
+        width: 20%;
+        height: 20%;
+        text-align: center;
+        line-height: 30px;
+        cursor: pointer;
+    }
+
+
+
+    .custom-btn {
+        margin-right: 5px;
+    }
+
+    .select-margin {
+        margin-top: 10px;
+    }
+</style>
+
+<body class="nav-md">
+
+    <div class="container body">
+        <div class="main_container">
+            <div class="col-md-3 left_col hidden-print">
+                <div class="left_col scroll-view">
+                    {% include 'navbar.html'%}
+                </div>
+            </div>
+
+            <!-- top navigation -->
+            <div class="top_nav hidden-print">
+                <div class="nav_menu">
+                    <nav>
+                        <div class="nav toggle">
+                            <a id="menu_toggle"><i class="fa fa-bars"></i></a>
+                        </div>
+
+                        <ul class="nav navbar-nav navbar-right">
+                            <li class="">
+                                <a href="javascript:;" class="user-profile dropdown-toggle" data-toggle="dropdown"
+                                    aria-expanded="false">
+                                    {{request.session.username}} <span class=" fa fa-angle-down"></span>
+                                </a>
+                                <ul class="dropdown-menu dropdown-usermenu pull-right">
+                            </li>
+                            <li><a href="/dashboard/"><i class="fa fa-user pull-right"></i>
+                                    پروفایل</a></li>
+                            <li><a href="/reset_password/{{request.session.user_id}}"><i
+                                        class="fa fa-lock pull-right"></i>
+                                    تغییر رمزعبور</a></li>
+                            <hr>
+                            <li><a id="logout" onclick="logout()"><i class="fa fa-sign-out pull-right"></i>
+                                    خروج</a></li>
+                        </ul>
+                        </li>
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+            <!-- /top navigation -->
+            <!-- /header content -->
+
+            <!-- page content -->
+            <div class="right_col" role="main">
+                <div class="">
+                    <div class="page-title">
+                        <div class="title_left">
+                            <!-- <h3>صفحه ساده</h3> -->
+                        </div>
+
+                        <div class="title_right">
+                            <div class="col-md-5 col-sm-5 col-xs-12 form-group pull-right top_search">
+                                <!-- <div class="input-group">
+                                    {% csrf_token %}
+                                    <input type="text" class="form-control" placeholder="جست و جو برای...">
+                                    <span class="input-group-btn">
+                                        <button class="btn btn-default" type="button"><i
+                                                class="fa fa-search"></i></button>
+                                    </span>
+                                </div> -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="clearfix"></div>
+
+                    <div class="col-md-12 col-sm-12 col-xs-12">
+                        <div class="x_panel">
+                            <div class="x_title">
+                                <div class="row x_title">
+
+                                    <h1> ایجاد موتورخانه </h1>
+                                    <form action="" method="POST" id="enginroom_form">
+                                        {% csrf_token %}
+                                        <label for="enginroom_name">نام موتورخانه</label>
+                                        <input type="text" id="enginroom_name" name="enginroom_name"
+                                            class="form-control" placeholder="نام موتورخانه را وارد کنید" required><br>
+                                        <label for="serial_number">شماره سریال دستگاه</label>
+                                        <input type="text" id="serial_number" name="serial_number" class="form-control"
+                                            placeholder="شماره سریال دستگاه را وارد کنید" required><br>
+
+                                        <label for="address">آدرس</label>
+                                        <textarea class="form-control" id="address" name="address" rows="3"
+                                            placeholder="آدرس را وارد کنید" required></textarea>
+                                        <div class="row">
+                                            <div class="col-md-4 col-sm-12 select-margin">
+                                                <div class="col-md-7 col-sm-9 col-xs-7">
+                                                    <label for="organization">نام سازمان</label>
+                                                    <select class="form-control" id="organization" name="organization"
+                                                        required>
+                                                        <option value="">لطفا انتخاب کنید</option>
+                                                    </select>
+                                                </div>
+                                                <div class="col-md-5 col-sm-3 col-xs-5" style="top: 28px;">
+                                                    <span class="custom-btn" onclick="get_organization_by_id()">
+                                                        <i class="fa fa-solid fa-eye fa-lg" style="color: #74C0FC;"></i>
+                                                    </span>
+                                                    <span class="custom-btn" onclick="edit_organization()">
+                                                        <i class="fa fa-solid fa-pencil fa-lg"
+                                                            style="color: #FFD43B;"></i>
+                                                    </span>
+                                                    <span class="custom-btn" onclick="add_organization()">
+                                                        <i class="fa fa-solid fa-plus fa-lg"
+                                                            style="color: #63E6BE;"></i>
+                                                    </span>
+                                                </div>
+
+
+                                            </div>
+                                            <div class="col-md-4 col-sm-12 select-margin">
+                                                <div class="col-md-7 col-sm-9 col-xs-7">
+                                                    <label for="engineroom_feature">ویژگی موتورخانه</label>
+                                                    <select class="form-control col-sm-9 col-xs-6" style="width: 100%;"
+                                                        id="engineroom_feature" name="engineroom_feature" required>
+                                                        <option value="">لطفا انتخاب کنید</option>
+
+
+                                                    </select>
+                                                </div>
+                                                <div class="col-md-5 col-sm-3 col-xs-5" style="top: 28px;">
+                                                    <span class="custom-btn" onclick="get_feature_by_id()">
+                                                        <i class="fa fa-solid fa-eye fa-lg" style="color: #74C0FC;"></i>
+                                                    </span>
+                                                    <!-- <span class="custom-btn" onclick="edit_feature()">
+                                                        <i class="fa fa-solid fa-pencil fa-lg"
+                                                            style="color: #FFD43B;"></i>
+                                                    </span>
+                                                    <span class="custom-btn" onclick="add_feature()">
+                                                        <i class="fa fa-solid fa-plus fa-lg"
+                                                            style="color: #63E6BE;"></i>
+                                                    </span> -->
+                                                </div>
+                                            </div>
+
+                                            <div class="col-md-4 col-sm-12 select-margin">
+                                                <div class="col-md-7 col-sm-9 col-xs-7">
+                                                    <label for="location">شهر و استان</label>
+                                                    <select class="form-control" style="width: 100%;" id="location"
+                                                        name="location" required>
+                                                        <option value="">لطفا انتخاب کنید</option>
+                                                    </select>
+                                                </div>
+                                                <div class="col-md-5 col-sm-3 col-xs-5" style="top: 28px;">
+                                                    <span class="custom-btn" onclick="get_location_by_id()">
+                                                        <i class="fa fa-solid fa-eye fa-lg" style="color: #74C0FC;"></i>
+                                                    </span>
+                                                    <span class="custom-btn" onclick="edit_location()">
+                                                        <i class="fa fa-solid fa-pencil fa-lg"
+                                                            style="color: #FFD43B;"></i>
+                                                    </span>
+                                                    <span class="custom-btn" onclick="add_location()">
+                                                        <i class="fa fa-solid fa-plus fa-lg"
+                                                            style="color: #63E6BE;"></i>
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="select-margin">
+                                            <label for="installer">نصاب</label>
+                                            <select class="form-control" style="width: 100%;" id="installer"
+                                                name="installer" required>
+                                                <option value="">لطفا انتخاب کنید</option>
+                                            </select>
+                                        </div>
+
+
+                                        <br>
+                                        <input type="hidden" class="form-control" id="location-input"
+                                            name="location-input">
+                                        <label for="map">موقعیت محل نصب</label> <span class="button"
+                                            onclick="getUserLocation()">موقعیت
+                                            من <img src="{% static 'images/my-location-50.png'%}"
+                                                style="width: 25px; height: 25px;" alt="center-direction" />
+                                        </span>
+                                        <div id="map" class="jumbotron" style="height: 300px;"></div>
+                                        <b id="location-error" style="color: red;"></b>
+                                        <div class="progress" style="display: none;">
+
+                                        </div>
+
+                                        <br><input type="submit" value="ثبت" name="" id="enginroom_submit">
+                                    </form>
+                                </div>
+
+
+
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            <!-- /page content -->
+
+            <!-- /page content -->
+
+            <!-- footer content -->
+            <footer class="hidden-print">
+                <div class="pull-left">
+
+                </div>
+                <div class="clearfix"></div>
+            </footer>
+            <!-- /footer content -->
+        </div>
+    </div>
+    <div id="lock_screen">
+        <table>
+            <tr>
+                <td>
+                    <div class="clock"></div>
+                    <span class="unlock">
+                        <span class="fa-stack fa-5x">
+                            <i class="fa fa-square-o fa-stack-2x fa-inverse"></i>
+                            <i id="icon_lock" class="fa fa-lock fa-stack-1x fa-inverse"></i>
+                        </span>
+                    </span>
+                </td>
+            </tr>
+        </table>
+    </div>
+    {% include 'scripts.html' %}
+
+
+    <script>
+        let page = "{{ page }}";
+        let device_id = "{{ device_id }}";
+        let enginroomData;
+        let enginroomName;
+        let serial_number;
+        let installation_addr;
+        let feature;
+        let organization;
+        let loc;
+        let lat_long;
+        let creator;
+        let status;
+        let step;
+        let info;
+        let rejection_note;
+        var marker;
+        var mapClicked = false;
+        let progress = 0;
+
+        var map = L.map('map').setView([35.6895, 51.3896], 16);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 20, // Set the maximum zoom level
+        }).addTo(map);
+        // map.zoomControl = false
+        $(window).on('load', function () {
+            map.invalidateSize();
+        });
+        function getUserLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(function (position) {
+                    var userLat = position.coords.latitude;
+                    var userLng = position.coords.longitude;
+
+                    map.setView([userLat, userLng], 16);
+
+                    // Add a click event listener to the map
+                    map.on('click', function (e) {
+                        // Remove the previous marker if it exists
+                        if (marker) {
+                            map.removeLayer(marker);
+                        }
+
+                        // Get the clicked coordinates
+                        var clickedLat = e.latlng.lat;
+                        var clickedLng = e.latlng.lng;
+
+                        // Create a marker at the clicked location
+                        marker = L.marker([clickedLat, clickedLng]).addTo(map);
+                        $("#location-input").val(clickedLat + ", " + clickedLng);
+                        mapClicked = true;
+
+                    });
+                });
+            } else {
+                alert("Geolocation is not supported by your browser.");
+            }
+        }
+
+        // Add a click event listener to the map
+        map.on('click', function (e) {
+            // Remove the previous marker if it exists
+            if (marker) {
+                map.removeLayer(marker);
+            }
+
+            // Get the clicked coordinates
+            var clickedLat = e.latlng.lat;
+            var clickedLng = e.latlng.lng;
+
+            // Create a marker at the clicked location
+            marker = L.marker([clickedLat, clickedLng]).addTo(map);
+            $("#location-input").val(clickedLat + ", " + clickedLng);
+            mapClicked = true;
+
+        });
+
+
+
+        console.log('page', page);
+        console.log('organ id', device_id);
+        var engineroom_feature_select = $("#engineroom_feature");
+        var location_select = $("#location");
+        var organization_select = $("#organization");
+        var installer_select = $("#installer");
+        function get_engineroom_options(feature_val = "", organization_val = "", location_val = "", installer_val = "") {
+            $.ajax({
+                url: "/apiv2/get_option_for_insert/",
+                type: "GET",
+                success: function (response) {
+                    let engineroom_features = response.features;
+                    
+                    let organizations = response.organizations;
+                    let locations = response.locations;
+                    let installers = response.installers;
+                    engineroom_feature_select.empty()
+                    // engineroom_feature_select.select2();
+                    engineroom_feature_select.append('<option value="">لطفا انتخاب کنید</option>');
+                    engineroom_feature_select.append(engineroom_features.map(function (feature) {
+                        return $('<option>', {
+                            value: feature.main_3d_view,
+                            text: feature.main_3d_view.replace(/^Hirkan_/, '')
+                        });
+                    }));
+                    engineroom_feature_select.val(feature_val)
+                    organization_select.empty()
+                    organization_select.append('<option value="">لطفا انتخاب کنید</option>');
+                    organization_select.append(organizations.map(function (organization) {
+                        return $('<option>', {
+                            value: organization.id,
+                            text: organization.organization
+                        });
+                    }));
+                    organization_select.val(organization_val)
+
+                    location_select.empty()
+                    location_select.append('<option value="">لطفا انتخاب کنید</option>');
+                    location_select.append(locations.map(function (location) {
+                        return $('<option>', {
+                            value: location.id,
+                            text: location.location
+                        });
+                    }));
+                    location_select.val(location_val)
+                    installer_select.empty()
+                    installer_select.append('<option value="">لطفا انتخاب کنید</option>');
+                    installer_select.append(installers.map(function (installer) {
+                        return $('<option>', {
+                            value: installer.id,
+                            text: installer.installer
+                        });
+                    }));
+                    installer_select.val(installer_val)
+                },
+                error: function (xhr, status, error) {
+                    console.error(error.responseJson);
+                    console.log(xhr.responseText);
+                }
+            });
+
+
+        }
+        // $('select').select2();
+        /////////////////////////////////////////////////// show Organization by ID ////////////////////////////////
+        function get_organization_by_id() {
+            var selected_organization_id = $("#organization").val();
+
+            if (!selected_organization_id) {
+                Swal.fire({
+                    title: "خطا",
+                    text: "لطفاً یک سازمان را انتخاب کنید",
+                    icon: "error"
+                });
+                return;
+            }
+
+            $.ajax({
+                type: "GET",
+                url: `/apiv2/objects/organization/${selected_organization_id}/`,
+                success: function (response) {
+                    // Display the details in a SweetAlert dialog
+                    Swal.fire({
+                        title: "اطلاعات سازمان",
+                        html: "<b>نام سازمان:</b> " + response.organization + "<br>" +
+                            "<b>اداره:</b> " + response.administration,
+                    });
+                },
+                error: function (xhr, status, error) {
+                    console.error(error);
+
+                    Swal.fire({
+                        title: "خطا",
+                        text: "سازمانی یافت نشد",
+                        icon: "error"
+                    });
+                    console.error('Failed to fetch organization details: ', error.responseJSON);
+                }
+            });
+        }
+        ///////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+        ////////////////////////////////// ADD ORGANIZATION //////////////////////////////////////////////////////
+        function add_organization() {
+            Swal.fire({
+                title: "اضافه کردن سازمان جدید",
+                html: '<input id="organization_name" class="swal2-input" placeholder="نام سازمان">' +
+                    '<input id="administration_name" class="swal2-input" placeholder="نهاد">',
+                showCancelButton: true,
+                confirmButtonText: "ثبت",
+                cancelButtonText: "انصراف",
+
+
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    var organization_name = $("#organization_name").val();
+                    var administration_name = $("#administration_name").val();
+
+                    $.ajax({
+                        type: "POST",
+                        url: "/apiv2/objects/organization/add/",
+                        data: JSON.stringify({
+                            "organization": organization_name,
+                            "administration": administration_name
+                        }),
+                        contentType: "application/json",
+                        headers: {
+                            "X-CSRFToken": $("[name=csrfmiddlewaretoken]").val(),
+                        },
+                        success: function (response) {
+
+                            Swal.fire("تایید", "سازمان با موفقیت اضافه شد", "success");
+                            get_engineroom_options();
+                            // organization_select.find('option').last().prop('selected', true);
+                        },
+                        error: function (xhr, status, error) {
+                            if (xhr.status === 409) {
+                                Swal.fire({
+                                    title: "خطا",
+                                    text: "سازمان قبلا ثبت شده است.",
+                                    icon: "error"
+                                });
+                            } else {
+
+
+                                Swal.fire({
+                                    title: "خطا",
+                                    text: "خطایی رخ داده است",
+                                    icon: "error"
+                                });
+                                console.error('Failed to ّINSERT organization details: ', error.responseJSON);
+                            }
+
+                        }
+                    });
+                }
+            })
+        }
+        ///////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+        ////////////////////////////////// ADD ORGANIZATION //////////////////////////////////////////////////////
+        function edit_organization() {
+            let selected_organization_id = $("#organization").val();
+
+
+            if (!selected_organization_id) {
+                Swal.fire({
+                    title: "خطا",
+                    text: "لطفاً یک سازمان را انتخاب کنید",
+                    icon: "error"
+                });
+                return;
+            }
+
+            // If an organization ID is selected, proceed with AJAX request to fetch its details
+            $.ajax({
+                type: "GET",
+                url: `/apiv2/objects/organization/${selected_organization_id}/`,
+                success: function (response) {
+                    Swal.fire({
+                        title: "ویرایش سازمان",
+                        html: '<input id="organization_name" class="swal2-input" placeholder="نام سازمان" value="' + response.organization + '">' +
+                            '<input id="administration_name" class="swal2-input" placeholder="نهاد" value="' + response.administration + '">',
+                        showCancelButton: true,
+                        confirmButtonText: "ثبت",
+                        cancelButtonText: "انصراف",
+                        preConfirm: function () {
+                            var organization_name = $("#organization_name").val();
+                            var administration_name = $("#administration_name").val();
+
+                            // Perform AJAX request to update organization details
+                            $.ajax({
+                                type: "POST",
+                                url: "/apiv2/objects/organization/edit/",
+                                data: JSON.stringify({
+                                    "id": selected_organization_id,
+                                    "organization": organization_name,
+                                    "administration": administration_name
+                                }),
+                                contentType: "application/json",
+                                headers: {
+                                    "X-CSRFToken": $("[name=csrfmiddlewaretoken]").val(),
+                                },
+                                success: function (response) {
+                                    Swal.fire("تایید", "سازمان با موفقیت بروزرسانی شد", "success");
+                                    get_engineroom_options();
+                                },
+                                error: function (xhr, status, error) {
+                                    Swal.fire({
+                                        title: "خطا",
+                                        text: "خطایی رخ داده است",
+                                        icon: "error"
+                                    });
+                                    console.error('Failed to UPDATE organization details: ', error.responseJSON);
+                                }
+                            });
+                        }
+                    });
+                },
+                error: function (xhr, status, error) {
+                    Swal.fire({
+                        title: "خطا",
+                        text: "سازمانی یافت نشد",
+                        icon: "error"
+                    });
+                    console.error('Failed to fetch organization details: ', error.responseJSON);
+                }
+            });
+        }
+
+
+
+
+        ///////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+        //////////////////////////////// ADD Enigeroom Features //////////////////////////////////////////////////////
+        // function add_feature() {
+        //     Swal.fire({
+        //         title: "اضافه کردن نمای‌جدید",
+        //         html: '<input id="feature_name" class="swal2-input" placeholder="نمای موتورخانه">',
+        //         showCancelButton: true,
+        //         confirmButtonText: "ثبت",
+        //         cancelButtonText: "انصراف",
+
+
+        //     }).then((result) => {
+        //         if (result.isConfirmed) {
+        //             var feature_name = $("#feature_name").val();
+
+
+        //             $.ajax({
+        //                 type: "POST",
+        //                 url: "/apiv2/objects/engineroomfeature/add/",
+        //                 data: JSON.stringify({
+        //                     "main_3d_view": feature_name
+        //                 }),
+        //                 contentType: "application/json",
+        //                 headers: {
+        //                     "X-CSRFToken": $("[name=csrfmiddlewaretoken]").val(),
+        //                 },
+        //                 success: function (response) {
+
+        //                     Swal.fire("تایید", "نمای‌موتورخانه با موفقیت اضافه شد", "success");
+        //                     get_engineroom_options();
+        //                     // organization_select.find('option').last().prop('selected', true);
+        //                 },
+        //                 error: function (xhr, status, error) {
+        //                     if (xhr.status === 409) {
+        //                         Swal.fire({
+        //                             title: "خطا",
+        //                             text: "نمای موتورخانه قبلا ثبت شده است.",
+        //                             icon: "error"
+        //                         });
+        //                     } else {
+
+
+        //                         Swal.fire({
+        //                             title: "خطا",
+        //                             text: "خطایی رخ داده است",
+        //                             icon: "error"
+        //                         });
+        //                         console.error('Failed to ّINSERT engineroom features details: ', error.responseJSON);
+        //                     }
+
+        //                 }
+        //             });
+        //         }
+        //     })
+        // }
+        // ///////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+        // /////////////////////////////////////////////////// Edit Feature /////////////////////////////////////////
+        // function edit_feature() {
+        //     let selected_feature_id = $("#engineroom_feature").val();
+
+
+        //     if (!selected_feature_id) {
+        //         Swal.fire({
+        //             title: "خطا",
+        //             text: "لطفاً یک نما را انتخاب کنید",
+        //             icon: "error"
+        //         });
+        //         return;
+        //     }
+
+        //     // If an organization ID is selected, proceed with AJAX request to fetch its details
+        //     $.ajax({
+        //         type: "GET",
+        //         url: `/apiv2/objects/engineroomfeature/${selected_feature_id}/`,
+        //         success: function (response) {
+        //             Swal.fire({
+        //                 title: "ویرایش سازمان",
+        //                 html: '<input id="feature_name" class="swal2-input" placeholder="نمای موتورخانه" value="' + response.main_3d_view + '">',
+        //                 showCancelButton: true,
+        //                 confirmButtonText: "ثبت",
+        //                 cancelButtonText: "انصراف",
+        //                 preConfirm: function () {
+        //                     var feature_name = $("#feature_name").val();
+
+        //                     // Perform AJAX request to update feature details
+        //                     $.ajax({
+        //                         type: "POST",
+        //                         url: "/apiv2/objects/engineroomfeature/edit/",
+        //                         data: JSON.stringify({
+        //                             "id": selected_feature_id,
+        //                             "main_3d_view": feature_name,
+
+        //                         }),
+        //                         contentType: "application/json",
+        //                         headers: {
+        //                             "X-CSRFToken": $("[name=csrfmiddlewaretoken]").val(),
+        //                         },
+        //                         success: function (response) {
+        //                             Swal.fire("تایید", "نمای موتورخانه با موفقیت بروزرسانی شد", "success");
+        //                             get_engineroom_options();
+        //                         },
+        //                         error: function (xhr, status, error) {
+        //                             Swal.fire({
+        //                                 title: "خطا",
+        //                                 text: "خطایی رخ داده است",
+        //                                 icon: "error"
+        //                             });
+        //                             console.error('Failed to UPDATE Feature details: ', error.responseJSON);
+        //                         }
+        //                     });
+        //                 }
+        //             });
+        //         },
+        //         error: function (xhr, status, error) {
+        //             Swal.fire({
+        //                 title: "خطا",
+        //                 text: "سازمانی یافت نشد",
+        //                 icon: "error"
+        //             });
+        //             console.error('Failed to fetch organization details: ', error.responseJSON);
+        //         }
+        //     });
+        // }
+
+
+        /////////////////////////////////////////////////// show Engineroom by ID ////////////////////////////////
+        /////////////////////////////////////////////////// show Engineroom by ID ////////////////////////////////
+        function get_feature_by_id() {
+            var selected_feature_val = $("#engineroom_feature").val();
+            var engineroom_feature_without_prefix= selected_feature_val.replace(/^Hirkan_/, '');
+            if (!selected_feature_val) {
+                Swal.fire({
+                    title: "خطا",
+                    text: "لطفاً یک نما را انتخاب کنید",
+                    icon: "error"
+                });
+                return;
+            }
+            //var imageUrl = `/static/image/${selected_feature_id}.png`;
+            var imageUrl = `../static/images/engineroomfeatures/${selected_feature_val}.png`
+
+            // Display the image preview and feature details in a SweetAlert dialog
+            Swal.fire({
+                title: "اطلاعات نمای‌موتورخانه",
+                html: `<b>نمای‌موتورخانه</b>: ${engineroom_feature_without_prefix}<br><br>
+                <img src="${imageUrl}" style="display: block; margin: 0 auto; max-width: 100%; border-radious=5px" alt="Engine Room Preview">`,
+
+                allowOutsideClick: true,
+                width: 'auto'
+            });
+        }
+
+        //////////////////////////////// ADD Locations //////////////////////////////////////////////////////
+        function add_location() {
+            Swal.fire({
+                title: "اضافه کردن مکان",
+                html: '<input type="text" id="province" name="province" class="swal2-input" placeholder="استان"> <br> <input type="text" id="city" name="city" class="swal2-input" placeholder="شهر">',
+                showCancelButton: true,
+                confirmButtonText: "ثبت",
+                cancelButtonText: "انصراف",
+
+
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    var province = $("#province").val();
+                    var city = $("#city").val();
+
+
+                    $.ajax({
+                        type: "POST",
+                        url: "/apiv2/objects/location/add/",
+                        data: JSON.stringify({
+                            "province": province,
+                            "city": city
+                        }),
+                        contentType: "application/json",
+                        headers: {
+                            "X-CSRFToken": $("[name=csrfmiddlewaretoken]").val(),
+                        },
+                        success: function (response) {
+
+                            Swal.fire("تایید", "مکان با موفقیت اضافه شد", "success");
+                            get_engineroom_options();
+                            // organization_select.find('option').last().prop('selected', true);
+                        },
+                        error: function (xhr, status, error) {
+                            if (xhr.status === 409) {
+                                Swal.fire({
+                                    title: "خطا",
+                                    text: "این مکان قبلا ثبت شده است.",
+                                    icon: "error"
+                                });
+                            } else {
+
+
+                                Swal.fire({
+                                    title: "خطا",
+                                    text: "خطایی رخ داده است",
+                                    icon: "error"
+                                });
+                                console.error('Failed to ّINSERT Location details: ', error);
+                            }
+
+                        }
+                    });
+                }
+            })
+        }
+        ///////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+        //////////////////////////////// Edit Locations //////////////////////////////////////////////////////
+        function edit_location() {
+            let selected_location_id = $("#location").val();
+
+
+            if (!selected_location_id) {
+                Swal.fire({
+                    title: "خطا",
+                    text: "لطفاً یک مکان را انتخاب کنید",
+                    icon: "error"
+                });
+                return;
+            }
+
+            // If an location ID is selected, proceed with AJAX request to fetch its details
+            $.ajax({
+                type: "GET",
+                url: `/apiv2/objects/location/${selected_location_id}/`,
+                success: function (response) {
+                    Swal.fire({
+                        title: "ویرایش مکان",
+                        html: '<input type="text" id="province" name="province" class="swal2-input" placeholder="استان" value="' + response.province + '""> <br> <input type="text" id="city" name="city" class="swal2-input" placeholder="شهر"  value="' + response.city + '"">',
+                        showCancelButton: true,
+                        confirmButtonText: "ثبت",
+                        cancelButtonText: "انصراف",
+                        preConfirm: function () {
+                            var province_name = $("#province").val();
+                            var city_name = $("#city").val();
+
+                            // Perform AJAX request to update location details
+                            $.ajax({
+                                type: "POST",
+                                url: "/apiv2/objects/location/edit/",
+                                data: JSON.stringify({
+                                    "id": selected_location_id,
+                                    "province": province_name,
+                                    "city": city_name
+                                }),
+                                contentType: "application/json",
+                                headers: {
+                                    "X-CSRFToken": $("[name=csrfmiddlewaretoken]").val(),
+                                },
+                                success: function (response) {
+                                    Swal.fire("تایید", "مکان با موفقیت بروزرسانی شد", "success");
+                                    get_engineroom_options();
+                                },
+                                error: function (xhr, status, error) {
+                                    Swal.fire({
+                                        title: "خطا",
+                                        text: "خطایی رخ داده است",
+                                        icon: "error"
+                                    });
+                                    console.error('Failed to UPDATE location details: ', error.responseJSON);
+                                }
+                            });
+                        }
+                    });
+                },
+                error: function (xhr, status, error) {
+                    Swal.fire({
+                        title: "خطا",
+                        text: "مکانی یافت نشد",
+                        icon: "error"
+                    });
+                    console.error('Failed to fetch location details: ', error.responseJSON);
+                }
+            });
+        }
+        ///////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+        /////////////////////////////////////////////////// show Engineroom by ID ////////////////////////////////
+        function get_location_by_id() {
+            var selected_location_id = $("#location").val();
+
+            if (!selected_location_id) {
+                Swal.fire({
+                    title: "خطا",
+                    text: "لطفاً یک مکان را انتخاب کنید",
+                    icon: "error"
+                });
+                return;
+            }
+
+            $.ajax({
+                type: "GET",
+                url: `/apiv2/objects/location/${selected_location_id}/`,
+                success: function (response) {
+                    // Display the details in a SweetAlert dialog
+                    Swal.fire({
+                        title: "اطلاعات مکان موتورخانه",
+                        html: "<b>استان</b> " + response.province + "<br> " + "<b>شهر</b> " + response.city,
+
+                    });
+                },
+                error: function (xhr, status, error) {
+                    console.error(error);
+
+                    Swal.fire({
+                        title: "خطا",
+                        text: "مکان یافت نشد",
+                        icon: "error"
+                    });
+                    console.error('Failed to fetch location details: ', error.responseJSON);
+                }
+            });
+        }
+        ///////////////////////////////////////////////////////////////////////////////////////////////////////////
+        if (page === "update_device") {
+            console.log(page);
+            $(document).ready(function () {
+                get_engineroom_options()
+                $.ajax({
+                    type: "GET",
+                    url: `/apiv2/objects/device/${device_id}/`,
+                    success: function (response) {
+                        $('#enginroom_name').val(response.name);
+                        $('#enginroom_name').html(response.name);
+                        // $('#organization').val(response.organization_id);
+                        // $('#location').val(response.location);
+                        $('#address').val(response.installation_address);
+                        $('#serial_number').val(response.serial_number);
+                        // $('#engineroom_feature').val(response.engine_room_feature);
+                        // $('#installer').val(response.created_by);
+                        get_engineroom_options(response.main_3d_view, response.organization_id, response.location, response.created_by)
+                        latLongStr = response.lat_long
+                        if (latLongStr) {
+                            var latLongArr = latLongStr.split(',').map(function (coord) {
+                                return parseFloat(coord);
+                            });
+                            var latLng = L.latLng(latLongArr[0], latLongArr[1]);
+                            $("#location-input").val(latLongArr);
+                            marker = L.marker(latLng).addTo(map);
+                            map.setView(latLng, 13);
+                        }
+
+
+                        // step = response.step;
+                        status = response.status;
+                        rejection_note = response.rejection_note
+
+                    }
+                })
+                $('#enginroom_form').validate({
+                    rules: {
+                        enginroom_name: {
+                            required: true,
+                            minlength: 3
+                        },
+                        organization: "required",
+                        administration: "required",
+                        serial_number: "required",
+                        engineroom_feature: "required",
+                        location: "required",
+                        installer: "required",
+                        address: "required",
+                    },
+                    messages: {
+                        enginroom_name: {
+                            required: "نام موتورخانه را وارد کنید",
+                            minlength: "نام موتورخانه باید حداقل 3 کاراکتر داشته باشد"
+                        },
+                        organization: "لطفاً نام سازمان را وارد کنید",
+                        administration: "لطفاً نام‌ نهاد را وارد کنید",
+                        serial_number: "لطفا شماره سریال دستگاه را وارد کنید",
+                        engineroom_feature: "لطفا ویژگی موتورخانه را انتخاب کنید",
+                        location: 'لطفا موقعیت موتورخانه را انتخاب کنید',
+                        installer: 'لطفا نام نصاب را انتخاب کنید',
+                        address: 'لطفا آدرس را وارد کنید',
+                    },
+                    errorPlacement: function (error, element) {
+                        error.insertAfter(element);
+                    },
+                    submitHandler: function (form) {
+
+                        let name = $('#enginroom_name').val();
+                        let serial_number = $('#serial_number').val();
+
+
+                        let engineroom_feature = $('#engineroom_feature').val();
+                        let location = $('#location').val();
+                        let organization = $('#organization').val();
+                        let installation_addr = $('#address').val();
+                        let created = $('#installer').val();
+                        var location_input = $("#location-input").val();
+
+                        engineroom_feature = $('#engineroom_feature').val();
+                        enginroomData = {
+                            'id': device_id,
+                            'name': name,
+                            'serial_number': serial_number,
+                            'installation_address': installation_addr,
+                            'engine_room_feature': engineroom_feature,
+                            'location': location,
+                            'organization': organization,
+
+                            'status': status,
+                            'rejection_note': rejection_note,
+                            'created_by': created,
+                            'lat_long': location_input,
+                            'details': {
+                                'name': name,
+                                'serial_number': serial_number,
+                            },
+                        }
+                        $.ajax({
+                            type: "POST",
+                            // url: `/api/enginroom/${device_id}/`,
+                            url: '/apiv2/device/edit/',
+                            data: JSON.stringify(enginroomData),
+                            contentType: "application/json",
+                            headers: {
+                                'X-CSRFToken': $('[name=csrfmiddlewaretoken]').val()
+                            },
+                            xhr: function () {
+                                let xhr = new window.XMLHttpRequest();
+                                xhr.upload.addEventListener("progress", function (evt) {
+                                    if (evt.lengthComputable) {
+                                        progress = (evt.loaded / evt.total) * 100;
+                                        // console.log("Progress:", progress);
+                                        $(".progress").show()
+                                        $(".progress").append(`<div class="progress">
+                                        <div class="progress-bar progress-bar-striped bg-info" role="progressbar" style="width: ${progress}%" aria-valuenow="${progress}" aria-valuemin="0" aria-valuemax="100"> درحال ثبت ${Math.round(progress) + "%"}</div>
+                                        </div>`);
+                                    }
+                                }, false);
+                                return xhr;
+                            },
+                            success: function (response) {
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'تایید',
+                                    text: 'موتورخانه با موفقیت بروز رسانی شد.',
+                                });
+
+                                window.location.href = '/enginroom-list/'
+
+                            },
+                            error: function (xhr, status, error) {
+                                if (xhr.responseJSON.error == "Invalid serial number format") {
+                                    Swal.fire({
+                                        title: "خطا",
+                                        text: "سریال دستگاه ناردست است",
+                                        icon: "error"
+                                    });
+                                    console.error('Failed to ّINSERT device details: ', error);
+
+                                }
+                                else if (xhr.status === 500) {
+                                    Swal.fire({
+                                        title: "خطا",
+                                        text: "خطایی رخ داده است",
+                                        icon: "error"
+                                    });
+                                    console.error('Failed to ّINSERT device details: ', xhr.responseJSON.error);
+                                }
+                                else {
+
+
+                                    Swal.fire({
+                                        title: "خطا",
+                                        text: "خطایی رخ داده است",
+                                        icon: "error"
+                                    });
+                                    console.error('Failed to ّINSERT device details: ', xhr.responseJSON.error);
+                                }
+
+                            }
+                        });
+                        console.log(enginroomData)
+                    }
+                });
+
+            });
+
+
+        }
+        else {
+
+            $(document).ready(function () {
+                get_engineroom_options()
+                $('#enginroom_form').validate({
+                    rules: {
+                        enginroom_name: {
+                            required: true,
+                            minlength: 3
+                        },
+                        organization: "required",
+                        administration: "required",
+                        serial_number: "required",
+                        engineroom_feature: "required",
+                        location: "required",
+                        installer: "required",
+                        address: "required",
+
+
+                    },
+                    messages: {
+                        enginroom_name: {
+                            required: "نام موتورخانه را وارد کنید",
+                            minlength: "نام موتورخانه باید حداقل 3 کاراکتر داشته باشد"
+                        },
+                        organization: "لطفاً نام سازمان را وارد کنید",
+                        administration: "لطفاً نام‌ نهاد را وارد کنید",
+                        serial_number: "لطفا شماره سریال دستگاه را وارد کنید",
+                        engineroom_feature: "لطفا ویژگی موتورخانه را انتخاب کنید",
+                        location: 'لطفا موقعیت موتورخانه را انتخاب کنید',
+                        installer: 'لطفا نام نصاب را انتخاب کنید',
+                        address: 'لطفا آدرس را وارد کنید',
+
+
+                    },
+                    errorPlacement: function (error, element) {
+                        error.insertAfter(element);
+                    },
+                    submitHandler: function (form) {
+                        console.log('form', form)
+                        enginroomName = $('#enginroom_name').val();
+                        serial_number = $('#serial_number').val();
+                        organization = $('#organization').val();
+                        loc = $('#location').val();
+                        feature = $('#engineroom_feature').val();
+                        lat_long = $("#location-input").val();
+                        installation_addr = $('#address').val()
+                        creator = $("#installer").val();
+                        engineroom_feature = $('#engineroom_feature').val();
+                        enginroomData = {
+                            'name': enginroomName,
+                            'serial_number': serial_number,
+                            'installation_address': installation_addr,
+                            'engine_room_feature': engineroom_feature,
+                            'location': loc,
+                            'organization': organization,
+                            'status': null,
+                            'created_by': creator,
+                            'lat_long': lat_long,
+                            'details': {
+                                'name': enginroomName,
+                            }
+
+                            // if(mapClicked) {
+
+                            //     var mapError = $('<label class="error">لطفاً روی نقشه کلیک کنید</label>');
+                            //     mapError.insertAfter($('#map'));
+
+                            //     return false;
+                            // }
+                        }
+
+                        console.log(enginroomData)
+
+                        $.ajax({
+                            type: "POST",
+                            url: "/apiv2/device/add/",
+                            data: JSON.stringify(enginroomData),
+                            contentType: "application/json",
+                            headers: {
+                                'X-CSRFToken': $('[name=csrfmiddlewaretoken]').val()
+                            },
+                            xhr: function () {
+                                let xhr = new window.XMLHttpRequest();
+                                xhr.upload.addEventListener("progress", function (evt) {
+                                    if (evt.lengthComputable) {
+                                        progress = (evt.loaded / evt.total) * 100;
+                                        // console.log("Progress:", progress);
+                                        $(".progress").show()
+                                        $(".progress").append(`<div class="progress">
+                                        <div class="progress-bar progress-bar-striped bg-info" role="progressbar" style="width: ${progress}%" aria-valuenow="${progress}" aria-valuemin="0" aria-valuemax="100"> درحال ثبت ${Math.round(progress) + "%"}</div>
+                                        </div>`);
+                                    }
+                                }, false);
+                                return xhr;
+                            },
+                            success: function (response) {
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'عملیات موفق',
+                                    text: 'موتورخانه با موفقیت ثبت شد.',
+                                }).then(() => {
+                                    window.location.href = '/enginroom-list/';
+                                });
+
+                            },
+                            error: function (xhr, status, error) {
+                                if (xhr.status === 409) {
+                                    Swal.fire({
+                                        title: "خطا",
+                                        text: "موتورخانه قبلا ثبت شده است.",
+                                        icon: "error"
+                                    })
+                                }
+                                else if (xhr.responseJSON.error == "Invalid serial number format") {
+                                    Swal.fire({
+                                        title: "خطا",
+                                        text: "سریال دستگاه ناردست است",
+                                        icon: "error"
+                                    });
+                                    console.error('Failed to ّINSERT device details: ', error);
+
+                                }
+                                else if (xhr.status === 500) {
+                                    Swal.fire({
+                                        title: "خطا",
+                                        text: "خطایی رخ داده است",
+                                        icon: "error"
+                                    });
+                                    console.error('Failed to ّINSERT device details: ', xhr.responseJSON.error);
+                                }
+                                else {
+
+
+                                    Swal.fire({
+                                        title: "خطا",
+                                        text: "خطایی رخ داده است",
+                                        icon: "error"
+                                    });
+                                    console.error('Failed to ّINSERT device details: ', xhr.responseJSON.error);
+                                }
+
+                            }
+                        });
+                    }
+                });
+            });
+
+
+
+        }
+    </script>
+</body>
+
+</html>

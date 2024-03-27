@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+{% load static %}
+{% block headcontent %}
+{% include 'head.html' with title="Installers App| Engineroom" %}
+{% endblock %}
+<!-- /header content -->
+<style>
+    p {
+        font-size: 15px;
+    }
+
+    .slide img {
+        width: 60%;
+        height: 60%;
+        margin-right: 25%;
+    }
+
+    .height {
+        height: 10px;
+    }
+
+    /* Image-container design */
+    .image-container {
+        max-width: 800px;
+        position: relative;
+        margin: auto;
+    }
+
+    .next {
+        right: 0;
+    }
+
+    .previous {
+        left: 0;
+    }
+
+    /* Next and previous icon design */
+    .previous,
+    .next {
+        cursor: pointer;
+        position: absolute;
+        top: 50%;
+        padding: 10px;
+        margin-top: -25px;
+
+    }
+
+    /* caption decorate */
+    .captionText {
+        color: #000000;
+        font-size: 14px;
+        position: absolute;
+        padding: 12px 12px;
+        bottom: 8px;
+        width: 100%;
+        text-align: center;
+    }
+
+    /* Slider image number */
+    .slideNumber {
+        background-color: #5574C5;
+        color: white;
+        border-radius: 25px;
+        right: 0;
+        opacity: .5;
+        margin: 5px;
+        width: 30px;
+        height: 30px;
+        text-align: center;
+        font-weight: bold;
+        font-size: 24px;
+        position: absolute;
+    }
+
+    /* .fa {
+        font-size: 32px;
+    } */
+
+    .fa:hover {
+        /* transform: rotate(360deg); */
+        transition: 1s;
+        /* color: white; */
+    }
+
+    .footerdot {
+        cursor: pointer;
+        height: 15px;
+        width: 15px;
+        margin: 0 2px;
+        background-color: #bbbbbb;
+        border-radius: 50%;
+        display: inline-block;
+        transition: background-color 0.5s ease;
+    }
+
+
+    .footerdot:hover {
+        background-color: black;
+    }
+</style>
+
+<body class="nav-md">
+    <div class="container body">
+        <div class="main_container">
+            <div class="col-md-3 left_col hidden-print">
+                <div class="left_col scroll-view">
+                    {% include 'navbar.html'%}
+                </div>
+            </div>
+
+            <!-- top navigation -->
+            <div class="top_nav hidden-print">
+                <div class="nav_menu">
+                    <nav>
+                        <div class="nav toggle">
+                            <a id="menu_toggle"><i class="fa fa-bars"></i></a>
+                        </div>
+
+                        <ul class="nav navbar-nav navbar-right">
+                            <li class="">
+                                <a href="javascript:;" class="user-profile dropdown-toggle" data-toggle="dropdown"
+                                    aria-expanded="false">
+                                    {{request.session.username}} <span class=" fa fa-angle-down"></span>
+                                </a>
+                                <ul class="dropdown-menu dropdown-usermenu pull-right">
+                            </li>
+                            <li><a href="/dashboard/"><i class="fa fa-user pull-right"></i>
+                                    پروفایل</a></li>
+                            <li><a href="/reset_password/{{request.session.user_id}}"><i
+                                        class="fa fa-lock pull-right"></i>
+                                    تغییر رمزعبور</a></li>
+                            <hr>
+                            <li><a id="logout" onclick="logout()"><i class="fa fa-sign-out pull-right"></i>
+                                    خروج</a></li>
+                        </ul>
+                        </li>
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+            <!-- /top navigation -->
+            <!-- /header content -->
+
+            <!-- page content -->
+            <div class="right_col" role="main">
+                <div class="">
+                    <div class="page-title">
+                        <div class="title_left">
+                            <h3 id="enginroom"></h3>
+                        </div>
+
+                        <div class="title_right">
+                            <div class="col-md-5 col-sm-5 col-xs-12 form-group pull-right top_search">
+                                <div class="input-group">
+
+                                    <span class="input-group-btn">
+
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="clearfix"></div>
+
+                    <div class="row" class="col-md-12 col-sm-12 col-xs-12">
+                        <div>
+                            <div class="x_panel">
+                                <div class="x_title">
+                                    <h2></h2>
+                                    <ul class="nav navbar-right panel_toolbox">
+                                        <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
+                                        </li>
+
+
+                                    </ul>
+                                    <div class="clearfix"></div>
+                                </div>
+                                <div class="x_content">
+                                    <div class="container">
+                                        <h1 class="text-center">ثبت رخدادها</h1>
+                                        <form id="eventForm">
+                                            {% csrf_token %}
+                                            <div class="form-group">
+                                                <label for="title">عنوان</label>
+                                                <input type="text" class="form-control" id="title" name="title"
+                                                    placeholder="عنوان موردنظر را وارد کنید" required>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="text">متن</label>
+                                                <textarea class="form-control" id="text" name="text" rows="5"
+                                                    placeholder="متن موردنظر را وارد کنید" required></textarea>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="engineroom">موتورخانه‌</label>
+                                                <select class="form-control" id="engineroom" name="engineroom" required>
+
+
+                                                    <!-- Add more options as necessary -->
+                                                </select>
+                                            </div>
+                                            <button type="submit" class="btn"
+                                                style="background-color: #34495E;color: #FFFFFF;">تایید</button>
+                                        </form>
+                                    </div>
+
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            <!-- /page content -->
+
+            <!-- /page content -->
+
+            <!-- footer content -->
+            <footer class="hidden-print">
+                <div class="pull-left">
+                </div>
+                <div class="clearfix"></div>
+            </footer>
+            <!-- /footer content -->
+        </div>
+    </div>
+    <div id="lock_screen">
+        <table>
+            <tr>
+                <td>
+                    <div class="clock"></div>
+                    <span class="unlock">
+                        <span class="fa-stack fa-5x">
+                            <i class="fa fa-square-o fa-stack-2x fa-inverse"></i>
+                            <i id="icon_lock" class="fa fa-lock fa-stack-1x fa-inverse"></i>
+                        </span>
+                    </span>
+                </td>
+            </tr>
+        </table>
+    </div>
+    {% include 'scripts.html' %}
+    <script>
+        let event_data;
+        let page = '{{ page }}';
+        console.log('page', page);
+        let event_id = '{{ event_id }}'
+
+
+        function populateSelectOptions(selectval="") {
+
+            var select = $("select[name='engineroom']");
+
+            $.ajax({
+                url: "/apiv2/get_option_for_insert/",
+                type: "GET",
+                success: function (response) {
+                    select.empty()
+                    // engineroom_enginetoom_select.select2();
+                    let enginerooms = response.devices;
+                    select.append('<option value="">لطفا انتخاب کنید</option>');
+                    select.append(enginerooms.map(function (enginetoom) {
+                        return $('<option>', {
+                            value: enginetoom.id,
+                            text: enginetoom.name
+                        });
+                    }));
+
+                    select.val(selectval);
+                },
+                error: function (xhr, status, error) {
+                    console.error(error);
+                }
+            });
+        }
+
+      
+
+        $(document).ready(function () {
+            populateSelectOptions();
+            if (page == "update_event") {
+
+                $.ajax({
+                    type: "GET",
+                    url: `/api/event-history/${event_id}/`,
+                    success: function (response) {
+                        $('#title').val(response.title),
+                            $('#text').val(response.text)
+                            populateSelectOptions(response.device);
+                    },
+                    error(xhr, error) {
+                        console.error("ERROR", error)
+                    }
+                });
+            }
+            // Form validation rules
+            $("#eventForm").validate({
+                rules: {
+                    title: {
+                        required: true
+                    },
+                    text: {
+                        required: true
+                    },
+                    engineroom: {
+                        required: true
+                    }
+                },
+                messages: {
+                    title: {
+                        required: "لطفا عنوان را وارد کنید"
+                    },
+                    text: {
+                        required: "لطفا متن را وارد کنید"
+                    },
+                    engineroom: {
+                        required: "لطفا یک موتورخانه را انتخاب کنید"
+                    }
+                },
+                submitHandler: function (form) {
+                    var userId = parseInt('{{ request.session.user_id }}');
+                    if (!isNaN(userId)) {
+                        event_data = {
+                            title: $('#title').val(),
+                            text: $('#text').val(),
+                            device: $('#engineroom').val(),
+                            user: userId
+                        }
+                    };
+                    if (page == "update_event") {
+
+
+
+                        $.ajax({
+                            url: `/api/event-history/${event_id}/`,
+                            type: "PUT",
+                            data: JSON.stringify(event_data),
+                            contentType: "application/json",
+                            headers: {
+                                'X-CSRFToken': $('[name=csrfmiddlewaretoken]').val()
+                            },
+                            success: function (response) {
+
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'تایید',
+                                    text: 'عملیان با موفقیت انجام شد',
+                                }).then(function () {
+
+                                    window.location.href = '/event-history-list/';
+                                });
+
+                            },
+                            error: function (xhr, status, error) {
+
+                                console.error(error);
+
+                            }
+                        });
+
+
+                    }
+                    else {
+
+
+                        $.ajax({
+                            url: "/api/event-history/",
+                            type: "POST",
+                            data: JSON.stringify(event_data),
+                            contentType: "application/json",
+                            headers: {
+                                'X-CSRFToken': $('[name=csrfmiddlewaretoken]').val()
+                            },
+                            success: function (response) {
+
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'تایید',
+                                    text: 'عملیان با موفقیت انجام شد',
+                                }).then(function () {
+
+                                    window.location.href = '/event-history-list/';
+                                });
+
+                            },
+                            error: function (xhr, status, error) {
+
+                                console.error(error);
+
+                            }
+                        });
+
+                    }
+
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>

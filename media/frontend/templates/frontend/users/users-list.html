@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+{% load static %}
+{% block headcontent %}
+{% include 'head.html' with title="Installers App| user List" %}
+{% endblock %}
+<!-- /header content -->
+<style>
+   .pagination-container {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+
+        padding: 10px;
+        border: 1px  white;
+        border-radius: 5px;
+    }
+
+    .pagination button {
+        border: 2px solid #34495E;
+        
+    }
+
+    .prev-page,
+    .next-page {
+        background-color: #34495E;
+        color: white;
+        border: none;
+        padding: 8px 16px;
+        margin: 0 2px;
+        cursor: pointer;
+        border-radius: 5px;
+        
+    }
+
+    .prev-page:hover,
+    .next-page:hover {
+        background-color: #334658;
+
+    }
+
+    .page-numbers {
+        display: flex;
+    }
+
+    .page-number {
+        padding: 6px 12px;
+        margin: 0 2px;
+        border-radius: 5px;
+        display: flex;
+        gap: 10px;
+    }
+    .ellipsis {
+    padding: 2px 0;
+    color: #34495E; 
+    font-size: 20px; 
+    font-weight: bold; 
+    margin: 0 4px; 
+}
+
+    .page-number.active {
+        background-color: #34495e;
+        color: #fff;
+        border-radius: 5px;
+        
+    }
+
+
+    .phone-number {
+        text-decoration: underline;
+
+
+    }
+
+
+ 
+</style>
+
+<body class="nav-md">
+
+    <div class="container body">
+        <div class="main_container">
+            <div class="col-md-3 left_col hidden-print">
+                <div class="left_col scroll-view">
+                    {% include 'navbar.html'%}
+                </div>
+            </div>
+
+            <!-- top navigation -->
+            <div class="top_nav hidden-print">
+                <div class="nav_menu">
+                    <nav>
+                        <div class="nav toggle">
+                            <a id="menu_toggle"><i class="fa fa-bars"></i></a>
+                        </div>
+
+                        <ul class="nav navbar-nav navbar-right">
+                            <li class="">
+                                <a href="javascript:;" class="user-profile dropdown-toggle" data-toggle="dropdown"
+                                    aria-expanded="false">
+                                    {{request.session.username}} <span class=" fa fa-angle-down"></span>
+                                </a>
+                                <ul class="dropdown-menu dropdown-usermenu pull-right">
+                            </li>
+                            <li><a href="/dashboard/"><i class="fa fa-user pull-right"></i>
+                                    پروفایل</a></li>
+                            <li><a href="/reset_password/{{request.session.user_id}}"><i
+                                        class="fa fa-lock pull-right"></i>
+                                    تغییر رمزعبور</a></li>
+                            <hr>
+                            <li><a id="logout" onclick="logout()"><i class="fa fa-sign-out pull-right"></i>
+                                    خروج</a></li>
+                        </ul>
+                        </li>
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+            <!-- /top navigation -->
+            <!-- /header content -->
+
+            <!-- page content -->
+            <div class="right_col" role="main">
+                <div class="">
+                    <div class="page-title">
+                        <div class="title_left">
+
+                        </div>
+
+                        <div class="title_right">
+                            <div class="col-md-5 col-sm-5 col-xs-12 form-group pull-right top_search">
+                                <div class="input-group">
+                                    {% csrf_token %}
+                                    <input type="text" class="form-control" placeholder="جست و جو برای..." id="search">
+                                    <span class="input-group-btn">
+                                        <button class="btn btn-default" type="button"><i
+                                                class="fa fa-search"></i></button>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="clearfix"></div>
+
+                    <div class="col-md-12 col-sm-12 col-xs-12">
+                        <div class="x_panel">
+                            <div class="x_title">
+                                <div class="row x_title">
+                                    <div class="col-md-6">
+                                        <h3>لیست کاربران </h3>
+                                    </div>
+                                    <div class="col-md-6 col-sm-12 col-xs-12">
+                                        <h3>تعداد کل کاربران: <strong id="total_users"></strong></h3>
+
+                                    </div>
+                                </div>
+
+                                <div class="col-xs-12 col-sm-12 col-md-4 col-lg-3">
+                                    <label for="role">نقش کاربری:</label>
+                                    <select id="role" class="form-select" style="width: 100%;">
+                                        <option value="">انتخاب کنید</option>
+                                        <option value="superuser">سرپرست</option>
+                                        <option value="staff">مدیر</option>
+                                        <option value="installer">نصاب</option>
+
+
+
+                                    </select>
+                                </div>
+                                <div class="col-xs-12 col-sm-12 col-md-4 col-lg-3">
+                                    <label for="status">وضعیت:</label>
+                                    <select id="status" class="form-select"style="width: 100%;">
+                                        <option value="">انتخاب کنید</option>
+                                        <option value="active">فعال</option>
+                                        <option value="deactive">غیرفعال</option>
+
+
+                                    </select>
+                                </div>
+                                <div class="col-xs-12 col-sm-12 col-md-4 col-lg-3">
+                                    <!-- <label for="administration">وزارت‌خانه:</label>
+                                    <select id="administration" class="form-control">
+                                        <option value="">انتخاب کنید</option> -->
+
+                                    </select>
+                                </div>
+                                <div class="clearfix"></div>
+                            </div>
+
+                            <div class="x_content">
+
+                                <!-- <p>با افزودن کلاس <code dir="ltr">bulk_action</code> برای جدول، جدول دارای اعمال همگانی
+                                    می‌شود.</p> -->
+
+                                <div class="table-responsive">
+                                    <table class="table table-striped jambo_table dataTable no-footer " id="users-list">
+                                        <thead>
+                                            <tr class="headings">
+
+                                                <th class="column-title">تصویر پروفایل</th>
+                                                <th class="column-title">نام</th>
+                                                <th class="column-title">نام کاربری</th>
+                                                <th class="column-title">نقش کاربری</th>
+                                                <th class="column-title">وضعیت</th>
+
+                                                <th class="column-title no-link last"><span class="nobr">عمل</span>
+                                                </th>
+                                            </tr>
+                                        </thead>
+
+                                        <tbody>
+
+                                        </tbody>
+                                    </table>
+                                    <div class="col-md-3 col-xs-3">
+                                        <a class="btn btn-success" style="left:3%;" id="add_user" href="/create-user/">افزودن
+                                            کاربر<i class="fa fa-plus-circle"></i></a>
+                                            <div class="pagination-container">
+                                                <button class="prev-page"><i class="fa fa-chevron-right"></i></button>
+                                                <div class="pagination justify-content-center pagination-sm">
+                                                    <div class="page-numbers"></div>
+                                                </div>
+                                                <button class="next-page"><i class="fa fa-chevron-left"></i></button>
+                                            </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            <!-- /page content -->
+
+            <!-- /page content -->
+
+            <!-- footer content -->
+            <footer class="hidden-print">
+                <div class="pull-left">
+
+                </div>
+                <div class="clearfix"></div>
+            </footer>
+            <!-- /footer content -->
+        </div>
+    </div>
+    <div id="lock_screen">
+        <table>
+            <tr>
+                <td>
+                    <div class="clock"></div>
+                    <span class="unlock">
+                        <span class="fa-stack fa-5x">
+                            <i class="fa fa-square-o fa-stack-2x fa-inverse"></i>
+                            <i id="icon_lock" class="fa fa-lock fa-stack-1x fa-inverse"></i>
+                        </span>
+                    </span>
+                </td>
+            </tr>
+        </table>
+    </div>
+    {% include 'scripts.html' %}
+    <script>
+        let currentPage = 1;
+        let totalPages;
+
+
+
+
+        function showDetail(id) {
+            const userUrl = `/user-details/${id}`;
+            window.location.href = userUrl;
+        }
+        $(document).ready(function () {
+
+            $("#search").on("keyup", function () {
+                var value = $(this).val().toLowerCase();
+                $("#users-list tbody tr").filter(function () {
+                    $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+                });
+            });
+            function listOfUsers(resp) {
+                const tableBody = $('#users-list tbody')
+                tableBody.empty();
+                resp.results.forEach(function (obj) {
+                    const profileImage = obj.profile_image
+                        ? `<img src=${obj.profile_image} alt="profile image" class="thumbnail" style="width: 120px;height: 120px;"> ` : '';
+
+                    let userRole = '';
+                    if (obj.is_superuser === true && obj.is_staff === true) {
+                        userRole = 'سرپرست';
+                    } else if (obj.is_superuser === false && obj.is_staff === true) {
+                        userRole = 'مدیر';
+                    } else {
+                        userRole = 'نصاب';
+                    }
+                    const row = ` 
+                <tr id="user_${obj.id}">
+                    <td  onclick="showDetail(${obj.id})">${profileImage}</td>
+                    <td  onclick="showDetail(${obj.id})">${obj.first_name} ${obj.last_name}</td>
+                    <td  onclick="showDetail(${obj.id})">${obj.username}</td>
+                    <td  onclick="showDetail(${obj.id})"> ${userRole}</td>
+                    <td  onclick="showDetail(${obj.id})">${obj.is_active ? 'فعال' : 'غیرفعال'}</td>
+                    <td class=" last">
+                        <a><i class="btn btn-sm btn-danger fa fa-trash delete-button" data-toggle="modal" data-target="#deleteConfirmationModal" data-user-id="${obj.id}" data-username="${obj.username}"></i></i></a>
+                        <a href="/update-user/${obj.id}"><i class="btn btn-sm btn-warning fa fa-pencil"></i></a>
+                    </td>
+                </tr>
+                `;
+                    tableBody.append(row);
+                });
+            }
+
+            function applyFilters() {
+                const status = $('#status').val();
+                const role = $('#role').val();
+
+
+                // Make an AJAX request to retrieve the filtered results
+                $.ajax({
+                    type: 'GET',
+                    url: '/api/enginroom/',
+                    data: {
+                        status: status,
+                        role: role,
+
+
+                    },
+                    success: function (response) {
+                        // Handle the filtered results
+                        console.log(response);
+                        listOfEnginroom(response);
+                        totalPages = response.total_pages
+
+                        console.log('filter total page', response.total_pages)
+                        updatePageNumbers();
+
+                    },
+                    error: function (error) {
+                        console.error('Error loading filtered results:', error.responseJSON);
+                    }
+                });
+            }
+            function loadUsers(page) {
+                let status = $('#status').val();
+                let role = $('#role').val();
+
+                // Append the selected filters to the URL if any filter is selected
+
+                let url = '/api/users/?page=' + page;
+
+                if (status || role) {
+                    url += '&status=' + status;
+                    url += '&role=' + role;
+
+                }
+                $.ajax({
+                    type: 'GET',
+                    url: url,
+                    success: function (response) {
+                        listOfUsers(response);
+                        currentPage = page;
+                        totalPages = response.total_pages;
+                        if (!status || !role){
+                        $('#total_users').text(response.count)}
+                        updatePageNumbers();
+                    },
+                    error: function (error) {
+                        console.error('Error loading users:', error.responseJSON);
+                    }
+                });
+
+            }
+            function loadFilteredUsers(page) {
+                // Make an AJAX request to retrieve the filtered engine rooms
+                let status = $('#status').val();
+                let role = $('#role').val();
+
+                $.ajax({
+                    type: 'GET',
+                    url: '/api/users/',
+                    data: {
+                        status: status,
+                        role: role,
+                        
+                    },
+                    success: function (response) {
+                        listOfUsers(response);
+                        currentPage = page;
+                        totalPages = response.total_pages;
+                        updatePageNumbers();
+                    },
+                    error: function (error) {
+                        console.error('Error loading filtered results:', error.responseJSON);
+                    }
+                });
+            }
+
+            loadUsers(currentPage);
+            $('#role').on('change', function () {
+                if ($('#role').val() || $('#status').val()) {
+                    loadFilteredUsers(currentPage);
+                } else {
+                    loadUsers(currentPage);
+                }
+            });
+            $('#status').on('change', function () {
+                if ($('#role').val() || $('#status').val()) {
+                    loadFilteredUsers(currentPage);
+                } else {
+                    loadUsers(currentPage);
+                }
+            });
+
+            if (currentPage == 1) {
+                $(".prev-page").hide()
+            }
+            if (currentPage == totalPages) {
+                $(".next-page").hide()
+            }
+
+            $(".prev-page").on("click", function () {
+                $(".next-page").show()
+                if (currentPage > 1) {
+                    loadUsers(currentPage - 1); // Load the previous page
+                }
+
+            });
+
+            $(".next-page").on("click", function () {
+                $(".prev-page").show()
+                if (currentPage < totalPages) {
+                    loadUsers(currentPage + 1); // Load the next page
+                }
+
+            });
+            function updatePageNumbers() {
+                if (currentPage === 1) {
+                    $(".prev-page").hide();
+                } else {
+                    $(".prev-page").show();
+                }
+
+                // Hide/show next button based on current page
+                if (currentPage === totalPages) {
+                    $(".next-page").hide();
+                } else {
+                    $(".next-page").show();
+                }
+                const pageNumbers = $(".page-numbers");
+                pageNumbers.empty();
+
+                const visiblePages = 3;
+                let startPage = Math.max(1, currentPage - Math.floor(visiblePages / 2));
+                let endPage = Math.min(totalPages, startPage + visiblePages - 1);
+
+                if (totalPages > visiblePages) {
+                    if (endPage === totalPages) {
+                        startPage = Math.max(1, totalPages - visiblePages + 1);
+                    } else if (startPage === 1) {
+                        endPage = Math.min(visiblePages, totalPages);
+                    }
+                }
+
+                if (startPage > 1) {
+                    pageNumbers.append($("<button>", { class: "page-number", text: 1, "data-page": 1 }));
+                    if (startPage > 2) {
+                        pageNumbers.append('<span class="ellipsis">...</span>');
+                    }
+                }
+
+                for (let i = startPage; i <= endPage; i++) {
+                    let pageNumberButton = $("<button>", { class: "page-number", text: i, "data-page": i });
+                    pageNumbers.append(pageNumberButton);
+                }
+
+                if (endPage < totalPages) {
+                    if (endPage < totalPages - 1) {
+                        pageNumbers.append('<span class="ellipsis">...</span>');
+                    }
+                    pageNumbers.append($("<button>", { class: "page-number", text: totalPages, "data-page": totalPages }));
+                }
+
+                // Highlight the current page number
+                $(`.page-number[data-page=${currentPage}]`).addClass("active");
+
+                // Page number click event handler
+                $(".page-number").on("click", function () {
+                    const page = $(this).data("page");
+                    $(`.page-number[data-page=${currentPage}]`).removeClass("active");
+                    $(`.page-number[data-page=${page}]`).addClass("active");
+                    loadUsers(page);
+                });
+            }
+
+        });
+        $('select').select2();
+        let userToDeleteId;
+
+        // When the trash button is clicked
+        $(document).on('click', '.delete-button', function () {
+            const userId = $(this).data('user-id');
+            const username = $(this).data('username');
+
+            // Display a SweetAlert confirmation dialog
+            Swal.fire({
+                title: `آیا می‌خواهید "${username}" را حذف کنید؟`,
+                icon: 'warning',
+                iconHtml: '؟',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'بله',
+                cancelButtonText: 'خیر'
+            }).then((result) => {
+                if (result.isConfirmed) {
+
+                    deleteUser(userId, username);
+                }
+            });
+        });
+
+
+        function deleteUser(userId, username) {
+            $.ajax({
+                type: "DELETE",
+                url: `/api/users/${userId}/`,
+                headers: {
+                    'X-CSRFToken': $('input[name="csrfmiddlewaretoken"]').val() // Include the CSRF token in the headers
+                },
+                success: function (response) {
+
+                    $(`#user_${userId}`).remove();
+
+                    $('#deleteConfirmationModal').modal('hide');
+
+                    Swal.fire('حذف شد!', `"${username}" با موفقیت حذف شد.`, 'success');
+                },
+                error: function (error) {
+                    console.error('Error deleting Engineroom:', error.responseJSON);
+
+                    Swal.fire('خطا', 'خطایی در حذف اتفاق افتاده است.', 'error');
+                }
+            });
+        }
+
+
+
+    </script>
+
+</body>
+
+</html>
